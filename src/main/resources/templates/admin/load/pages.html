@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<div th:fragment="pages">
+		<ul class="pagination pull-right no-margin" th:with="page_length=5,page_avg=${page_length}/2">
+			<li class="prev disabled">
+				<a href="#" th:onclick="toList([[${page-1}]])">
+					<i class="ace-icon fa fa-angle-double-left"></i>
+				</a>
+			</li>
+			<li th:if="${page-4>=1 && (page-4>=page-page_avg || page-4>total_page-page_length)}">
+				<a href="#" th:text="${page-4}" th:onclick="toList([[${page-4}]])"></a>
+			</li>
+			<li th:if="${page-3>=1 && (page-3>=page-page_avg || page-3>total_page-page_length)}">
+				<a href="#" th:text="${page-3}" th:onclick="toList([[${page-3}]])"></a>
+			</li>
+			<li th:if="${page-2>=1 && page-2>=page-page_avg}">
+				<a href="#" th:text="${page-2}" th:onclick="toList([[${page-2}]])"></a>
+			</li>
+			<li th:if="${page-1>=1 && page-1>=page-page_avg}">
+				<a href="#" th:text="${page-1}" th:onclick="toList([[${page-1}]])"></a>
+			</li>
+			<li class="active">
+				<a href="#" th:text="${page}"></a>
+			</li>
+			<li th:if="${page+1<=total_page && page+1<=page+page_avg}">
+				<a href="#" th:text="${page+1}" th:onclick="toList([[${page+1}]])"></a>
+			</li>
+			<li th:if="${page+2<=total_page && page+2<=page+page_avg}">
+				<a href="#" th:text="${page+2}" th:onclick="toList([[${page+2}]])"></a>
+			</li>
+			<li th:if="${page+3<=total_page && (page+3<=page+page_avg || page+3<=page_length)}">
+				<a href="#" th:text="${page+3}" th:onclick="toList([[${page+3}]])"></a>
+			</li>
+			<li th:if="${page+4<=total_page && (page+4<=page+page_avg || page+4<=page_length)}">
+				<a href="#" th:text="${page+4}" th:onclick="toList([[${page+4}]])"></a>
+			</li>
+			<li class="next">
+				<a href="#" th:onclick="toList([[${page+1}]])">
+					<i class="ace-icon fa fa-angle-double-right"></i>
+				</a>
+			</li>
+		</ul>
+	</div>
+</html>

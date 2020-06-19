@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:include="admin/load/css :: css"></head>
+	<head th:include="admin/load/js :: js"></head>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title th:text="${field.id} ? '學習領域管理 - 修改': '學習領域管理 - 新增'"></title>
+		<meta name="description" content="Drag &amp; drop hierarchical list" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+	</head>
+
+	<body class="no-skin">
+		
+		<!-- header -->
+		<div th:include="admin/load/header :: header">&nbsp;</div>
+		
+		<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+
+			<!-- menu -->
+			<div id="sidebar" class="sidebar responsive ace-save-state" th:include="admin/load/menu :: menu"></div>
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<span style="font-size:20px; padding-left: 10px" id="title_text"></span>
+					</div>
+
+					<div class="page-content">
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+<!-- 								<form class="form-horizontal" role="form"> -->
+								<form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${field}" enctype="multipart/form-data">
+									<input type="hidden" id="id" th:field="*{id}" th:value="*{id}" />
+									<input type="hidden" id="parent_id" th:field="*{parent_id}" th:value="*{parent_id}" />
+									<input type="hidden" id="parent_name" th:field="*{parent_name}" />
+									<input type="hidden" id="layer" th:field="*{layer}" th:value="*{layer}" />
+<!-- 									<input type="hidden" id="page" th:field="*{page}" th:value="*{page}" /> -->
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">名稱<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="name" class="col-xs-10 col-sm-5" th:field="*{name}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">簡稱<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="abbreviation" class="col-xs-10 col-sm-5" th:field="*{abbreviation}" />
+										</div>
+									</div>
+									
+									<div class="clearfix form-actions">
+										<div class="col-md-offset-1 col-md-9">
+											<button class="btn btn-info" type="button" onclick="update()">
+												<i class="ace-icon fa fa-check bigger-110"></i>
+												送出
+											</button>
+
+											<button class="btn" type="button" th:onclick="backList([[${parent_parent_id}]],[[${parent_parent_name}]])">
+												<i class="ace-icon fa fa-undo bigger-110"></i>
+												返回
+											</button>
+										</div>
+									</div>
+								</form>
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<script type="text/javascript">
+// 		var year_list = new Array();
+		
+		$(function(){
+			
+			//選單選取判斷
+			$(".menu").removeClass("active");
+			$(".menu").parent("ul").parent("li").removeClass("open");
+			$(".menu").parent("ul").parent("li").removeClass("active");
+			$(".field").addClass("active");
+			$(".field").parent("ul").parent("li").addClass("open");
+			$(".field").parent("ul").parent("li").addClass("active");
+			
+			if($("#id").val()== null || $("#id").val()== "") {
+				$("#title_text").text("學習領域管理 - 新增");
+			} else {
+				$("#title_text").text("學習領域管理 - 修改");
+			}
+		    
+		});
+		
+		//修改
+		function update() {
+			
+			if(checkNull($("#name"))) {
+				alert("請輸入名稱");
+				return false;
+			}
+			
+			if(checkLength($("#name"), "1", "6")) {
+				alert("名稱不可超過6個字");
+				$("#name").focus();
+				return false;
+			}
+			
+			if(checkNull($("#abbreviation"))) {
+				alert("請輸入名稱");
+				return false;
+			}
+			
+			if(checkLength($("#abbreviation"), "1", "3")) {
+				alert("名稱不可超過3個字");
+				$("#abbreviation").focus();
+				return false;
+			}
+			
+			if($("#id").val()== null || $("#id").val()== "") {
+				$("#mainForm").attr("action", "addSubmit");
+			} else {
+				$("#mainForm").attr("action", "updateSubmit");
+			}
+			
+			$("#mainForm").submit();
+			
+		}
+		
+		//返回
+		function backList(parent_id, name) {
+			
+			$("#parent_id").val(parent_id);
+			$("#parent_name").val(name);
+			$("#layer").val($("#layer").val());
+			$("#mainForm").attr("action", "list");
+			$("#mainForm").submit();
+			
+		}
+		
+		</script>
+	</body>
+</html>

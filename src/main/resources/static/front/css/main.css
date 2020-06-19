@@ -1,0 +1,768 @@
+.style-admin {
+    --primary: #948574;
+    --primary-light: #f2f2e8;
+    --primary-dark: #4b423b;
+    --secondary: #b7ac9d;
+}
+.style-content-teacher {
+    --primary: #ff8c02;
+    --primary-light: #ffebba;
+    --primary-dark: #dd5600;
+    --secondary: #ffb02c;
+}
+.style-verify-teacher {
+    --primary: #8662b4;
+    --primary-light: #dcc5f8;
+    --primary-dark: #5a3d80;
+    --secondary: #a761ff;
+}
+
+
+input[type='text'] , input[type='password'] , input[type='date'] , select {    
+    width: 320px;
+    height: 36px;
+    border: 1px solid #888;
+    background: #fff;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+input, select, span, button {
+    color: #4b4b4b;
+}
+
+
+
+span.required {
+    color: #FF0000;
+    margin: 0 3px;
+}
+span.memo {
+    font-size: 0.93rem;
+    color: #6b6b6b;
+}
+button {
+    border: 1px solid var(--primary-dark);
+    background-color: #ffffff;
+    cursor: pointer;
+}
+button.btn-submit {
+    margin: 0 auto;
+    display: block;
+    padding: 12px 36px;    
+    border-radius: 5px;
+    margin-bottom: 20px;  
+    color: var(--primary-dark);      
+}
+button.btn-import {    
+    border-radius: 5px;
+    padding: 8px 15px;
+}
+.btn-block {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.btn-block button{
+    margin: 0 10px;
+}
+button.btn-md {
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: var(--primary-dark);
+}
+button.btn-sm {
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+button.btn-submit:hover , button.btn-import:hover , button.btn-sm:hover , button.btn-md:hover {
+    color: #ffffff;
+    background-color: var(--primary-dark);
+}
+button.btn-closeLightBox {
+    border: none;
+    color: var(--primary);
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    font-size: 1.5rem;
+}
+button.btn-closeLightBox:hover {
+    transform: scale(1.1)
+}
+button.btn-openLightBox {
+    display: block;
+    color: #fff;
+    background-color: var(--secondary);
+    padding: 7px 15px;
+    cursor: pointer;
+    border: none;
+}
+.radio-circle {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    background-color: #fff;
+    border: 1.5px solid var(--primary-dark);
+    border-radius: 999rem;
+    vertical-align: text-bottom;
+}
+.radio-circle.active {
+    background-color: var(--primary-dark);
+}
+.checkbox-square {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    background-color: #fff;
+    border: 1.5px solid var(--primary-dark);
+    vertical-align: text-bottom;
+}
+.checkbox-square.active {
+    background-color: var(--primary-dark);
+}
+
+label{
+    cursor: pointer;
+    margin-right: 10px;
+}
+span.btn-file {
+    display: inline-block;
+    color: #fff;
+    background-color: var(--secondary);
+    padding: 7px 15px;
+    cursor: pointer;
+}
+.fixed-width {
+    width: 1200px;    
+    margin: 0 auto;
+}
+.text-c-red { color: #FF0000; }
+.font-size-09 { font-size: 0.9rem; }
+.font-size-08 { font-size: 0.8rem; }
+.p-left-14px { padding-left: 14px; }
+.failTag { background-color: #af4448; }
+.successTag { background-color: #00897b; }
+.v-center {
+    display: flex;
+    align-items: center;
+}
+
+/* index.html start */
+.big-logo {
+    color: var(--primary-dark);
+    font-size: 2rem;
+    font-weight: 600;
+    text-shadow: 0px 2px 6px #afaeae;
+}
+.index-container {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.index-container p {
+    margin: 10px 0 50px 0;    
+}
+.index-container button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 20px;
+    cursor: pointer;
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    box-shadow: 0px 2px 6px #666666;
+}
+.index-container button.btn-teacher:hover {
+    background-color: #dd5600;
+}
+.index-container button.btn-admin:hover {
+    background-color: #948574;
+}
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.login-container .login-block {
+    border: 1px solid #222222;
+    border-radius: 5px;
+    padding: 30px;
+    margin-left: 50px;
+    color: #4b4b4b;
+}
+.login-container .login-block p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    color: var(--primary-dark);
+}
+.login-container .login-block i {
+    margin: 0 3px;
+}
+.login-container .login-block div:nth-child(3) {
+    margin: 20px 0 40px 0;
+} 
+.login-container .login-block div input {
+    margin-left: 10px;
+    width: 250px;
+}
+.login-container .login-block div button {
+    background: inherit;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 0 10px;
+    color: var(--primary-dark);
+}
+.login-container .login-block div button:hover {
+    background: var(--primary-dark);
+    color: #ffffff;
+}
+.bac-c-lightBrown { background-color: #f2f2e8; }
+/* index.html end */
+
+
+/* 燈箱 start */
+.lightBoxBG {
+    width: 100%;    
+    height: 100vh;
+    background-color: #ccc;
+    position: fixed;
+    top: 0;    
+    opacity: 0.4;
+    z-index: 12;
+}
+.lightBoxAlert {
+    position: fixed;
+    top: 25%;
+    left: 40%;    
+    background-color: #ffffff;
+    z-index: 13;
+    border-radius: 10px;
+    border: 2px solid var(--primary);
+    padding: 30px;
+    box-sizing: border-box;
+    color: #4b4b4b;
+    width: 320px;
+}
+.lightBoxContent{    
+    position: fixed;
+    top: 25%;
+    left: 25%;    
+    background-color: #ffffff;
+    z-index: 13;
+    border-radius: 10px;
+    border: 2px solid var(--primary);
+    padding: 30px;
+    box-sizing: border-box;
+    color: #4b4b4b;
+}
+.lightBoxContent h3 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.lightBoxContent hr {
+    margin: 15px 0;
+}
+.lightBoxContent button , .lightBoxAlert button {
+    display: table;
+    margin: 0 auto;
+}
+.lightBoxContent .container , .lightBoxAlert .container {
+    margin-bottom: 20px;
+}
+.lightBoxContent.lessonOutline-lightBox , .lightBoxContent.lessonIntro-lightBox , .lightBoxContent.learningPerformace-lightBox , .lightBoxContent.learningContent-lightBox {
+    width: 50%;
+    min-height: 200px;    
+}
+.lightBoxContent.lessonOutline-lightBox .container , .lightBoxContent.lessonIntro-lightBox .container , .lightBoxContent.learningPerformace-lightBox .container , .lightBoxContent.learningContent-lightBox .container {
+    overflow-y: scroll;
+    max-height: 200px;    
+}
+.lightBoxContent.lessonOutline-lightBox .container label , .lightBoxContent.lessonIntro-lightBox .container label , .lightBoxContent.learningPerformace-lightBox .container label , .lightBoxContent.learningContent-lightBox .container label {
+    display: block;
+    margin-bottom: 5px;    
+}
+.lightBoxContent.teacherImportData-lightBox {
+    left: 28%;
+}
+/* 燈箱 end */
+
+
+/* header start */
+.header-content {
+    background-color: var(--primary-dark);
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    z-index: 11;
+}
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 25px 0 10px 0;
+    color: #ffffff;
+    align-items: baseline;
+    position: relative;
+}
+.header a.btn-menu {
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+.header .logo {        
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+}
+.header .account-name {    
+    cursor: pointer;
+    /* position: relative;     */
+    position: absolute;
+    right: 0;
+    top: 32px;
+}
+.header .account-name span {
+    color: #ffffff;
+    margin-right: 10px;    
+}
+.header .account-name ul {
+    position: absolute;
+    border: 1px solid #111;
+    background-color: #fff;
+    display: none;
+    overflow: hidden;
+}
+.header .account-name ul li {
+    border-bottom: 1px solid #111111;
+}
+.header .account-name ul li:last-child {
+    border-bottom: none;
+}
+.header .account-name ul a {
+    padding: 10px 20px;
+    display: inline-block;
+    color: var(--primary-dark);
+    width: 100%;    
+}
+.header .account-name ul a:hover {
+    color: #ffffff;
+    background-color: var(--primary);
+}
+.header>nav {
+    width: 80%;
+    margin: 0 auto;
+}
+.header>nav>ul {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.2rem;    
+}
+.header>nav>ul>li.menu {    
+    position: relative;
+    cursor: pointer;
+}
+.header>nav>ul>li.menu>ul.sub-menu {
+    display: none;    
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #111111;
+    width: max-content;
+    border-bottom: none;
+}
+.header>nav>ul>li.menu>ul.sub-menu>li {
+    border-bottom: 1px solid #111111;
+    overflow: hidden;
+}
+.header>nav>ul>li.menu>ul.sub-menu>li>a.btn-subMenu {
+    display: inline-block;
+    padding: 10px 15px;    
+    color: var(--primary-dark);
+    width: 100%;
+}
+.header>nav>ul>li.menu>ul.sub-menu>li>a:hover {
+    color: #ffffff;
+    background-color: var(--primary-dark);
+}
+
+.header a.btn-menu span , .header a.btn-subMenu span{    
+    width: 20px;    
+    background-color: var(--primary-light);
+    display: inline-block;    
+    border-radius: 3px;
+    text-align: center;
+    margin-left: 8px;
+    color: var(--primary-dark);
+}
+.header .nav-mobile {
+    display: none;
+}
+.header .logo.scrollState { /* 滾輪滑動時改變狀態 */
+    width: 30%;
+    text-align: left;
+    margin-bottom: 0;
+}
+.header .nav-web.scrollState { /* 滾輪滑動時改變狀態 */
+    display: none;
+}
+.header .nav-mobile.scrollState { /* 滾輪滑動時改變狀態 */
+    display: block;
+}
+.header nav.scrollState { /* 滾輪滑動時改變狀態 */
+    width: 70%;
+}
+/* header end */
+
+
+/* content 、breadcrumb start */
+.main-content {
+    margin-top: 140px;
+}
+.breadcrumb i {
+    margin: 8px;
+}
+.breadcrumb a {
+    color: #4b4b4b;
+}
+.breadcrumb a:last-child {
+    color: #6b6b6b;
+}
+.breadcrumb a:hover {
+    color: var(--secondary);
+}
+/* content 、breadcrumb end */
+
+
+/* 建立老師 start */
+.create-content {
+    width: 80%;    
+    border: 1px solid #4b4b44;
+    border-radius: 5px;
+    margin: 30px auto 50px auto;
+    color: #4b4b4b;
+    overflow: hidden;
+}
+.create-content .create-grid {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    padding: 40px;
+    grid-row-gap: 20px;    
+}
+.create-content .create-grid>div:nth-child(odd) {
+    line-height: 36px;
+}
+.create-content>h3 {
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #4b4b4b;
+    /* background-color: #f2f2e8; */
+    background-color: var(--primary-light);
+}
+.create-content h3 i {
+    margin: 0 10px;
+}
+.create-content div.basic-h {    
+    line-height: 36px;
+}
+
+
+.create-content.teacher>.create-grid div.bank-mobile {
+    display: none;
+}
+.create-content.teacher>.create-grid span.bank-web , .create-content>.create-grid span.memo {
+    margin-left: 20px;
+}
+/* 建立老師 end */
+
+
+/* 新增合約 start */
+.create-content.contract .create-grid .fileNumInput {
+    width: 40px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+.create-content.contract .create-grid p {
+    font-size: 0.93rem;
+    color: #FF0000;
+}
+.create-content.contract .container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 20px;
+    justify-content: center;
+}
+.create-content.contract .container>p {
+    margin-top: 40px;
+    color: #FF0000;
+    width: 100%;
+    margin-bottom: 8px;
+}
+.create-content.contract .container .page {
+    width: 50%;
+    background-color: #dddddd;
+    padding: 20px 10px 10px 20px;
+    box-sizing: border-box;
+}
+.create-content.contract .container .page:nth-child(2){
+    border-right: 1px solid #ffffff;
+}
+.create-content.contract .container .page>div{
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    padding-left: 20px;
+    align-items: center;
+    grid-row-gap: 8px;
+    margin-top: 10px;
+}
+.create-content.contract .container .page input[type='text'] , .create-content.contract .create-grid input[name='contractDate']{
+    width: 180px;
+}
+.create-content.contract .container .page .contractFileText {
+    display: block;
+    font-size: 0.9rem;
+}
+.create-content.contract .create-grid input[name='contractDate']:first-child {
+    margin-right: 10px;
+}
+/* 新增合約 end */
+
+
+/*新增教案 start */
+.create-content.lesson .les-labelBlock {
+    display: inline-block;
+    width: 19%;
+    margin: 5px 0;
+}
+.create-content.lesson .lessonIntro {
+    margin-top: 10px;
+}
+.create-content.lesson .lessonFileText {
+    display: block;
+}
+/*新增教案 end */
+
+
+/* 教案詳細資料 start */
+.create-content a {
+    color: #948574;
+}
+.create-content a:hover {
+    color: var(--secondary);
+}
+.create-content.lessonContent {
+    position: relative;
+}
+.create-content.lessonContent .create-grid>div:nth-child(odd) {
+    line-height: unset;
+}
+.create-content.lessonContent .statusTag {
+    position: absolute;
+    right: -40px;
+    width: 170px;
+    font-size: 1.3rem;    
+    color: #fff;
+    text-align: center;
+    padding: 15px 20px;
+    transform: rotate(35deg);
+    top: 14px;
+}
+.create-content.lessonContent .create-grid .lesson-item>div {    
+    min-height: 25px;
+}
+.create-content.lessonContent .create-grid .lesson-item>span {
+    margin-right: 10px;
+}
+.create-content.lessonContent .create-grid .lesson-item>div:last-child {
+    margin: 0;
+}
+.create-content.lessonContent .create-grid .item-block {
+    display: grid;
+    grid-template-columns: 60px 1fr;    
+    align-items: center;
+}
+.create-content.lessonContent .create-grid .item-block:first-child {
+    margin-bottom: 10px;
+}
+.create-content.lessonContent .create-grid .item-block div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: #ffffff;    
+    margin-right: 15px;
+    height: 100%;
+}
+.create-content.lessonContent .create-grid .item-block span{    
+    color: #ffffff;      
+}
+.create-content.lessonFile .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 40px;
+    grid-row-gap: 20px;
+    grid-column-gap: 15px;
+}
+.create-content.lessonFile .container>div {
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.1rem;
+}
+.create-content.lessonFile .container>div:nth-child(1) , .create-content.lessonFile .container>div:nth-child(2) {
+    font-size: 1.1rem;
+    background-color: var(--primary);
+    padding: 5px 0;
+    color: #ffffff;    
+    justify-content: center;    
+}
+.create-content.lessonVerify label {
+    margin-right: 10px;
+}
+/* 教案詳細資料 end */
+
+
+/* 編輯教案 start */
+.lightboxItem {
+    display: inline-block;
+    background-color: #dfdbdb;
+    margin: 5px 10px 0 0;
+    padding: 3px 5px;
+    border-radius: 3px;
+}
+.lightboxItem button {
+    border: none;
+    border-left: 1px solid #111111;    
+    background-color: inherit;
+    margin-left: 7px;
+}
+/* 編輯教案 end */
+
+
+/* 列表 start */
+.topWrap {
+    display: flex;
+    justify-content: space-between;    
+}
+.list-content {
+    color: #4b4b4b;    
+}
+.list-content>h3 {
+    font-size: 1.4rem;
+    margin: 20px 0;
+    text-align: center;
+}
+.list-content>.pageList-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.list-content>.pageList-block select{
+    width: fit-content;
+}
+.list-content>.list-block {
+    margin: 10px 0 50px 0;    
+}
+.grid {
+    display: grid;
+    text-align: center;
+    align-items: center;
+    border-bottom: 1px solid var(--secondary);
+    word-break: break-all;
+}
+.grid>div {    
+    padding: 20px 0;
+}
+.grid a {
+    color: #4b4b4b;
+}
+.list-content .grid-title {
+    background-color: var(--primary-light);
+    border: none;        
+}
+.list-content>.page-block {
+    text-align: center;
+    margin-bottom: 60px;
+}
+.list-content>.page-block a{
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--primary-dark);
+    display: inline-block;
+    line-height: 30px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    margin: 0 3px;
+    color: var(--primary-dark);
+}
+.list-content>.page-block a:hover {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+}
+.list-content>.page-block i {
+    color: var(--primary-dark);
+    margin: 0 20px;
+    cursor: pointer;
+}
+.list-content>.page-block i:hover {
+    transform: scale(1.5);
+}
+.list-content>.page-block div p {
+    display: inline-block;
+    margin: 15px 5px;
+}
+.list-content>.page-block div p span {    
+    margin: 0 3px;
+}
+.list-content>.page-block .pageInput {
+    height: 30px;
+    width: 35px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+.list-content .teacherList-grid { /* 老師列表 */
+    grid-template-columns: 1fr 1fr 1fr 2fr 1fr 2fr 1fr 1fr;
+}
+.list-content .contractList-grid { /* 合約列表 */
+    grid-template-columns: 2fr 2fr 2fr 75px 3fr 3fr 3fr 75px 75px 75px;
+}
+.list-content .contractList-grid span {
+    margin: 0 3px;
+}
+.list-content .lessonList-grid { /* 教案列表--管理者、內容老師 */
+    grid-template-columns: 1fr 6fr 1fr 1fr 1fr 1fr 1fr;
+}
+.list-content .lessonList-verify-grid { /* 教案列表--審核老師 */
+    grid-template-columns: 1fr 6fr 1fr 1fr 1fr ;
+}
+.list-content .lessonList-grid>div {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.list-content .lessonList-memo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.list-content .lessonList-memo span {
+    margin: 0 5px;
+    color: #FF0000;
+}
+/* 列表 end */
+
+
+
+
+.dis-n { display: none; }
+.dis-b { display: block; }

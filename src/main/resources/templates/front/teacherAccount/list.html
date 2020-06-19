@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title></title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">    
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/reset.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/all.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/fontawesome.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-customselect.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/main.css}">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <form id="mainForm" method="POST" th:object="${account}">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+	</form>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="topWrap">
+                <div class="breadcrumb">
+                    <a href="#">首頁</a>
+                    <i>/</i>
+                    <a href="#">老師管理</a>
+                    <i>/</i>
+                    <a href="#">老師列表</a>
+                </div>
+                <button class="btn-import btn-openLightBox" data-lb="teacherImportData">資料匯入</button>
+            </div> 
+            <div class="list-content">
+                <h3>老師列表</h3>
+                <div class="pageList-block">
+                    <div>總計筆數 <span>[[${account.count}]]</span> 筆</div>
+                    <div>每頁顯示數量
+                        <select>
+                            <option>20</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="list-block">
+                    <div class="grid teacherList-grid grid-title">
+                        <div>內容提供</div>
+                        <div>內容審核</div>
+                        <div>姓名</div>
+                        <div>電子信箱</div>
+                        <div>領域</div>
+                        <div>服務學校</div>
+                        <div>詳細資料</div>
+                        <div>新增合約</div>
+                    </div>
+                    <div class="grid teacherList-grid" th:each="list,stat:${list}">
+                        <div><i class="fas fa-check" th:if="${list.content_provision}=='1'"></i></div>
+                        <div><i class="fas fa-check" th:if="${list.content_audit}=='1'"></i></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.email}"></div>
+                        <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.school_master_name}"></div>
+                        <div><a href="#"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
+                        <div><a href="./contract-create.html"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                    </div>
+                </div>
+                <div class="page-block" th:include="front/load/pages :: pages" th:with="page_length=5,page_avg=${page_length}/2"></div>
+            </div>            
+        </div>
+    </section>
+    <!-- 燈箱背景 -->
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 資料匯入燈箱 -->
+    <section class="lightBoxContent teacherImportData-lightBox dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <h3 class="title">資料匯入</h3>
+        <hr>
+        <div class="container">
+            <label for="teacherImportFile">
+                <input type="file" class="dis-n btnFile" id="teacherImportFile" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="teacherImportFileText">
+                <span class="btn-file">選擇檔案</span>
+            </label>                        
+            <span class="memo">註：僅接受附檔名為.pdf、.ppt、.doc、.docx、.xls、.xlsx</span>                        
+            <p class="teacherImportFileText"></p>
+        </div>
+        <button class="createTagBtn btn-sm" data-tag="teacherImportData">確定</button>
+    </section>
+
+    <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
+    <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
+    <script th:src="@{/front/js/lib/jquery-customselect.js}"></script>
+    <script th:src="@{/front/js/main.js}"></script>
+	<script>
+		
+		$(function(){
+			
+		})
+	
+		function toList(page) {
+			
+			$("#page").val(page);
+			$("#mainForm").attr("action", "/teacher");
+			$("#mainForm").submit();
+			
+		}
+	</script>
+</body>
+</html>

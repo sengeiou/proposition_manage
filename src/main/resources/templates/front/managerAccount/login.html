@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>素養教案與命題管理系統</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/reset.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/all.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/fontawesome.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/main.css}">
+</head>
+<body class="style-admin bac-c-lightBrown">
+    <section class="fixed-width login-container"> 
+        <h2 class="big-logo">素養教案與命題管理系統</h2>
+        <div class="login-block">
+            <p>登入系統</p>
+            <form role="form" id="mainForm" th:object="${account}" method="post">
+	            <div><span>帳號</span><i class="fas fa-user-circle fa-lg"></i><input type="text" th:field="*{account}" placeholder="請輸入帳號"></div>
+	            <div><span>密碼</span><i class="fas fa-lock fa-lg"></i><input type="password" th:field="*{password}" placeholder="請輸入密碼"></div>
+	            <div>
+	                <button type="button" id="change">更改身分</button>
+	                <button type="button" id="login">登入</button>
+	            </div>
+            </form>
+        </div>
+    </section>
+
+    <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
+    <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
+	<script>
+		$(function(){
+			$("#change").click(function(){
+				$(location).attr("href", "/");
+			});
+			$("#login").click(function(){
+				$("#mainForm").attr("action", "/manager/doLogin");
+				$("#mainForm").submit();
+			});
+		});
+	</script>
+	
+</body>
+</html>

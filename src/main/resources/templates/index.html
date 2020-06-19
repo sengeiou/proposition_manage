@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>素養教案與命題管理系統</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/reset.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/fontawesome.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/main.css}">
+</head>
+<body class="style-admin bac-c-lightBrown">
+    <section class="fixed-width index-container">
+        <h2 class="big-logo">素養教案與命題管理系統</h2>
+        <p>我是...</p>
+        <div>
+            <button class="btn-teacher" id="teacher">老師</button>
+            <button class="btn-admin" id="manager">管理者</button>
+        </div>
+    </section>
+
+    <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
+    <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
+	<script>
+		$(function(){
+			$("#teacher").click(function(){
+				$(location).attr("href", "/teacher/login");
+			});
+			$("#manager").click(function(){
+				$(location).attr("href", "/manager/login");
+			});
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:include="admin/load/css :: css"></head>
+	<head th:include="admin/load/js :: js"></head>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title>老師 - 新增</title>
+		<meta name="description" content="Drag &amp; drop hierarchical list" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+	</head>
+
+	<body class="no-skin">
+		
+		<!-- header -->
+		<div th:include="admin/load/header :: header">&nbsp;</div>
+		
+		<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+
+			<!-- menu -->
+			<div id="sidebar" class="sidebar responsive ace-save-state" th:include="admin/load/menu :: menu"></div>
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<span style="font-size:20px; padding-left: 10px">老師 - 新增</span>
+					</div>
+
+					<div class="page-content">
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+<!-- 								<form class="form-horizontal" role="form"> -->
+								<form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${account}" enctype="multipart/form-data">
+									<input type="hidden" id="id" th:field="*{id}" th:value="*{id}" />
+									<input type="hidden" id="page" th:field="*{page}" th:value="*{page}" />
+									<input type="hidden" id="totalPage" th:field="*{total_page}" th:value="*{total_page}" />
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">真實姓名<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="name" class="col-xs-10 col-sm-5" th:field="*{name}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">身份證字號<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="id_no" class="col-xs-10 col-sm-5" th:field="*{id_no}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">電子信箱<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="email" class="col-xs-10 col-sm-5" th:field="*{email}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">手機<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="phone" class="col-xs-10 col-sm-5" th:field="*{phone}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-field-4">領域<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<select id="field_id" th:field="*{field_id}">
+												<option value="0">請選擇</option>
+												<option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
+											</select>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-field-4">系統身份<font color="red">*</font></label>
+										
+										<div class="col-sm-8">
+											<div class="checkbox">
+												<label>
+													<input id="content_provision" name="content_provision" type="checkbox" class="ace input-lg">
+													<span class="lbl bigger-120"> 內容提供 </span>
+												</label>
+												<label>
+													<input id="content_audit"name="content_audit" type="checkbox" class="ace input-lg">
+													<span class="lbl bigger-120"> 內容審核 </span>
+												</label>
+											</div>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-field-4">服務學校<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<select id="school_master_id" th:field="*{school_master_id}">
+												<option value="0">請選擇</option>
+												<option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+											</select>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">匯款銀行<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="bank" class="col-xs-10 col-sm-5" th:field="*{bank}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">分行</label>
+
+										<div class="col-sm-8">
+											<input type="text" id="branch" class="col-xs-10 col-sm-5" th:field="*{branch}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">匯款帳號<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="remittance_account" class="col-xs-10 col-sm-5" th:field="*{remittance_account}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">通訊地址</label>
+
+										<div class="col-sm-8">
+											<input type="text" id="address" class="col-xs-10 col-sm-5" th:field="*{address}" />
+										</div>
+									</div>
+									
+									<div class="clearfix form-actions">
+										<div class="col-md-offset-1 col-md-9">
+											<button class="btn btn-info" type="button" onclick="update()">
+												<i class="ace-icon fa fa-check bigger-110"></i>
+												送出
+											</button>
+
+											<button class="btn" type="button" onclick="backList()">
+												<i class="ace-icon fa fa-undo bigger-110"></i>
+												返回
+											</button>
+										</div>
+									</div>
+								</form>
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<script type="text/javascript">
+// 		var year_list = new Array();
+		
+		$(function(){
+			
+			//選單選取判斷
+			$(".menu").removeClass("active");
+			$(".menu").parent("ul").parent("li").removeClass("open");
+			$(".menu").parent("ul").parent("li").removeClass("active");
+			$(".teacherAccountAdd").addClass("active");
+			$(".teacherAccountAdd").parent("ul").parent("li").addClass("open");
+			$(".teacherAccountAdd").parent("ul").parent("li").addClass("active");
+			
+		});
+		
+		//修改
+		function update() {
+			
+			$("#mainForm").attr("action", "addSubmit");
+			$("#mainForm").submit();
+			
+		}
+		
+		//返回
+		function backList() {
+			
+			$("#mainForm").attr("action", "list");
+			$("#mainForm").submit();
+			
+		}
+		
+		</script>
+	</body>
+</html>
