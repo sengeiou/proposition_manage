@@ -190,7 +190,7 @@ $(function(){
             contentEditAdmin(type)
         }
     })
-
+    
     function openlightBoxAlert(text) {
         console.log(text)
         $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')

@@ -52,7 +52,7 @@
                         <div>詳細資料</div>
                         <div>新增合約</div>
                     </div>
-                    <div class="grid lessonList-admin-grid" th:each="list,stat:${list}">
+                    <div class="grid lessonList-admin-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
@@ -73,7 +73,7 @@
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
-                    <div class="grid lessonList-content-grid" th:each="list,stat:${list}">
+                    <div class="grid lessonList-content-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
@@ -91,7 +91,7 @@
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
-                    <div class="grid lessonList-verify-grid" th:each="list,stat:${list}">
+                    <div class="grid lessonList-verify-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>

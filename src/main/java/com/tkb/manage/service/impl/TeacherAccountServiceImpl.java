@@ -44,4 +44,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		teacherAccountDao.delete(account);
 	}
 	
+	public void updateIdentity(Account account) {
+		teacherAccountDao.updateIdentity(account);
+	}
+	
 }

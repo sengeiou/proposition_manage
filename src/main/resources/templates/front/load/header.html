@@ -6,8 +6,8 @@
             <div class="account-name nav-web">
                 <p><span>[[${accountSession.name}]]</span>您好<i class="fas fa-user-circle fa-lg"></i></p>
                 <ul>
+                	<li th:if="${accountSession.content_provision=='1' && accountSession.content_audit=='1'}"><a href="/switch/identity">更改身份</a></li>
                     <li><a href="/logout">登出</a></li>
-<!--                     <li><a href="#">更改身份</a></li> -->
                 </ul>
             </div>
             <nav>
@@ -19,10 +19,10 @@
                         </ul>
                     </li>
                     <li class="nav-mobile menu">
-                        <a href="#" class="btn-menu" title="王小明您好"><i class="fas fa-user-circle fa-lg"></i></a>
+                        <a href="#" class="btn-menu" th:title="${accountSession.name}+'您好'"><i class="fas fa-user-circle fa-lg"></i></a>
                         <ul class="sub-menu">
+                        	<li th:if="${accountSession.content_provision=='1' && accountSession.content_audit=='1'}"><a href="#" class="btn-subMenu">更改身份</a></li>
                             <li><a href="/logout" class="btn-subMenu">登出</a></li>
-<!--                             <li><a href="#" class="btn-subMenu">更改身份</a></li> -->
                         </ul>
                     </li>
                 </ul>

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -683,7 +684,8 @@ public class IndexController {
 			model.addAttribute("lessonNum", lessonNum);
 			//合約未完成數
 //			int undoneCount = contractService.undoneCount(contract);
-			int undoneCount = contractService.getList(contract).size();
+			List<Map<String, Object>> contractList = contractService.getList(contract);
+			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
 			lessonPlan.setUpload_status("Y");
@@ -1231,7 +1233,8 @@ public class IndexController {
 			model.addAttribute("basicNum", basicNum);
 			//合約未完成數
 //			int undoneCount = contractService.undoneCount(contract);
-			int undoneCount = contractService.getList(contract).size();
+			List<Map<String, Object>> contractList = contractService.getList(contract);
+			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
 			proposition.setUpload_status("Y");
@@ -1781,7 +1784,8 @@ public class IndexController {
 			model.addAttribute("questionsGroupNum", questionsGroupNum);
 			//合約未完成數
 //			int undoneCount = contractService.undoneCount(contract);
-			int undoneCount = contractService.getList(contract).size();
+			List<Map<String, Object>> contractList = contractService.getList(contract);
+			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
 			proposition.setUpload_status("Y");
@@ -2289,5 +2293,44 @@ public class IndexController {
 		PrintWriter out = pResponse.getWriter();
 		out.write(tJSONArray.toString());
 		
+	}
+	
+	@GetMapping("/switch/identity")
+	public String switchIdentity(Model model,
+			@SessionAttribute("accountSession") Account accountSession,
+			HttpServletRequest pRequest
+			) {
+		
+		try {
+			
+			if("1".equals(accountSession.getContent_provision()) && "1".equals(accountSession.getContent_audit())) {
+				Identity identity = new Identity();
+				if("4".equals(accountSession.getLevel())) {
+					identity.setLevel("3");
+				} else {
+					identity.setLevel("4");
+				}
+				Account account = new Account();
+				account.setId(accountSession.getId());
+				
+				Map<String, Object> getDataByLevel = identityService.getDataByLevel(identity);
+				if(getDataByLevel != null) {
+					String identity_id = getDataByLevel.get("ID").toString();
+					account.setIdentity_id(identity_id);
+					teacherAccountService.updateIdentity(account);
+					
+					accountSession.setLevel(identity.getLevel());
+					accountSession.setIdentity_id(identity_id);
+				}
+				
+			}
+			
+		} catch(Exception e) {
+//			System.out.println("error:"+e.getMessage());
+			logger.error("error:"+e.getMessage(), dateFormat.format(new Date()));
+		}
+		
+		model.addAttribute("PATH", "/index");
+		return "front/path";
 	}
 }

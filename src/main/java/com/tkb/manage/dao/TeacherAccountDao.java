@@ -14,5 +14,6 @@ public interface TeacherAccountDao {
 	public int add(Account account);
 	public void update(Account account);
 	public void delete(Account account);
+	public void updateIdentity(Account account);
 	
 }

@@ -175,4 +175,19 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public void updateIdentity(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " UPDATE proposition_manage.teacher_account "
+				   + " SET IDENTITY_ID = ? "
+				   + " WHERE ID = ? ";
+		
+		args.add(account.getIdentity_id());
+		args.add(account.getId());
+		
+		jdbcTemplate.update(sql, args.toArray());
+		
+	}
+	
 }
