@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 詳細資料</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-ui.css}">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="#">首頁</a>
+                <i>/</i>
+                <a href="#">合約管理</a>
+                <i>/</i>
+                <a href="#">老師授權合約</a>
+                <i>/</i>
+                <a href="#">合約列表</a>
+                <i>/</i>
+                <a href="#">合約詳細資料</a>
+            </div>
+            <div class="create-content contract contentPage">
+                <h3><i class="fas fa-file-alt"></i>合約詳細資料<i class="fas fa-file-alt"></i></h3>                
+                <div class="container">                    
+                    <div class="page">
+                        <p>授權於<span>臺灣知識庫</span>合約</p>
+                        <div>
+                            <div>合約編號</div>
+                            <div>202006201623</div>
+                            <div>合約檔案</div>
+                            <div><a href="#">單元主題：「曆曆」在目（歷歷在目）</a></div>
+                            <div>甲方</div>
+                            <div>臺灣知識庫</div>
+                            <div>乙方</div>
+                            <div>陳柔柔</div>
+                        </div>
+                    </div>
+                    <div class="page">
+                        <p>授權於<span>中華未來教育學會</span>合約</p>
+                        <div>
+                            <div>合約編號</div>
+                            <div>202006201623</div>
+                            <div>合約檔案</div>
+                            <div><a href="#">單元主題：「曆曆」在目（歷歷在目）</a></div>
+                            <div>甲方</div>
+                            <div>中華未來教育學會</div>
+                            <div>乙方</div>
+                            <div>陳柔柔</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="create-grid">
+                    <div>領域</div>
+                    <div>國語文領域</div>
+                    <div>學制</div>
+                    <div>國中</div>
+                    <div>合約時限</div>
+                    <div>
+                        <span>2020/10/10</span>~<span>2021/10/09</span>
+                    </div>
+                    <div>合約內容</div>
+                    <div>
+                        <p>教案授權數量<span>3</span>份</p>
+                        <p>命題基本題授權數量<span>0</span>份</p>
+                        <p>命題題組題授權數量<span>0</span>份</p>
+                    </div>                   
+                </div>                            
+            </div>
+        </div>
+    </section>
+	
+	<div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/lib/jquery-ui.min.js}"></script>
+
+</body>
+</html>

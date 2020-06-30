@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 新增合約</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-ui.css}">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="/teacher">老師管理</a>
+                <i>/</i>
+                <a href="/teacher">老師列表</a>
+                <i>/</i>
+                <a href="#">新增合約</a>
+            </div>
+            <div class="create-content contract">
+                <h3><i class="fas fa-file-alt"></i>新增內容合約<i class="fas fa-file-alt"></i></h3>
+                <form role="form" id="mainForm" th:object="${contract}" method="post" enctype="multipart/form-data">
+                	<input type="hidden" id="teacher_id" th:field="*{teacher_id}" />
+                	<input type="hidden" id="tkb_partya" name="tkb_partya" th:value="臺灣知識庫" />
+                	<input type="hidden" id="tkb_partyb" th:field="*{tkb_partyb}" />
+                	<input type="hidden" id="csofe_partya" name="csofe_partya" th:value="中華未來教育學會" />
+					<input type="hidden" id="csofe_partyb" th:field="*{csofe_partyb}" />
+	                <div class="container">
+<!-- 	                    <p>合約必須至少上傳一份</p> -->
+	                    <div class="page">
+	                        <p>授權於<span>臺灣知識庫</span>合約</p>
+	                        <div>
+	                            <div>合約編號</div>
+	                            <div><input type="text" placeholder="請輸入合約編號" id="contractNumA" th:field="*{tkb_contract_num}"></div>
+	                            <div class="basic-h">合約檔案</div>
+	                            <div>
+	                                <label for="fileA">
+	                                    <input type="file" class="dis-n btnFile" id="fileA" name="tkbContractFile" accept=".pdf" data-text="contractFileTextA">
+	                                    <span class="btn-file">請選擇檔案</span>                                    
+	                                </label>   
+	                                <span class="memo">註：僅提供PDF檔</span>
+	                                <span class="contractFileTextA"></span>
+	                            </div>
+	                            <div class="basic-h">甲方</div>
+	                            <div>臺灣知識庫</div>
+	                            <div class="basic-h">乙方</div>
+	                            <div>[[${contract.tkb_partyb}]]</div>
+	                        </div>
+	                    </div>
+	                    <div class="page">
+	                        <p>授權於<span>中華未來教育學會</span>合約</p>
+	                        <div>
+	                            <div>合約編號</div>
+	                            <div><input type="text" placeholder="請輸入合約編號" id="contractNumB" th:field="*{csofe_contract_num}"></div>
+	                            <div class="basic-h">合約檔案</div>
+	                            <div>
+	                                <label for="fileB">
+	                                    <input type="file" class="dis-n btnFile" id="fileB" name="csofeContractFile" accept=".pdf" data-text="contractFileTextB">
+	                                    <span class="btn-file">請選擇檔案</span>                                    
+	                                </label>                                
+	                                <span class="memo">註：僅提供PDF檔</span>
+	                                <span class="contractFileTextB"></span>
+	                            </div>
+	                            <div class="basic-h">甲方</div>
+	                            <div>中華未來教育學會</div>
+	                            <div class="basic-h">乙方</div>
+	                            <div>[[${contract.csofe_partyb}]]</div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="create-grid">
+	                    <div class="p-left-14px">領域</div>
+	                    <div>
+	                        <select id="specialSkill" th:field="*{field_id}">
+	                            <option value="0">請選擇領域</option>
+	                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
+	                        </select>
+	                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
+	                    </div>
+	                    <div class="p-left-14px">學制</div>
+	                    <div>
+	                        <select id="schoolType" th:field="*{education_id}">
+	                            <option value="0">請選擇學制</option>
+	                            <option th:each="education:${educationList}" th:value="${education.ID}" th:text="${education.NAME}"></option>
+	                        </select>
+	                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
+	                    </div>
+	                    <div><span class="required">*</span>合約時限</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入開始日期" id="contractStart" th:field="*{begin_date}" autocomplete="off">
+	                        <input type="text" placeholder="請輸入結束日期" id="contractEnd" th:field="*{end_date}" autocomplete="off">
+	                    </div>
+	                    <div><span class="required">*</span>合約內容</div>
+	                    <div class="basic-h">
+	                        <p>合約授權內容必須至少填寫一欄，合約送出後將自動產生上傳教案與命題欄位</p>
+	                        <div>教案授權數量<input type="text" class="fileNumInput" id="lessonNum" th:field="*{lesson_num}">份</div>
+	                        <div>命題基本題授權數量<input type="text" class="fileNumInput" id="propoBasicNum" th:field="*{basic_num}">份</div>
+	                        <div>命題題組題授權數量<input type="text" class="fileNumInput" id="propoGroupNum" th:field="*{questions_group_num}">份</div>
+	                    </div>                   
+	                </div>            
+	                <button class="btn-submit" data-type="contractCreate" type="button">送出</button>
+				</form>
+            </div>
+        </div>
+    </section>
+    <!-- 燈箱背景 -->
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
+    </section>
+	
+    <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/lib/jquery-ui.min.js}"></script>
+    <script th:src="@{/front/js/datepicker.js}"></script>
+    
+</body>
+</html>

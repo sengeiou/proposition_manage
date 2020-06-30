@@ -15,8 +15,8 @@
         <div class="login-block">
             <p>登入系統</p>
             <form role="form" id="mainForm" th:object="${account}" method="post">
-	            <div><span>帳號</span><i class="fas fa-user-circle fa-lg"></i><input type="text" th:field="*{account}" placeholder="請輸入帳號"></div>
-	            <div><span>密碼</span><i class="fas fa-lock fa-lg"></i><input type="password" th:field="*{password}" placeholder="請輸入密碼"></div>
+	            <div><span>帳號</span><i class="fas fa-user-circle fa-lg"></i><input type="text" name="account" value="TKB0003001" placeholder="請輸入帳號"></div>
+	            <div><span>密碼</span><i class="fas fa-lock fa-lg"></i><input type="password" name="password" value="123456" placeholder="請輸入密碼"></div>
 	            <div>
 	                <button type="button" id="change">更改身分</button>
 	                <button type="button" id="login">登入</button>

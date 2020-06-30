@@ -1,22 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
 <head>
 	<title>素養教案與命題管理系統</title>
 	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">    
-    <link type="text/css" rel="stylesheet" th:href="@{/front/css/reset.css}">
-    <link type="text/css" rel="stylesheet" th:href="@{/front/css/all.css}">
-    <link type="text/css" rel="stylesheet" th:href="@{/front/css/fontawesome.min.css}">
-    <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-customselect.css}">
-    <link type="text/css" rel="stylesheet" th:href="@{/front/css/main.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="style-admin">    
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
-    
-    <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
-    <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
-    <script th:src="@{/front/js/lib/jquery-customselect.js}"></script>
-    <script th:src="@{/front/js/main.js}"></script>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="index-memoBlock">
+                <!-- 一般管理者 -->
+                <div class="memo" th:if="${accountSession.level <= '2'}">  
+                    <h3>系統提醒</h3>
+                    <div>
+                        <p>尚有<span th:classappend="${allUndoneNum} > 0 ? 'text-c-red' : ''">[[${allUndoneNum}]]</span>合約未履行完成</p>
+                        <p>有<span th:classappend="${expired} > 0 ? 'text-c-red' : ''">[[${expired}]]</span>份合約時效已過期</p>
+                    </div>                    
+                </div>
+
+                <!-- 內容老師 -->
+                <div class="memo" th:if="${accountSession.level == '3'}">  
+                    <h3>未上傳</h3>
+                    <div>
+                        <p>尚有<span th:classappend="${lessonNum-lessonAddCount-lessonEditCount-lessonDoneCount > 0} ? 'text-c-red' : ''">[[${lessonNum-lessonAddCount-lessonEditCount-lessonDoneCount}]]</span>份教案未上傳</p>
+                        <p>尚有<span th:classappend="${basicNum-basicAddCount-basicEditCount-basicDoneCount > 0} ? 'text-c-red' : ''">[[${basicNum-basicAddCount-basicEditCount-basicDoneCount}]]</span>份命題基本題未上傳</p>
+                        <p>尚有<span th:classappend="${questionsGroupNum-questionsGroupAddCount-questionsGroupEditCount-questionsGroupDoneCount > 0} ? 'text-c-red' : ''">[[${questionsGroupNum-questionsGroupAddCount-questionsGroupEditCount-questionsGroupDoneCount}]]</span>份命題題組題未上傳</p>
+                    </div>                    
+                </div>
+                <div class="memo" th:if="${accountSession.level == '3'}"> 
+                    <h3>待修訂</h3>
+                    <div>
+                        <p>尚有<span th:classappend="${lessonEditCount > 0} ? 'text-c-red' : ''">[[${lessonEditCount}]]</span>份教案待修訂</p>
+                        <p>尚有<span th:classappend="${basicEditCount > 0} ? 'text-c-red' : ''">[[${basicEditCount}]]</span>份命題基本題待修訂</p>
+                        <p>尚有<span th:classappend="${questionsGroupEditCount > 0} ? 'text-c-red' : ''">[[${questionsGroupEditCount}]]</span>份命題題組題待修訂</p>
+                    </div>                    
+                </div>
+                
+                <!-- 審核老師 -->                
+                <div class="memo" th:if="${accountSession.level == '4'}">  
+                    <h3>未審核</h3>
+                    <div>
+                        <p>尚有<span th:classappend="${unLessonAuditCount > 0} ? 'text-c-red' : ''">[[${unLessonAuditCount}]]</span>份教案未審核</p>
+                        <p>尚有<span th:classappend="${unBasicAuditCount > 0} ? 'text-c-red' : ''">[[${unBasicAuditCount}]]</span>份命題基本題未審核</p>
+                        <p>尚有<span th:classappend="${unGroupAuditCount > 0} ? 'text-c-red' : ''">[[${unGroupAuditCount}]]</span>份命題題組題未審核</p>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:include="front/load/js :: js"></div>
 
 </body>
 </html>

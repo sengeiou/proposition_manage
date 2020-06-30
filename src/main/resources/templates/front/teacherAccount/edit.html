@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 編輯</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+	    <form id="mainForm" method="POST" th:object="${account}">
+			<input type="hidden" id="id" th:field="*{id}" />
+			<input type="hidden" id="page" th:field="*{page}" />
+			<input type="hidden" id="totalPage" th:field="*{total_page}" />
+			<input type="hidden" id="pageCount" th:field="*{page_count}" />
+		
+	    <section class="main-content">
+	        <div class="fixed-width">
+	            <div class="breadcrumb">
+	                <a href="/">首頁</a>
+	                <i>/</i>
+	                <a href="/teacher">老師管理</a>
+	                <i>/</i>                
+	                <a href="/teacher">老師列表</a>
+	                <i>/</i>                
+	                <a href="#" id="content">老師詳細資料</a>
+	                <i>/</i>
+	                <a href="#">編輯老師詳細資料</a>
+	            </div>
+	            <div class="create-content teacher">
+	                <h3>編輯老師詳細資料</h3>
+	                <div class="create-grid">
+	                    <div><span class="required">*</span>真實姓名</div>
+	                    <div>
+	                        <span class="editOldData">[[${account.name}]]</span>
+	                        <span class="editNewData"></span>
+	                        <button class="btn-openLightBox" data-lb="edit-teacherName" type="button">更改姓名</button>                        
+	                    </div>
+	                    <div><span class="required">*</span>身份證字號</div>
+	                    <div>
+	                        <span class="editOldData">[[${account.id_no}]]</span>
+	                        <span class="editNewData"></span>
+	                        <button class="btn-openLightBox" data-lb="edit-teacherID" type="button">更改身份證字號</button>                        
+	                    </div>
+	                    <div><span class="required">*</span>電子信箱</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入電子信箱" value="" id="teacherEmail" th:field="*{email}">
+	                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
+	                    </div>
+	                    <div><span class="required">*</span>手機</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入手機號碼" value="" id="teacherPhone" th:field="*{phone}">
+	                        <span class="memo">註：將作為使用者的預設密碼（可以編輯）</span>
+	                    </div>
+	                    <div><span class="required">*</span>領域</div>
+	                    <div>
+	                        <select id="specialSkill" th:field="*{field_id}">
+	                            <option value="0">請選擇領域</option>
+	                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
+	                        </select>
+	                        <span class="memo">註：將作為內容審核的選擇基準</span>
+	                    </div>
+	                    <div><span class="required">*</span>系統身份</div>
+	                    <div class="basic-h">
+	                        <label for="content-teacher">
+	                            <div class="checkbox-square" th:classappend="${account.content_provision}=='0'?'':'active'"></div>
+	                            <span>內容提供</span>
+	                            <input type="checkbox" id="content-teacher" class="dis-n identityState" name="content_provision" th:checked="${account.content_provision}=='0'?'false':'true'">
+	                        </label>
+	                        <label for="verify-teacher">
+	                            <div class="checkbox-square" th:classappend="${account.content_audit}=='0'?'':'active'"></div>
+	                            <span>內容審核</span>
+	                            <input type="checkbox" id="verify-teacher" class="dis-n identityState" name="content_audit" th:checked="${account.content_audit}=='0'?'false':'true'">
+	                        </label>
+	                    </div>
+	                    <div><span class="required">*</span>服務學校</div>
+	                    <div>
+	                        <select id="select-school" class="custom-select" th:field="*{school_master_id}">
+	                            <option value="0">請選擇學校</option>
+	                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+	                        </select>
+	                    </div>
+	                    <div><span class="required">*</span>匯款銀行</div>
+	                    <div>
+	                        <div class="v-center">
+	                            <div>
+	                                <p class="editOldData">銀行代碼：[[${account.bank}]]</p>
+	                                <p class="editOldData">分行代碼：[[${account.branch}]]</p>
+	                                <p class="editOldData">匯款帳號：[[${account.remittance_account}]]</p>
+	                            </div>
+	                            <div>
+	                                <p class="editNewData bankNum"></p>
+	                                <p class="editNewData subBankNum"></p>
+	                                <p class="editNewData accountNum"></p>
+	                            </div> 
+	                        </div>                         
+	                        <button class="btn-openLightBox" data-lb="edit-teacherBank" type="button">更改匯款資訊</button>
+	                    </div>
+	                    <div class="p-left-14px">通訊地址</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}">
+	                    </div>
+	                </div>
+	                <button class="btn-submit" data-type="teacherEdit" type="button">送出</button>
+	            </div>                
+	        </div>
+	    </section>    
+	    <!-- 燈箱背景 -->
+	    <section class="lightBoxBG dis-n"></section>    
+	    <!-- 更改姓名燈箱 -->
+	    <section class="lightBoxContent edit-teacherName-lightBox dis-n">        
+	        <button class="btn-closeLightBox" data-lb="edit-teacherName" type="button"><i class="fas fa-times-circle fa-lg"></i></button>
+	        <h3 class="title">更改姓名</h3>
+	        <hr>
+	        <div class="container">
+	            <p>[[${account.name}]]</p>
+	            <input type="text" placeholder="請輸入真實姓名" id="teacherName" th:field="*{name}">         
+	        </div>
+	        <button class="editNewDataBtn btn-sm" data-newdata="edit-teacherName" type="button">確定</button>
+	    </section>
+	    <!-- 更改身份證字號燈箱 -->
+	    <section class="lightBoxContent edit-teacherID-lightBox dis-n">        
+	        <button class="btn-closeLightBox" data-lb="edit-teacherID" type="button"><i class="fas fa-times-circle fa-lg"></i></button>
+	        <h3 class="title">更改身份證字號</h3>
+	        <hr>
+	        <div class="container">
+	            <p>[[${account.id_no}]]</p>
+	            <input type="text" placeholder="請輸入身份證字號" id="teacherID" th:field="*{id_no}">         
+	        </div>
+	        <button class="editNewDataBtn btn-sm" data-newdata="edit-teacherID" type="button">確定</button>
+	    </section>
+	    <!-- 更改匯款資訊燈箱 -->
+	    <section class="lightBoxContent edit-teacherBank-lightBox dis-n">        
+	        <button class="btn-closeLightBox" data-lb="edit-teacherBank" type="button"><i class="fas fa-times-circle fa-lg"></i></button>
+	        <h3 class="title">更改匯款資訊</h3>
+	        <hr>
+	        <div class="container">
+	            <p>銀行代碼：[[${account.bank}]]</p>
+	            <input type="text" placeholder="請輸入銀行代碼" id="bankNum" th:field="*{bank}">
+	            <p>分行代碼：[[${account.branch}]]</p>
+	            <input type="text" placeholder="請輸入分行代碼" id="subBankNum" th:field="*{branch}">
+	            <p>匯款帳號：[[${account.remittance_account}]]</p>
+	            <input type="text" placeholder="請輸入匯款帳號" id="accountNum" th:field="*{remittance_account}">
+	        </div>
+	        <button class="editNewDataBtn btn-sm" data-newdata="edit-teacherBank" type="button">確定</button>
+	    </section>
+    </form>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
+    </section>
+
+    <div th:include="front/load/js :: js"></div>    
+	<script>
+		$(function(){
+			$("#content").click(function(){
+				$("#mainForm").attr("action", "/teacher/content");
+				$("#mainForm").submit();
+			})
+		})
+	</script>
+</body>
+</html>

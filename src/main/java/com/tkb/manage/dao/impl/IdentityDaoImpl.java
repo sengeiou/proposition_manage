@@ -232,4 +232,25 @@ public class IdentityDaoImpl implements IdentityDao {
 		
 	}
 	
+	public Map<String, Object> getDataByLevel(Identity identity) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.identity "
+				   + " WHERE LEVEL = ? ";
+		
+		args.add(identity.getLevel());
+		
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		
+		list = jdbcTemplate.queryForList(sql.toString() , args.toArray());
+		
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

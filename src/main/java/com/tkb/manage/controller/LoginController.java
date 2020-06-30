@@ -104,7 +104,7 @@ public class LoginController {
 				loginLog.setIp(ip);
 				loginLogService.add(loginLog);
 				model.addAttribute("msg", msg);
-				return "front/login";
+				return "front/managerAccount/login";
 			}
 			
 		} else  {
@@ -117,7 +117,7 @@ public class LoginController {
 			loginLog.setIp(ip);
 			loginLogService.add(loginLog);
 			model.addAttribute("msg", msg);
-			return "front/login";
+			return "front/managerAccount/login";
 		}
 		
 	}
@@ -154,7 +154,7 @@ public class LoginController {
 				}
 				session.setAttribute("accountSession", login);
 				session.setMaxInactiveInterval(60* 60);
-				model.addAttribute("PATH", "index");
+				model.addAttribute("PATH", "/index");
 				loginLog.setAccount(account.getAccount());
 				loginLog.setPassword(account.getPassword());
 				loginLog.setStatus("1");
@@ -174,7 +174,7 @@ public class LoginController {
 				loginLog.setIp(ip);
 				loginLogService.add(loginLog);
 				model.addAttribute("msg", msg);
-				return "front/login";
+				return "front/teacherAccount/login";
 			}
 			
 		} else  {
@@ -187,7 +187,7 @@ public class LoginController {
 			loginLog.setIp(ip);
 			loginLogService.add(loginLog);
 			model.addAttribute("msg", msg);
-			return "front/login";
+			return "front/teacherAccount/login";
 		}
 		
 	}

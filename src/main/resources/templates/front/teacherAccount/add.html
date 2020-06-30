@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 建立老師</title>
+	<meta charset="utf-8">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="/teacher">老師管理</a>
+                <i>/</i>
+                <a href="#">建立老師</a>
+            </div>
+            <form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${account}" enctype="multipart/form-data">
+            <div class="create-content teacher">
+                <h3>建立老師</h3>
+                <div class="create-grid">
+                    <div><span class="required">*</span>真實姓名</div>
+                    <div>
+                        <input type="text" placeholder="請輸入姓名" id="teacherName" th:field="*{name}">
+                    </div>
+                    <div><span class="required">*</span>身份證字號</div>
+                    <div>
+                        <input type="text" placeholder="請輸入身份證字號" id="teacherID" th:field="*{id_no}">
+                    </div>
+                    <div><span class="required">*</span>電子信箱</div>
+                    <div>
+                        <input type="text" placeholder="請輸入電子信箱" id="teacherEmail" th:field="*{email}">
+                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
+                    </div>
+                    <div><span class="required">*</span>手機</div>
+                    <div>
+                        <input type="text" placeholder="請輸入手機號碼" id="teacherPhone" th:field="*{phone}">
+                        <span class="memo">註：將作為使用者的預設密碼（可以編輯）</span>
+                    </div>
+                    <div><span class="required">*</span>領域</div>
+                    <div>
+                        <select id="specialSkill" th:field="*{field_id}">
+                            <option value="0">請選擇領域</option>
+                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
+                        </select>
+                        <span class="memo">註：將作為內容審核的選擇基準</span>
+                    </div>
+                    <div><span class="required">*</span>系統身份</div>
+                    <div class="basic-h">
+                        <label for="content-teacher">
+                            <div class="checkbox-square"></div>
+                            <span>內容提供</span>
+                            <input type="checkbox" id="content-teacher" class="dis-n identityState" name="content_provision">
+                        </label>
+                        <label for="verify-teacher">
+                            <div class="checkbox-square"></div>
+                            <span>內容審核</span>
+                            <input type="checkbox" id="verify-teacher" class="dis-n identityState" name="content_audit">
+                        </label>
+                    </div>
+                    <div><span class="required">*</span>服務學校</div>
+                    <div>
+                        <select id="select-school" class="custom-select" th:field="*{school_master_id}">
+                            <option value="0">請選擇學校</option>
+                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+                        </select>
+                    </div>
+                    <div><span class="required">*</span>匯款銀行</div>
+                    <div>
+                        <input type="text" placeholder="請輸入匯款銀行代碼" id="bankNum" th:field="*{bank}">
+                        <span class="bank-web">分行<input type="text" placeholder="請輸入分行代碼" id="subBankNum" th:field="*{branch}"></span>
+                    </div>
+<!--                     <div class="bank-mobile"><span class="required">*</span>分行</div> -->
+<!--                     <div class="bank-mobile"> -->
+<!--                         <input type="text" placeholder="請輸入分行代碼" id="subBankNum" th:field="*{branch}">                             -->
+<!--                     </div> -->
+                    <div><span class="required">*</span>匯款帳號</div>
+                    <div>
+                        <input type="text" placeholder="請輸入匯款帳號" id="accountNum" th:field="*{remittance_account}">
+                    </div>
+                    <div class="p-left-14px">通訊地址</div>
+                    <div>
+                        <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}">
+                    </div>
+                </div>
+                <button class="btn-submit" data-type="teacherCreate" type="button">送出</button>
+            </div>
+            </form>
+        </div>
+    </section>    
+    <!-- 燈箱背景 -->
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
+    </section>
+
+    <div th:include="front/load/js :: js"></div>
+	
+</body>
+</html>

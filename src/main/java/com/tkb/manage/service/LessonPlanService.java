@@ -1,0 +1,22 @@
+package com.tkb.manage.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.tkb.manage.model.LessonPlan;
+
+public interface LessonPlanService {
+	
+	public List<Map<String, Object>> manageList(LessonPlan lessonPlan);
+	public Integer manageCount(LessonPlan lessonPlan);
+	public List<Map<String, Object>> auditList(LessonPlan lessonPlan);
+	public Integer auditCount(LessonPlan lessonPlan);
+	public List<Map<String, Object>> teacherList(LessonPlan lessonPlan);
+	public Integer teacherCount(LessonPlan lessonPlan);
+	public Integer uploadStatusCount(LessonPlan lessonPlan);
+	public Integer add(LessonPlan lessonPlan);
+	public void update(LessonPlan lessonPlan);
+	public LessonPlan data(LessonPlan lessonPlan);
+	public void audit(LessonPlan lessonPlan);
+	
+}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 詳細資料</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <form id="mainForm" method="POST" th:object="${proposition}" enctype="multipart/form-data">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+	
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="/proposition/basic">命題管理</a>
+                <i>/</i>
+                <a href="/proposition/basic">命題-基本題列表</a>
+                <i>/</i>
+                <a href="#">詳細資料</a>
+            </div>
+            <!-- 僅審核老師有此區塊 -->
+            <div class="create-content lessonVerify" th:if="${accountSession.level=='4'}">
+                <h3><i class="fas fa-book"></i>審核<i class="fas fa-book"></i></h3>
+                <div class="create-grid">
+                    <div><span class="required">*</span>審核結果</div>
+                    <div class="basic-h">
+                        <label>
+                            <div class="radio-circle"></div>
+                            <span>通過</span>
+                            <input type="radio" name="verify" value="1" class="dis-n">
+                        </label>
+                        <label>
+                            <div class="radio-circle"></div>
+                            <span>不通過</span>
+                            <input type="radio" name="verify" value="0" class="dis-n">
+                        </label>
+                        <span class="memo">註：若選擇不通過，則回饋檔案為必填</span>
+                    </div>
+                    <div class="p-left-14px">審核回饋檔案</div>
+                    <div>
+                        <label for="lessonVerifyFile">
+                            <input type="file" class="dis-n btnFile" id="lessonVerifyFile" name="fileName" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="lessonVerifyFileText">
+                            <span class="btn-file">選擇檔案</span>
+                        </label>
+                        <span class="memo">註：僅接受附檔名為.pdf、.ppt、.pptx、.doc、.docx、.xls、.xlsx</span>
+                        <p class="lessonVerifyFileText"></p>
+                    </div>             
+                </div>
+                <button class="btn-submit" data-type="propoBasicContentVerify" type="button">送出</button>
+            </div>  
+
+            <div class="create-content lessonContent contentPage">
+                <div class="statusTag failTag" th:if="${data.upload_status == 'N'}">未通過</div> <!-- 僅管理者、內容老師有此tag -->  
+                <div class="statusTag successTag" th:if="${data.upload_status == 'C'}">通過</div> <!-- 僅管理者、內容老師有此tag，目前用dis-n隱藏 -->  
+                <h3><i class="fas fa-book"></i>詳細資料<i class="fas fa-book"></i></h3>
+                <div class="create-grid">
+                    <div>合約序號</div>
+                    <div>[[${data.contract_id}]]</div>
+                    <div>命題名稱</div>
+                    <div>[[${data.name}]]</div>
+                    <div>學習領域</div>
+                    <div>[[${field_name}]]</div>
+                    <div>學科</div>
+                    <div>[[${subject}]]</div>
+                    <div>學制</div>
+                    <div>[[${education_name}]]</div>
+                    <div>年級</div>
+                    <div>[[${grade}]]</div>
+                    <div>教案檔案</div>
+                    <div><a th:href="'/upload/file/proposition/'+${nowFile.upload_name}" target="_blank">[[${nowFile.file_name}]]</a></div>
+<!--                     <div>關鍵字</div> -->
+<!--                     <div class="lesson-item">                         -->
+<!--                         <span th:each="tag : ${#strings.arraySplit(data.tag, ',')}">#[[${tag}]]</span> -->
+<!--                     </div> -->
+                </div>
+                <div class="btn-block">                    
+                    <a href="#" id="back"><button class="btn-md">返回列表</button></a> <!-- 管理者、內容老師的按鈕 -->
+                    <a href="#" id="update" th:if="${accountSession.level<='2'}"><button class="btn-md">編輯</button></a> <!-- 管理者的按鈕 -->
+                    <a href="#" id="edit" th:if="${accountSession.level<='4' && data.upload_status == 'N'}"><button class="btn-md">修訂</button></a> <!-- 內容老師的按鈕 -->
+                </div>
+            </div>    
+
+            <!-- 僅內容老師、審核老師有此區塊 -->
+<!--             <div class="create-content lessonFile"> -->
+<!--                 <h3><i class="fas fa-book"></i>檔案歷程<i class="fas fa-book"></i></h3> -->
+<!--                 <div class="container"> -->
+<!--                     <div>內容上傳</div> -->
+<!--                     <div>審核回饋</div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                 </div> -->
+<!--             </div> -->
+            
+        </div>
+    </section>
+    </form>
+    <!-- 燈箱背景 -->
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm">確定</button>
+    </section>
+
+    <div th:include="front/load/js :: js"></div>
+	<script>
+		$(function(){
+			//返回列表
+			$("#back").click(function(){
+				$("#mainForm").attr("action", "/proposition/basic");
+				$("#mainForm").submit();
+			})
+			//修訂
+			$("#edit").click(function(){
+				$("#mainForm").attr("action", "/proposition/basic/edit");
+				$("#mainForm").submit();
+			})
+			//編輯
+			$("#update").click(function(){
+				$("#mainForm").attr("action", "/proposition/basic/update");
+				$("#mainForm").submit();
+			})
+		})
+	</script>
+</body>
+</html>

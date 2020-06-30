@@ -156,8 +156,6 @@ public class SchoolMasterDaoImpl implements SchoolMasterDao {
 				   + " CASE WHEN DISPLAY = '0' THEN '否' ELSE '是' END DISPLAY_NAME "
 				   + " FROM proposition_manage.school_master ";
 		
-		sql += " LIMIT 0,100 ";
-		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
 			return list;

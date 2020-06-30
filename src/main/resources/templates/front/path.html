@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
-		<script th:src="@{/admin/js/jquery-2.1.4.min.js}"></script>
+		<script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
 	</head>
 	<body>
 		<form id="mainForm" method="POST" th:action="${PATH}" >
@@ -9,6 +9,7 @@
 			<input type="hidden" id="message" th:value="${MESSAGE}"></input>
 			<input type="hidden" id="page" name="page" th:value="${page}"></input>
 			<input type="hidden" id="totalPage" name="total_page" th:value="${total_page}"></input>
+			<input type="hidden" id="pageCount" name="page_count" th:value="${page_count}"></input>
 			<input type="hidden" id="id" name="id" th:value="${id}"></input>
 			<input type="hidden" id="parent_id" name="parent_id" th:value="${parent_id}"></input>
 			<input type="hidden" id="parent_name" name="parent_name" th:value="${parent_name}"></input>

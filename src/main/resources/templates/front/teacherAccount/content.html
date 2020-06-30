@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 詳細資料</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="style-admin">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <form id="mainForm" method="POST" th:object="${account}">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+	</form>
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="/teacher">老師管理</a>
+                <i>/</i>
+                <a href="/teacher">老師列表</a>
+                <i>/</i>
+                <a href="#">老師詳細資料</a>
+            </div>
+            <div class="create-content contentPage">
+                <h3>老師詳細資料</h3>
+                <div class="create-grid">
+                    <div>姓名</div>
+                    <div>[[${data.name}]]</div>
+                    <div>身份證字號</div>
+                    <div>[[${data.id_no}]]</div>
+                    <div>電子信箱</div>
+                    <div>[[${data.email}]]</div>
+                    <div>手機</div>
+                    <div>[[${data.phone}]]</div>
+                    <div>領域</div>
+                    <div>[[${data.field_name}]]</div>
+                    <div>系統身份</div>
+                    <div>
+                    	<p>內容提供：<span>[[${data.content_provision_name}]]</span></p>
+                    	<p>內容審核：<span>[[${data.content_audit_name}]]</span></p>
+                    </div>
+                    <div>服務學校</div>
+                    <div></div>
+                    <div>匯款銀行</div>
+                    <div>
+                        <p>銀行代碼：<span>[[${data.bank}]]</span></p>
+                        <p>分行代碼：<span>[[${data.branch}]]</span></p>
+                        <p>匯款帳號：<span>[[${data.remittance_account}]]</span></p>                        
+                    </div>                    
+                    <div>通訊地址</div>
+                    <div>[[${data.address}]]</div>
+                </div>
+                <div class="btn-block">                    
+                    <a href="#" id="back"><button class="btn-md">返回列表</button></a>
+                    <a href="#" id="edit"><button class="btn-md">編輯</button></a>
+                </div>
+            </div>                
+        </div>
+    </section>    
+
+    <div th:include="front/load/js :: js"></div>  
+	<script>
+		$(function(){
+			//返回列表
+			$("#back").click(function(){
+				$("#mainForm").attr("action", "/teacher");
+				$("#mainForm").submit();
+			})
+			//編輯
+			$("#edit").click(function(){
+				$("#mainForm").attr("action", "/teacher/edit");
+				$("#mainForm").submit();
+			})
+		})
+	</script>
+</body>
+</html>

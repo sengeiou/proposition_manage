@@ -34,6 +34,10 @@ public class Account extends Base {
 	private String content_audit;		//內容審核(0：否，1：是)
 	
 	private String level;				//等級
+	private String field_name;			//領域名稱
+	private String school_master_name;	//學校名稱
+	private String content_provision_name;	//內容提供名稱
+	private String content_audit_name;		//內容審核名稱
 	
 	public String getId() {
 		return id;
@@ -208,6 +212,30 @@ public class Account extends Base {
 	}
 	public void setLevel(String level) {
 		this.level = level;
+	}
+	public String getField_name() {
+		return field_name;
+	}
+	public void setField_name(String field_name) {
+		this.field_name = field_name;
+	}
+	public String getSchool_master_name() {
+		return school_master_name;
+	}
+	public void setSchool_master_name(String school_master_name) {
+		this.school_master_name = school_master_name;
+	}
+	public String getContent_provision_name() {
+		return content_provision_name;
+	}
+	public void setContent_provision_name(String content_provision_name) {
+		this.content_provision_name = content_provision_name;
+	}
+	public String getContent_audit_name() {
+		return content_audit_name;
+	}
+	public void setContent_audit_name(String content_audit_name) {
+		this.content_audit_name = content_audit_name;
 	}
 	
 }

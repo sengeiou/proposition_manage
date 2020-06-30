@@ -60,4 +60,8 @@ public class IdentityServiceImpl implements IdentityService {
 		return identityDao.getMenu(identity);
 	}
 	
+	public Map<String, Object> getDataByLevel(Identity identity) {
+		return identityDao.getDataByLevel(identity);
+	}
+	
 }

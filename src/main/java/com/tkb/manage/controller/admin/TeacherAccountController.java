@@ -135,8 +135,8 @@ public class TeacherAccountController {
     public String update(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
 		
 		//取得管理者資料
-		account = teacherAccountService.data(account);
-		model.addAttribute("account", account);
+		Account teacherAccount = teacherAccountService.data(account);
+		model.addAttribute("account", teacherAccount);
 		
 		//取得領域清單
 		Field field = new Field();

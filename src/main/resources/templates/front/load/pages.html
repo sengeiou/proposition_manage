@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 	<div th:fragment="pages">
-		<i class="fas fa-angle-left fa-lg" th:onclick="toList([[${page-1}]])"></i>
+		<i class="fas fa-angle-left fa-lg" th:onclick="toList([[${page-1<1?page:page-1}]])"></i>
 		<a href="#" th:if="${page-4>=1 && (page-4>=page-page_avg || page-4>total_page-page_length)}" th:text="${page-4}" th:onclick="toList([[${page-4}]])"></a>
 		<a href="#" th:if="${page-3>=1 && (page-3>=page-page_avg || page-3>total_page-page_length)}" th:text="${page-3}" th:onclick="toList([[${page-3}]])"></a>
 		<a href="#" th:if="${page-2>=1 && page-2>=page-page_avg}" th:text="${page-2}" th:onclick="toList([[${page-2}]])"></a>
 		<a href="#" th:if="${page-1>=1 && page-1>=page-page_avg}" th:text="${page-1}" th:onclick="toList([[${page-1}]])"></a>
-		<a href="#" th:text="${page}"></a>
+		<a href="#" th:text="${page}" class="active"></a>
 		<a href="#" th:if="${page+1<=total_page && page+1<=page+page_avg}" th:text="${page+1}" th:onclick="toList([[${page+1}]])"></a>
 		<a href="#" th:if="${page+2<=total_page && page+2<=page+page_avg}" th:text="${page+2}" th:onclick="toList([[${page+2}]])"></a>
 		<a href="#" th:if="${page+3<=total_page && (page+3<=page+page_avg || page+3<=page_length)}" th:text="${page+3}" th:onclick="toList([[${page+3}]])"></a>
 		<a href="#" th:if="${page+4<=total_page && (page+4<=page+page_avg || page+4<=page_length)}" th:text="${page+4}" th:onclick="toList([[${page+4}]])"></a>
-		<i class="fas fa-angle-right fa-lg" th:onclick="toList([[${page+1}]])"></i>
+		<i class="fas fa-angle-right fa-lg" th:onclick="toList([[${page+1>total_page?page:page+1}]])"></i>
 		<div>
 			<p>共<span th:text="${total_page}"></span>頁</p>
-			<p>跳至<input type="text" class="pageInput" th:value="${page}" id="changePage">頁</p>
+			<p>跳至<input type="text" class="pageInput" th:attr="data-totalPage=${total_page}" th:value="${page}" id="changePage">頁</p>
 		</div>
 	</div>
 </html>

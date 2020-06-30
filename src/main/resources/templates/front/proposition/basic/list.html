@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 命題基本題列表</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <form id="mainForm" method="POST" th:object="${proposition}">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+	</form>
+    <section class="main-content">
+        <div class="fixed-width">            
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="#">命題管理</a>
+                <i>/</i>
+                <a href="#">命題-基本題列表</a>                
+            </div>                             
+            <div class="list-content">
+                <h3>命題-基本題列表</h3>
+                <div class="lessonList-memo" th:if="${accountSession.level=='3'}"><!-- 內容老師，顯示提示文字 -->
+                    您尚有<span>[[${basicNum-addCount-editCount-doneCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
+                    <a href="/proposition/basic/add" th:if="${basicNum-addCount-editCount-doneCount > 0}"><button class="btn-sm">新增命題</button></a>
+                </div>
+                <div class="lessonList-memo" th:if="${accountSession.level=='4'}">您尚有<span>[[${proposition.count}]]</span>份教案未審核</div><!-- 審核老師，顯示提示文字 -->                
+                <div class="pageList-block">
+                    <div>總計筆數<span>[[${proposition.count}]]</span>筆</div>
+                    <div>每頁顯示數量
+                        <select id="selectPageCount" th:field="${proposition.page_count}">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="list-block" th:if="${accountSession.level <= '2'}"> <!-- 管理者，顯示列表 -->                    
+                    <div class="grid lessonList-admin-grid grid-title">
+                        <div>合約序號</div>
+                        <div>命題名稱</div>
+                        <div>學習領域</div>
+                        <div>檔案狀態</div>
+                        <div>上傳狀態</div>
+                        <div>建立時間</div>
+                        <div>詳細資料</div>
+                        <div>新增合約</div>
+                    </div>
+                    <div class="grid lessonList-admin-grid" th:each="list,stat:${list}">
+                        <div th:text="${list.contract_id}"></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.file_status_name}"></div>
+                        <div th:text="${list.upload_status_name}"></div>
+                        <div th:text="${list.create_date}"></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
+                        <div><a href="#"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                    </div>
+                </div>
+                <div class="list-block" th:if="${accountSession.level == '3'}"> <!-- 內容老師，顯示列表 -->                    
+                    <div class="grid lessonList-content-grid grid-title">
+                        <div>合約序號</div>
+                        <div>命題名稱</div>
+                        <div>學習領域</div>
+                        <div>檔案狀態</div>
+                        <div>上傳狀態</div>
+                        <div>建立時間</div>
+                        <div>詳細資料</div>
+                    </div>
+                    <div class="grid lessonList-content-grid" th:each="list,stat:${list}">
+                        <div th:text="${list.contract_id}"></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.file_status_name}"></div>
+                        <div th:text="${list.upload_status_name}"></div>
+                        <div th:text="${list.create_date}"></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
+                    </div>
+                </div>
+                <div class="list-block" th:if="${accountSession.level == '4'}"> <!-- 審核老師，顯示列表 --> 
+                    <div class="grid lessonList-verify-grid grid-title">
+                        <div>合約序號</div>
+                        <div>命題名稱</div>
+                        <div>學習領域</div>
+                        <div>建立時間</div>
+                        <div>詳細資料</div>
+                    </div>
+                    <div class="grid lessonList-verify-grid" th:each="list,stat:${list}">
+                        <div th:text="${list.contract_id}"></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.create_date}"></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
+                    </div>
+                </div>
+                <div class="page-block" th:include="front/load/pages :: pages" th:if="${total_page}>1" th:with="page_length=5,page_avg=${page_length}/2"></div>
+            </div>            
+        </div>
+    </section>    
+
+    <div th:include="front/load/js :: js"></div>
+	<script>
+		
+		$(function(){
+			$("#changePage").change(function(){
+				var total_page = $("#changePage").attr("data-totalPage");
+				var page = $("#changePage").val()<1 ? 1 : ($("#changePage").val()>total_page?total_page:$("#changePage").val());
+				toList(page);
+			});
+			$("#selectPageCount").change(function(){
+				$("#pageCount").val($("#selectPageCount").val());
+				var page = 1;
+				toList(page);
+			});
+		})
+	
+		function toList(page) {
+			
+			$("#page").val(page);
+			$("#mainForm").attr("action", "/proposition/basic");
+			$("#mainForm").submit();
+			
+		}
+		
+		function toContractAdd(id, name) {
+			$("#teacher_id").val(id);
+			$("#tkb_partyb").val(name);
+			$("#csofe_partyb").val(name);
+			$("#contractForm").attr("action", "/contract/add");
+			$("#contractForm").submit();
+		}
+		
+		function toContent(id) {
+			
+			$("#id").val(id);
+			$("#mainForm").attr("action", "/proposition/basic/content");
+			$("#mainForm").submit();
+			
+		}
+	</script>
+</body>
+</html>

@@ -124,12 +124,12 @@
 			}
 			
 			if(checkNull($("#abbreviation"))) {
-				alert("請輸入名稱");
+				alert("請輸入簡稱");
 				return false;
 			}
 			
 			if(checkLength($("#abbreviation"), "1", "3")) {
-				alert("名稱不可超過3個字");
+				alert("簡稱不可超過3個字");
 				$("#abbreviation").focus();
 				return false;
 			}

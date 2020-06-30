@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title></title>
+	<title>素養教案與命題管理系統 - 老師列表</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">    
     <link type="text/css" rel="stylesheet" th:href="@{/front/css/reset.css}">
@@ -16,16 +16,22 @@
 		<input type="hidden" id="id" th:field="*{id}" />
 		<input type="hidden" id="page" th:field="*{page}" />
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+	</form>
+	<form id="contractForm" method="POST" th:object="${contract}">
+		<input type="hidden" id="teacher_id" th:field="*{teacher_id}" />
+		<input type="hidden" id="tkb_partyb" th:field="*{tkb_partyb}" />
+		<input type="hidden" id="csofe_partyb" th:field="*{csofe_partyb}" />
 	</form>
     <section class="main-content">
         <div class="fixed-width">
             <div class="topWrap">
                 <div class="breadcrumb">
-                    <a href="#">首頁</a>
+                    <a href="/">首頁</a>
                     <i>/</i>
-                    <a href="#">老師管理</a>
+                    <a href="/teacher">老師管理</a>
                     <i>/</i>
-                    <a href="#">老師列表</a>
+                    <a href="/teacher">老師列表</a>
                 </div>
                 <button class="btn-import btn-openLightBox" data-lb="teacherImportData">資料匯入</button>
             </div> 
@@ -34,10 +40,11 @@
                 <div class="pageList-block">
                     <div>總計筆數 <span>[[${account.count}]]</span> 筆</div>
                     <div>每頁顯示數量
-                        <select>
-                            <option>20</option>
-                            <option>50</option>
-                            <option>100</option>
+                        <select id="selectPageCount" th:field="${account.page_count}">
+                        	<option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                     </div>
                 </div>
@@ -59,11 +66,11 @@
                         <div th:text="${list.email}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.school_master_name}"></div>
-                        <div><a href="#"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
-                        <div><a href="./contract-create.html"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
+                        <div><a href="#" th:if="${list.content_provision}=='1'" th:onclick="toContractAdd([[${list.id}]], [[${list.name}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
-                <div class="page-block" th:include="front/load/pages :: pages" th:with="page_length=5,page_avg=${page_length}/2"></div>
+                <div class="page-block" th:include="front/load/pages :: pages" th:if="${total_page}>1" th:with="page_length=5,page_avg=${page_length}/2"></div>
             </div>            
         </div>
     </section>
@@ -71,34 +78,63 @@
     <section class="lightBoxBG dis-n"></section>
     <!-- 資料匯入燈箱 -->
     <section class="lightBoxContent teacherImportData-lightBox dis-n">        
-        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <button class="btn-closeLightBox" data-lb="teacherImportData" type="button"><i class="fas fa-times-circle fa-lg"></i></button>
         <h3 class="title">資料匯入</h3>
         <hr>
-        <div class="container">
-            <label for="teacherImportFile">
-                <input type="file" class="dis-n btnFile" id="teacherImportFile" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="teacherImportFileText">
-                <span class="btn-file">選擇檔案</span>
-            </label>                        
-            <span class="memo">註：僅接受附檔名為.pdf、.ppt、.doc、.docx、.xls、.xlsx</span>                        
-            <p class="teacherImportFileText"></p>
-        </div>
-        <button class="createTagBtn btn-sm" data-tag="teacherImportData">確定</button>
+        <form id="importForm" method="POST" th:object="${account}" enctype="multipart/form-data">
+	        <div class="container">
+	            <label for="teacherImportFile">
+	                <input type="file" class="dis-n btnFile" id="teacherImportFile" name="import" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="teacherImportFileText">
+	                <span class="btn-file">選擇檔案</span>
+	            </label>                        
+	            <span class="memo">註：僅接受副檔名為.xls</span>
+	            <p class="teacherImportFileText"></p>
+	        </div>
+	        <button class="createTagBtn btn-sm" data-tag="teacherImportData" type="button" onclick="importExcel()">確定</button>
+        </form>
     </section>
 
-    <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
-    <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
-    <script th:src="@{/front/js/lib/jquery-customselect.js}"></script>
-    <script th:src="@{/front/js/main.js}"></script>
+    <div th:include="front/load/js :: js"></div>  
 	<script>
 		
 		$(function(){
-			
+			$("#changePage").change(function(){
+				var total_page = $("#changePage").attr("data-totalPage");
+				var page = parseInt($("#changePage").val())<1 ? 1 : (parseInt($("#changePage").val())>total_page?total_page:$("#changePage").val());
+				toList(page);
+			});
+			$("#selectPageCount").change(function(){
+				$("#pageCount").val($("#selectPageCount").val());
+				var page = 1;
+				toList(page);
+			});
 		})
 	
 		function toList(page) {
 			
 			$("#page").val(page);
 			$("#mainForm").attr("action", "/teacher");
+			$("#mainForm").submit();
+			
+		}
+		
+		function importExcel(){
+			$("#importForm").attr("action", "/teacher/import/excel");
+			$("#importForm").submit();
+		}
+		
+		function toContractAdd(id, name) {
+			$("#teacher_id").val(id);
+			$("#tkb_partyb").val(name);
+			$("#csofe_partyb").val(name);
+			$("#contractForm").attr("action", "/contract/teacher/add");
+			$("#contractForm").submit();
+		}
+		
+		function toContent(id) {
+			
+			$("#id").val(id);
+			$("#mainForm").attr("action", "/teacher/content");
 			$("#mainForm").submit();
 			
 		}

@@ -18,5 +18,6 @@ public interface IdentityDao {
 	public Integer maxSort(Identity identity);
 	public void updateSortByDelete(Identity identity);
 	public List<Map<String, Object>> getMenu(Identity identity);
+	public Map<String, Object> getDataByLevel(Identity identity);
 	
 }
