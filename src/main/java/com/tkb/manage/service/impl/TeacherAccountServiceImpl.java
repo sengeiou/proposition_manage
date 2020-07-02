@@ -48,4 +48,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		teacherAccountDao.updateIdentity(account);
 	}
 	
+	public Map<String, Object> getDataByAccount(Account account) {
+		return teacherAccountDao.getDataByAccount(account);
+	}
+	
 }

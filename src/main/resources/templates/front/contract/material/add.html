@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="front/load/css :: css"></head>
 <head>
-	<title>素養教案與命題管理系統 - 新增合約</title>
+	<title>素養教案與命題管理系統 - 新增素材合約</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-ui.css}">
@@ -12,24 +12,26 @@
     <section class="main-content">
         <div class="fixed-width">
             <div class="breadcrumb">
-                <a href="#">首頁</a>
+                <a href="/">首頁</a>
                 <i>/</i>
-                <a href="#">老師管理</a>
+                <a href="#" th:text="${contractMaterial.lp_type=='1' ? '教案管理' : '命題管理'}"></a>
                 <i>/</i>
-                <a href="#">老師列表</a>
+                <a th:href="${contractMaterial.lp_type=='1' ? '/lesson' : contractMaterial.lp_type=='2' ? '/proposition/basic' : '/proposition/group'}" th:text="${contractMaterial.lp_type=='1' ? '教案列表' : contractMaterial.lp_type=='2' ? '命題-基本題列表' : '命題-題組題列表'}"></a>
                 <i>/</i>
-                <a href="#">新增合約</a>
+                <a href="#">新增素材合約</a>
             </div>
             <div class="create-content contract">
-                <h3><i class="fas fa-file-alt"></i>新增內容合約<i class="fas fa-file-alt"></i></h3>
-                <form role="form" id="mainForm" th:object="${contract}" method="post" enctype="multipart/form-data">
+                <h3><i class="fas fa-file-alt"></i>新增素材合約<i class="fas fa-file-alt"></i></h3>
+                <form role="form" id="mainForm" th:object="${contractMaterial}" method="post" enctype="multipart/form-data">
                 	<input type="hidden" id="teacher_id" th:field="*{teacher_id}" />
-                	<input type="hidden" id="tkb_partya" name="tkb_partya" th:value="臺灣知識庫" />
-                	<input type="hidden" id="tkb_partyb" th:field="*{tkb_partyb}" />
-                	<input type="hidden" id="csofe_partya" name="csofe_partya" th:value="中華未來教育學會" />
-					<input type="hidden" id="csofe_partyb" th:field="*{csofe_partyb}" />
+                	<input type="hidden" id="lp_id" th:field="*{lp_id}" />
+					<input type="hidden" id="lp_type" th:field="*{lp_type}" />
+					<input type="hidden" id="tkb_partya" name="tkb_partya" th:value="臺灣知識庫" />
+					<input type="hidden" id="csofe_partya" name="csofe_partya" th:value="中華未來教育學會" />
+					<input type="hidden" id="field_id" th:field="*{field_id}" />
+					<input type="hidden" id="education_id" th:field="*{education_id}" />
 	                <div class="container">
-<!-- 	                    <p>合約必須至少上傳一份</p> -->
+	                    <!-- <p>合約必須至少上傳一份</p> -->
 	                    <div class="page">
 	                        <p>授權於<span>臺灣知識庫</span>合約</p>
 	                        <div>
@@ -38,7 +40,7 @@
 	                            <div class="basic-h">合約檔案</div>
 	                            <div>
 	                                <label for="fileA">
-	                                    <input type="file" class="dis-n btnFile" id="fileA" name="tkbContractFile" accept=".pdf" data-text="contractFileTextA">
+	                                    <input type="file" class="dis-n btnFile" id="fileA" name="tkbContractFile" accept=".pdf" value="" data-text="contractFileTextA">
 	                                    <span class="btn-file">請選擇檔案</span>                                    
 	                                </label>   
 	                                <span class="memo">註：僅提供PDF檔</span>
@@ -47,7 +49,7 @@
 	                            <div class="basic-h">甲方</div>
 	                            <div>臺灣知識庫</div>
 	                            <div class="basic-h">乙方</div>
-	                            <div>[[${contract.tkb_partyb}]]</div>
+	                            <div><input type="text" placeholder="請輸入乙方名稱" id="2ndPartyA" th:field="*{tkb_partyb}"></div>
 	                        </div>
 	                    </div>
 	                    <div class="page">
@@ -58,7 +60,7 @@
 	                            <div class="basic-h">合約檔案</div>
 	                            <div>
 	                                <label for="fileB">
-	                                    <input type="file" class="dis-n btnFile" id="fileB" name="csofeContractFile" accept=".pdf" data-text="contractFileTextB">
+	                                    <input type="file" class="dis-n btnFile" id="fileB" name="csofeContractFile" accept=".pdf" value="" data-text="contractFileTextB">
 	                                    <span class="btn-file">請選擇檔案</span>                                    
 	                                </label>                                
 	                                <span class="memo">註：僅提供PDF檔</span>
@@ -67,27 +69,42 @@
 	                            <div class="basic-h">甲方</div>
 	                            <div>中華未來教育學會</div>
 	                            <div class="basic-h">乙方</div>
-	                            <div>[[${contract.csofe_partyb}]]</div>
+	                            <div><input type="text" placeholder="請輸入乙方名稱" id="2ndPartyB" th:field="*{csofe_partyb}"></div>
 	                        </div>
 	                    </div>
 	                </div>
 	                <div class="create-grid">
+	                    <div class="p-left-14px">名稱</div>
+	                    <div class="basic-h">[[${name}]]</div>
+	                    <div class="p-left-14px">類別</div>
+	                    <div class="basic-h" th:text="${contractMaterial.lp_type=='1' ? '教案' : contractMaterial.lp_type=='2' ? '基本題' : '題組題'}"></div>
+	                    <div><span class="required">*</span>類型</div>
+	                    <div class="basic-h">
+	                        <label class="les-labelBlock" for="圖片">
+	                            <div class="checkbox-square"></div>
+	                            <span>圖片</span>
+	                            <input type="checkbox" id="圖片" class="dis-n" name="contractType" value="1">
+	                        </label>
+	                        <label class="les-labelBlock" for="文本">
+	                            <div class="checkbox-square"></div>
+	                            <span>文本</span>
+	                            <input type="checkbox" id="文本" class="dis-n" name="contractType" value="2">
+	                        </label>
+	                        <label class="les-labelBlock" for="影片">
+	                            <div class="checkbox-square"></div>
+	                            <span>影片</span>
+	                            <input type="checkbox" id="影片" class="dis-n" name="contractType" value="3">
+	                        </label>
+	                        <label class="les-labelBlock" for="音檔">
+	                            <div class="checkbox-square"></div>
+	                            <span>音檔</span>
+	                            <input type="checkbox" id="音檔" class="dis-n" name="contractType" value="4">
+	                        </label>
+	                    </div>
 	                    <div class="p-left-14px">領域</div>
-	                    <div>
-	                        <select id="specialSkill" th:field="*{field_id}">
-	                            <option value="0">請選擇領域</option>
-	                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
-	                        </select>
-	                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
-	                    </div>
+	                    <div class="basic-h">[[${fieldName}]]</div>
 	                    <div class="p-left-14px">學制</div>
-	                    <div>
-	                        <select id="schoolType" th:field="*{education_id}">
-	                            <option value="0">請選擇學制</option>
-	                            <option th:each="education:${educationList}" th:value="${education.ID}" th:text="${education.NAME}"></option>
-	                        </select>
-	                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
-	                    </div>
+	                    <div class="basic-h">[[${educationName}]]</div>
 	                    <div><span class="required">*</span>合約時限</div>
 	                    <div>
 	                        <input type="text" placeholder="請輸入開始日期" id="contractStart" th:field="*{begin_date}" autocomplete="off">
@@ -101,8 +118,8 @@
 	                        <div>命題題組題授權數量<input type="text" class="fileNumInput" id="propoGroupNum" th:field="*{questions_group_num}">份</div>
 	                    </div>                   
 	                </div>            
-	                <button class="btn-submit" data-type="contractCreate" type="button" id="add">送出</button>
-				</form>
+	                <button class="btn-submit" data-type="contractMatCreate" type="button">送出</button>
+                </form>
             </div>
         </div>
     </section>
@@ -117,15 +134,9 @@
         <button class="btn-closelightBoxAlert btn-sm">確定</button>
     </section>
 	
-    <div th:include="front/load/js :: js"></div>
-    <script th:src="@{/front/js/lib/jquery-ui.min.js}"></script>
+	<div th:include="front/load/js :: js"></div>
+	<script th:src="@{/front/js/lib/jquery-ui.min.js}"></script>
     <script th:src="@{/front/js/datepicker.js}"></script>
-    <script>
-		//新增
-// 		$("#add").click(function(){
-// 			$("#mainForm").attr("action", "/contract/addSubmit");
-// 			$("#mainForm").submit();
-// 		});
-	</script>
+
 </body>
 </html>

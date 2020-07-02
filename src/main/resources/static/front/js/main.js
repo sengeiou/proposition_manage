@@ -72,9 +72,8 @@ $(function(){
         if ($(this).val() == '') {
             return
         }else {
-            let item = `<div class="lightboxItem"><span>${$(this).val()}</span><button class="deleteTag"><i class="fas fa-times"></i></button></div>`;
-            $(this).parent().append(item);
-            $("input[name='tag']").val()=='' ? $("input[name='tag']").val($(this).val()) : $("input[name='tag']").val($("input[name='tag']").val()+","+$(this).val());
+            let item = `<div class="lightboxItem"><span>${$(this).val()}</span><button class="deleteTag"><i class="fas fa-times"></i></button></div>`        
+            $(this).parent().append(item)
         }        
     })
 
@@ -156,12 +155,18 @@ $(function(){
         }
     })
 
+    $(".btn-search").on("click",function(){
+        console.log('搜尋在這邊～～～老師姓名：：' + $("input[name='teacherName']").val())
+        console.log('搜尋在這邊～～～履行合約：：' + $("input[name='state']:checked").val())
+        console.log('搜尋在這邊～～～合約時限：：' + $("input[name='available']:checked").val())        
+    })
+
     $(".btn-submit").on("click",function(){
         let type = $(this).data('type')
         if (type.indexOf('teacherCreate') > -1) {
             checkTeacher(type)
         }else if (type.indexOf('contractCreate') > -1) {
-            checkContract()
+            checkContract(type)
         }else if (type.indexOf('lessonCreate') > -1) {
             checkLessonOrProp(type)
         }else if (type.indexOf('lessonContentVerify') > -1) {
@@ -188,9 +193,11 @@ $(function(){
             contentEditAdmin(type)
         }else if (type.indexOf('propoBasicEditAdmin') > -1) {
             contentEditAdmin(type)
+        }else if (type.indexOf('contractMatCreate') > -1) {
+            checkContract(type)
         }
     })
-    
+
     function openlightBoxAlert(text) {
         console.log(text)
         $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')
@@ -303,7 +310,8 @@ $(function(){
         }        
     }
 
-    function checkContract() {        
+    function checkContract(type) {
+        let material = type == 'contractMatCreate' ? true :false        
         let status = true
         let text = ''
         let numCheck = /^(|[1-9][0-9]*)$/
@@ -314,12 +322,21 @@ $(function(){
         }else if ($(".contractFileTextA").text() == '') {
             status = false
             text = '請選擇授權於臺灣知識庫合約檔案'
+        }else if (material && !$("#2ndPartyA").val()) {
+            status = false
+            text = '請輸入授權於臺灣知識庫乙方名稱'
         }else if (!$("#contractNumB").val()) {
             status = false
             text = '請輸入授權於授權於中華未來教育學會合約編號'
         }else if ($(".contractFileTextB").text() == '') {
             status = false
             text = '請選擇授權於中華未來教育學會合約檔案'
+        }else if (material && !$("#2ndPartyB").val()) {
+            status = false
+            text = '請輸入授權於中華未來教育學會乙方名稱'
+        }else if (material && $("input[name='contractType']:checked").length == 0) {
+            status = false
+            text = '請勾選類型'
         }else if (!$("#contractStart").val()) {
             status = false
             text = '請輸入合約開始時間'
@@ -329,8 +346,7 @@ $(function(){
         }else if  (Date.parse($("#contractStart").val()) >= Date.parse($("#contractEnd").val())) {
             status = false
             text = '合約結束時間請大於開始時間'
-        }else 
-        if (!$("#lessonNum").val() && !$("#propoBasicNum").val() && !$("#propoGroupNum").val()) {
+        }else if (!$("#lessonNum").val() && !$("#propoBasicNum").val() && !$("#propoGroupNum").val()) {
             status = false
             text = '合約授權內容必須至少填寫一欄'
         }else if ($("#lessonNum").val() && !numCheck.test($("#lessonNum").val())) {
@@ -349,9 +365,15 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-            $("#mainForm").attr("action", "/contract/teacher/addSubmit");
-            $("#mainForm").submit();
-            console.log('驗證通過')
+            if (type == 'contractCreate') {
+                $("#mainForm").attr("action", "/contract/teacher/addSubmit");
+                $("#mainForm").submit();
+                console.log('新增合約驗證通過')
+            }else {
+            	$("#mainForm").attr("action", "/contract/material/addSubmit");
+                $("#mainForm").submit();
+                console.log('新增素材合約驗證通過')
+            }
         }
     }
 
@@ -406,7 +428,7 @@ $(function(){
                 $(this).val(lightBoxText.substring(1))
                 console.log('核心素養總綱/領綱、學習表現、學習內容input hidden::' + $(this).val())
             })
-            
+
             if (type == 'lessonCreate') {
             	$("#mainForm").attr("action", "/lesson/addSubmit");
                 $("#mainForm").submit();
@@ -419,7 +441,7 @@ $(function(){
             	$("#mainForm").attr("action", "/proposition/basic/addSubmit");
                 $("#mainForm").submit();
                 console.log('命題-基本題驗證通過')
-            }            
+            }
         }
     }
 
@@ -439,7 +461,7 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-            if (type == 'lessonContentVerify') {
+        	if (type == 'lessonContentVerify') {
             	$("#mainForm").attr("action", "/lesson/audit");
                 $("#mainForm").submit();
                 console.log('教案詳細資料審核')
@@ -451,7 +473,7 @@ $(function(){
             	$("#mainForm").attr("action", "/proposition/basic/audit");
                 $("#mainForm").submit();
                 console.log('命題-基本題：：教案詳細資料審核')
-            }            
+            }
         }
     }
 
@@ -468,7 +490,7 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-            if (type == 'lessonEditTeacher') {
+        	if (type == 'lessonEditTeacher') {
             	$("#mainForm").attr("action", "/lesson/editSubmit");
                 $("#mainForm").submit();
                 console.log('教案檔案修訂通過')
@@ -480,7 +502,7 @@ $(function(){
             	$("#mainForm").attr("action", "/proposition/basic/editSubmit");
                 $("#mainForm").submit();
                 console.log('命題-基本題：：檔案修訂通過')
-            }            
+            }
         }
     }
 
@@ -545,4 +567,5 @@ $(function(){
             
         }
     }
+
 })

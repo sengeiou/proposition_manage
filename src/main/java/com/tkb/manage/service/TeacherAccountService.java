@@ -15,5 +15,6 @@ public interface TeacherAccountService {
 	public void update(Account account);
 	public void delete(Account account);
 	public void updateIdentity(Account account);
+	public Map<String, Object> getDataByAccount(Account account);
 	
 }

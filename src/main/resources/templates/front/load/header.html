@@ -13,8 +13,9 @@
             <nav>
                 <ul>
                     <li class="menu" th:each="menu1:${menu}">
-                        <a th:href="${menu1.link}" class="btn-menu" th:text="${menu1.name}">管理者</a>
-                        <ul class="sub-menu">
+                        <a th:if="${menu1.link} != null" th:href="${menu1.link}" class="btn-menu" th:text="${menu1.name}"></a>
+                        [[${menu1.link==null ? menu1.name : ''}]]
+                        <ul class="sub-menu" th:if="${menu1.menu2} != null">
                             <li th:each="menu2:${menu1.menu2}"><a th:href="${menu2.link}" class="btn-subMenu" th:text="${menu2.name}">功能選單</a></li>
                         </ul>
                     </li>
