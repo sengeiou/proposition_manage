@@ -1,7 +1,14 @@
 package com.tkb.manage.controller;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -137,10 +144,16 @@ public class IndexController {
 	@Value("${upload.file.path}") 
 	private String uploadedFolder;
 	
+	@Value("${teacher.download}") 
+	private String teacherDownload;
+	
+	@Value("${teacher.fileName}") 
+	private String teacherFileName;
+	
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 	
-	private Integer page_count = 10;
+//	private Integer page_count = 10;
 	
 	@RequestMapping(value = "/index" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String index(Model model, @SessionAttribute("accountSession") Account accountSession) {
@@ -444,6 +457,75 @@ public class IndexController {
 		return "front/path";
     }
 	
+	//實現Spring Boot 的檔案下載功能，對映網址為/download
+    @RequestMapping("/teacher/download")
+    public String downloadFile(HttpServletRequest request,
+                               HttpServletResponse response) throws UnsupportedEncodingException {
+
+        // 獲取指定目錄下的第一個檔案
+        File scFileDir = new File(teacherDownload);
+        File TrxFiles[] = scFileDir.listFiles();
+        String fileName = "";
+        for(int i=0; i<TrxFiles.length; i++) {
+        	if(TrxFiles[i].toString().indexOf("export.xls") >= 0) {
+        		fileName = TrxFiles[i].getName();		//下載的檔名
+        	}
+        }
+        
+        // 如果檔名不為空，則進行下載
+        if (fileName != null) {
+            //設定檔案路徑
+            String realPath = teacherDownload+"/";
+            File file = new File(realPath, fileName);
+
+            // 如果檔名存在，則進行下載
+            if (file.exists()) {
+
+                // 配置檔案下載
+                response.setHeader("content-type", "application/octet-stream");
+                response.setContentType("application/octet-stream");
+                // 下載檔案能正常顯示中文
+                response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(teacherFileName, "UTF-8"));
+
+                // 實現檔案下載
+                byte[] buffer = new byte[1024];
+                FileInputStream fis = null;
+                BufferedInputStream bis = null;
+                try {
+                    fis = new FileInputStream(file);
+                    bis = new BufferedInputStream(fis);
+                    OutputStream os = response.getOutputStream();
+                    int i = bis.read(buffer);
+                    while (i != -1) {
+                        os.write(buffer, 0, i);
+                        i = bis.read(buffer);
+                    }
+                    System.out.println("Download the song successfully!");
+                }
+                catch (Exception e) {
+                    System.out.println("Download the song failed!");
+                }
+                finally {
+                    if (bis != null) {
+                        try {
+                            bis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (fis != null) {
+                        try {
+                            fis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+	
 	@RequestMapping(value = "/teacher/import/excel" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String importExcel(
 			@SessionAttribute("accountSession")Account accountSession,
@@ -462,18 +544,18 @@ public class IndexController {
 	        
 	        for(int i=1	; i<rowCount; i++) {
 	        	
-	        	String name = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
+	        	String name = sheet.getCell(0, i).getContents() == "" ? null : sheet.getCell(0, i).getContents();
 //	        	String school_name = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String id_no = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
-	        	String phone = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
-	        	String email = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
-	        	String address = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
-	        	String bank = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
-	        	String branch = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
-	        	String remittance_account = sheet.getCell(11, i).getContents() == "" ? null : sheet.getCell(11, i).getContents();
-	        	String field_name = sheet.getCell(12, i).getContents() == "" ? null : sheet.getCell(12, i).getContents();
-	        	String content_provision = "1";
-	        	String content_audit = "0";
+	        	String id_no = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
+	        	String phone = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
+	        	String email = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
+	        	String address = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
+	        	String bank = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
+	        	String branch = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
+	        	String remittance_account = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
+	        	String field_name = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
+	        	String content_provision = "".equals(sheet.getCell(9, i).getContents()) ? null : ("是".equals(sheet.getCell(9, i).getContents()) ? "1" : "0");
+	        	String content_audit = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
 	        	String status = "1";
 	        	
 	        	if(name == null) {
