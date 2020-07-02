@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tkb.manage.controller.admin.FunctionController;
 import com.tkb.manage.model.Account;
 import com.tkb.manage.model.Contract;
+import com.tkb.manage.model.ContractMaterial;
+import com.tkb.manage.model.ContractMaterialOption;
 import com.tkb.manage.model.Education;
 import com.tkb.manage.model.Field;
 import com.tkb.manage.model.Function;
@@ -46,6 +48,8 @@ import com.tkb.manage.model.PropositionOption;
 import com.tkb.manage.model.SchoolMaster;
 import com.tkb.manage.model.Subject;
 import com.tkb.manage.service.CommonService;
+import com.tkb.manage.service.ContractMaterialOptionService;
+import com.tkb.manage.service.ContractMaterialService;
 import com.tkb.manage.service.ContractService;
 import com.tkb.manage.service.EducationService;
 import com.tkb.manage.service.FieldService;
@@ -90,6 +94,12 @@ public class IndexController {
 	
 	@Autowired
 	private ContractService contractService;
+	
+	@Autowired
+	private ContractMaterialService contractMaterialService;
+	
+	@Autowired
+	private ContractMaterialOptionService contractMaterialOptionService;
 	
 	@Autowired
 	private LessonPlanService lessonPlanService;
@@ -535,6 +545,9 @@ public class IndexController {
 		
 	}
 	
+	/**
+	 * 老師授權合約
+	 */
 	@RequestMapping(value = "/contract/teacher" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String contract(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute Contract contract) {
 		
@@ -647,10 +660,163 @@ public class IndexController {
 	}
 	
 	/**
+	 * 素材授權合約
+	 */
+	@RequestMapping(value = "/contract/material" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String contractMaterial(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute ContractMaterial contractMaterial) {
+		
+		//設定每頁筆數
+		if(contractMaterial.getPage_count() == null) {
+			contractMaterial.setPage_count(10);
+		}
+		model.addAttribute("page_count", contractMaterial.getPage_count());
+		
+		if(contractMaterial.getPage() == null) {
+			contractMaterial.setPage(1);
+		}
+		
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		int count = 0;
+		
+		if("3".equals(accountSession.getLevel())) {
+			contractMaterial.setTeacher_id(accountSession.getId());
+		}
+		
+		list = contractMaterialService.list(contractMaterial);
+		count = contractMaterialService.count(contractMaterial);
+		
+		contractMaterial.setCount(count);
+		contractMaterial.setTotal_page((contractMaterial.getCount()/contractMaterial.getPage_count())<1 ? 1 : ((contractMaterial.getCount()/contractMaterial.getPage_count())+((contractMaterial.getCount()%contractMaterial.getPage_count()) > 0 ? 1 : 0)));
+		
+		model.addAttribute("list", list);
+		
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		//分頁
+		model.addAttribute("page", contractMaterial.getPage());
+		model.addAttribute("total_page", contractMaterial.getTotal_page());
+		
+		return "front/contract/material/list";
+	}
+	
+	@RequestMapping(value = "/contract/material/add" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String contractMaterialAdd(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute ContractMaterial contractMaterial) {
+		
+		Account account = new Account();
+		String name = "";
+		
+		if("1".equals(contractMaterial.getLp_type())) {
+			LessonPlan lessonPlan = new LessonPlan();
+			lessonPlan.setId(contractMaterial.getLp_id());
+			lessonPlan = lessonPlanService.data(lessonPlan);
+			name = lessonPlan.getName();
+			
+			account.setAccount(lessonPlan.getCreate_by());
+		} else {
+			Proposition proposition = new Proposition();
+			proposition.setId(contractMaterial.getLp_id());
+			proposition = propositionService.data(proposition);
+			name = proposition.getName();
+			
+			account.setAccount(proposition.getCreate_by());
+		}
+		
+		//教案命題名稱
+		model.addAttribute("name", name);
+		
+		//老師名稱
+		Map<String, Object> getDataByAccount = teacherAccountService.getDataByAccount(account);
+		
+		contractMaterial.setTeacher_id(getDataByAccount!=null ? getDataByAccount.get("ID").toString() : "");
+		
+		//取得領域資料
+		Field field = new Field();
+		field.setId(contractMaterial.getField_id());
+		field = fieldService.data(field);
+		model.addAttribute("fieldName", field.getName());
+		
+		//取得學制清單
+		Education education = new Education();
+		education.setId(contractMaterial.getEducation_id());
+		education = educationService.data(education);
+		model.addAttribute("educationName", education.getName());
+		
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		return "front/contract/material/add";
+	}
+	
+	@RequestMapping(value = "/contract/material/addSubmit" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String contractAddSubmit(Model model,
+			@SessionAttribute("accountSession") Account accountSession,
+			@ModelAttribute ContractMaterial contractMaterial,
+			@RequestParam("tkbContractFile") MultipartFile tkbContractFile,
+			@RequestParam("csofeContractFile") MultipartFile csofeContractFile,
+			HttpServletRequest pRequest
+			) {
+		
+		try {
+			
+			contractMaterial.setTkb_contract_file(!"".equals(tkbContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(tkbContractFile, uploadedFolder+"file/contract/") : null);
+			contractMaterial.setTkb_contract_name(tkbContractFile.getOriginalFilename());
+			contractMaterial.setCsofe_contract_file(!"".equals(csofeContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(csofeContractFile, uploadedFolder+"file/contract/") : null);
+			contractMaterial.setCsofe_contract_name(csofeContractFile.getOriginalFilename());
+			contractMaterial.setLesson_num((contractMaterial.getLesson_num()==null || "".equals(contractMaterial.getLesson_num())) ? "0" : contractMaterial.getLesson_num());
+			contractMaterial.setBasic_num((contractMaterial.getBasic_num()==null || "".equals(contractMaterial.getBasic_num())) ? "0" : contractMaterial.getBasic_num());
+			contractMaterial.setQuestions_group_num((contractMaterial.getQuestions_group_num()==null || "".equals(contractMaterial.getQuestions_group_num())) ? "0" : contractMaterial.getQuestions_group_num());
+			contractMaterial.setCreate_by(accountSession.getAccount());
+			contractMaterial.setUpdate_by(accountSession.getAccount());
+			int id = contractMaterialService.add(contractMaterial);
+			//修改合約序號，規則：年月日+流水號後四碼=共10碼
+			contractMaterial = new ContractMaterial();
+			contractMaterial.setId(String.valueOf(id));
+			contractMaterialService.updateTeacherId(contractMaterial);
+			
+			ContractMaterialOption contractMaterialOption = new ContractMaterialOption();
+			String[] contractType = pRequest.getParameterValues("contractType");
+			for(int i=0; i<contractType.length; i++) {
+				contractMaterialOption = new ContractMaterialOption();
+				contractMaterialOption.setContract_material_id(String.valueOf(id));
+				contractMaterialOption.setMaterial_type(contractType[i]);
+				contractMaterialOption.setCreate_by(accountSession.getAccount());
+				contractMaterialOptionService.add(contractMaterialOption);
+			}
+			
+		} catch(Exception e) {
+//			System.out.println("error:"+e.getMessage());
+			logger.error("error:"+e.getMessage(), dateFormat.format(new Date()));
+		}
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		model.addAttribute("PATH", "/contract/material");
+		return "front/path";
+	}
+	
+	@RequestMapping(value = "/contract/material/content" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String contractTeacherContent(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute ContractMaterial contractMaterial) {
+		
+		//取得合約資料
+		contractMaterial = contractMaterialService.data(contractMaterial);
+		model.addAttribute("contractMaterial", contractMaterial);
+		
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		return "front/contract/material/content";
+	}
+	
+	/**
 	 * 教案
 	 */
 	@RequestMapping(value = "/lesson" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String lesson(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute LessonPlan lessonPlan, Model model){
+    public String lesson(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute LessonPlan lessonPlan, @ModelAttribute ContractMaterial contractMaterial, Model model){
 		
 		//設定每頁筆數
 		if(lessonPlan.getPage_count() == null) {
@@ -1198,7 +1364,7 @@ public class IndexController {
 	 * 命題-基本題
 	 */
 	@RequestMapping(value = "/proposition/basic" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String propositionBasic(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, Model model){
+    public String propositionBasic(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, @ModelAttribute ContractMaterial contractMaterial, Model model){
 		
 		//設定每頁筆數
 		if(proposition.getPage_count() == null) {
@@ -1749,7 +1915,7 @@ public class IndexController {
 	 * 命題-題組題
 	 */
 	@RequestMapping(value = "/proposition/group" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String propositionGroup(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, Model model){
+    public String propositionGroup(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, @ModelAttribute ContractMaterial contractMaterial, Model model){
 		
 		//設定每頁筆數
 		if(proposition.getPage_count() == null) {

@@ -2,23 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="front/load/css :: css"></head>
 <head>
-	<title>素養教案與命題管理系統 - 詳細資料</title>
+	<title>素養教案與命題管理系統 - 合約詳細資料</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link type="text/css" rel="stylesheet" th:href="@{/front/css/jquery-ui.css}">
 </head>
-<body class="style-admin">    
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
     <section class="main-content">
         <div class="fixed-width">
             <div class="breadcrumb">
-                <a href="#">首頁</a>
+                <a href="/">首頁</a>
                 <i>/</i>
                 <a href="#">合約管理</a>
                 <i>/</i>
-                <a href="#">老師授權合約</a>
+                <a href="/contract/material">素材授權合約</a>
                 <i>/</i>
-                <a href="#">合約列表</a>
+                <a href="/contract/material">合約列表</a>
                 <i>/</i>
                 <a href="#">合約詳細資料</a>
             </div>
@@ -29,43 +29,49 @@
                         <p>授權於<span>臺灣知識庫</span>合約</p>
                         <div>
                             <div>合約編號</div>
-                            <div>202006201623</div>
+                            <div>[[${contractMaterial.tkb_contract_num}]]</div>
                             <div>合約檔案</div>
-                            <div><a href="#">單元主題：「曆曆」在目（歷歷在目）</a></div>
+                            <div><a th:href="'/upload/file/contract/'+${contractMaterial.tkb_contract_file}" target="_blank">[[${contractMaterial.tkb_contract_name}]]</a></div>
                             <div>甲方</div>
-                            <div>臺灣知識庫</div>
+                            <div>[[${contractMaterial.tkb_partya}]]</div>
                             <div>乙方</div>
-                            <div>陳柔柔</div>
+                            <div>[[${contractMaterial.tkb_partyb}]]</div>
                         </div>
                     </div>
                     <div class="page">
                         <p>授權於<span>中華未來教育學會</span>合約</p>
                         <div>
                             <div>合約編號</div>
-                            <div>202006201623</div>
+                            <div>[[${contractMaterial.csofe_contract_num}]]</div>
                             <div>合約檔案</div>
-                            <div><a href="#">單元主題：「曆曆」在目（歷歷在目）</a></div>
+                            <div><a th:href="'/upload/file/contract/'+${contractMaterial.csofe_contract_file}" target="_blank">[[${contractMaterial.csofe_contract_name}]]</a></div>
                             <div>甲方</div>
-                            <div>中華未來教育學會</div>
+                            <div>[[${contractMaterial.csofe_partya}]]</div>
                             <div>乙方</div>
-                            <div>陳柔柔</div>
+                            <div>[[${contractMaterial.csofe_partyb}]]</div>
                         </div>
                     </div>
                 </div>
                 <div class="create-grid">
+                    <div>名稱</div>
+                    <div>[[${contractMaterial.name}]]</div>
+                    <div>類別</div>
+                    <div>[[${contractMaterial.lp_type_name}]]</div>
+                    <div>類型</div>
+                    <div>[[${contractMaterial.material_type_name}]]</div>
                     <div>領域</div>
-                    <div>國語文領域</div>
+                    <div>[[${contractMaterial.field_name}]]</div>
                     <div>學制</div>
-                    <div>國中</div>
+                    <div>[[${contractMaterial.education_name}]]</div>
                     <div>合約時限</div>
                     <div>
-                        <span>2020/10/10</span>~<span>2021/10/09</span>
+                        <span>[[${contractMaterial.begin_date}]]</span>~<span>[[${contractMaterial.end_date}]]</span>
                     </div>
                     <div>合約內容</div>
                     <div>
-                        <p>教案授權數量<span>3</span>份</p>
-                        <p>命題基本題授權數量<span>0</span>份</p>
-                        <p>命題題組題授權數量<span>0</span>份</p>
+                        <p>教案授權數量<span>[[${contractMaterial.lesson_num}]]</span>份</p>
+                        <p>命題基本題授權數量<span>[[${contractMaterial.basic_num}]]</span>份</p>
+                        <p>命題題組題授權數量<span>[[${contractMaterial.questions_group_num}]]</span>份</p>
                     </div>                   
                 </div>                            
             </div>

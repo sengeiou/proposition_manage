@@ -39,10 +39,11 @@ public class PropositionDaoImpl implements PropositionDao {
 				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
 				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
 				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.proposition PMP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
@@ -81,10 +82,11 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT PMP.*, PMF.NAME AS FIELD_NAME, "
+		String sql = " SELECT PMP.*, PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.proposition PMP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " AND PMP.AUDITOR = ? "
 				   + " AND PMP.FILE_STATUS = 'Y' "
@@ -141,10 +143,11 @@ public class PropositionDaoImpl implements PropositionDao {
 				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
 				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
 				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.proposition PMP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " AND PMP.CREATE_BY = ? "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";

@@ -445,6 +445,7 @@ span.btn-file {
     border: 1px solid #111111;
     width: max-content;
     border-bottom: none;
+    margin-top: 10px;
 }
 .header>nav>ul>li.menu>ul.sub-menu>li {
     border-bottom: 1px solid #111111;
@@ -462,8 +463,8 @@ span.btn-file {
     color: #ffffff;
     background-color: var(--primary-dark);
 }
-
-.header a.btn-menu span , .header a.btn-subMenu span{    
+/* .header a.btn-menu span , .header a.btn-subMenu span */
+.header .menu span{    
     width: 20px;    
     background-color: var(--primary-light);
     display: inline-block;    
@@ -539,7 +540,7 @@ span.btn-file {
 .create-content h3 i {
     margin: 0 10px;
 }
-.create-content div.basic-h {    
+div.basic-h {    
     line-height: 36px;
 }
 .create-content.contentPage .create-grid>div:nth-child(odd) { /*詳細資料*/
@@ -606,7 +607,7 @@ span.btn-file {
 .create-content.contract .container .page>div{
     display: grid;
     grid-template-columns: 1fr 3fr;
-    padding-left: 20px;
+    padding-left: 10px;
     align-items: center;
     grid-row-gap: 8px;
     margin-top: 15px;
@@ -868,8 +869,37 @@ span.btn-file {
     margin: 0 5px;
     color: #FF0000;
 }
+.list-content .contractMatList-grid {
+    grid-template-columns: 2fr 2fr 2fr 1fr 4fr 1fr 1fr 1fr 1fr;
+}
 /* 列表 end */
-
+/* 搜尋區塊 start */
+button.btn-search {
+    display: block;
+    margin: 0 auto;
+    background-color: unset;
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: var(--primary-dark);
+}
+button.btn-search:hover {
+    color: #ffffff;
+    background-color: var(--primary-dark);
+}
+.search-block {
+    margin-bottom: 40px;
+    background-color: var(--primary-light);
+    width: fit-content;
+    margin: 0 auto;
+    padding: 25px;
+}
+.search-block .search-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-row-gap: 20px;
+    margin-bottom: 20px;
+}
+/* 搜尋區塊 end */
 
 
 

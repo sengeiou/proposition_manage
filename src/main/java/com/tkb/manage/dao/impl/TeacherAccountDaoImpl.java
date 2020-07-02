@@ -190,4 +190,22 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public Map<String, Object> getDataByAccount(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.teacher_account "
+				   + " WHERE ACCOUNT = ? ";
+		
+		args.add(account.getAccount());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

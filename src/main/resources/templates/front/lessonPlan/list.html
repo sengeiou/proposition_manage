@@ -14,6 +14,12 @@
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
 		<input type="hidden" id="pageCount" th:field="*{page_count}" />
 	</form>
+	<form id="contractForm" method="POST" th:object="${contractMaterial}">
+		<input type="hidden" id="lp_id" th:field="*{lp_id}" />
+		<input type="hidden" id="lp_type" th:field="*{lp_type}" />
+		<input type="hidden" id="field_id" th:field="*{field_id}" />
+		<input type="hidden" id="education_id" th:field="*{education_id}" />
+	</form>
     <section class="main-content">
         <div class="fixed-width">            
             <div class="breadcrumb">
@@ -60,7 +66,7 @@
                         <div th:text="${list.upload_status_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
-                        <div><a href="#"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${list.field_id}]],[[${list.education_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
                 <div class="list-block" th:if="${accountSession.level == '3'}"> <!-- 內容老師，顯示列表 -->                    
@@ -128,11 +134,12 @@
 			
 		}
 		
-		function toContractAdd(id, name) {
-			$("#teacher_id").val(id);
-			$("#tkb_partyb").val(name);
-			$("#csofe_partyb").val(name);
-			$("#contractForm").attr("action", "/contract/add");
+		function toContractAdd(lp_id, field_id, education_id) {
+			$("#lp_id").val(lp_id);
+			$("#lp_type").val("1");
+			$("#field_id").val(field_id);
+			$("#education_id").val(education_id);
+			$("#contractForm").attr("action", "/contract/material/add");
 			$("#contractForm").submit();
 		}
 		

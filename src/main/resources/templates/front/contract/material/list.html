@@ -2,12 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="front/load/css :: css"></head>
 <head>
-	<title>素養教案與命題管理系統 - 內容授權合約</title>
+	<title>素養教案與命題管理系統 - 素材合約列表</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
-    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">
+	<section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+	<form id="mainForm" method="POST" th:object="${contractMaterial}">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+	</form>
     <section class="main-content">
         <div class="fixed-width">            
             <div class="breadcrumb">
@@ -15,53 +21,83 @@
                 <i>/</i>
                 <a href="#">合約管理</a>
                 <i>/</i>
-                <a href="/contrace">內容授權合約</a>
+                <a href="#">素材授權合約</a>
                 <i>/</i>
                 <a href="#">合約列表</a>
             </div>                             
             <div class="list-content">
-                <h3>合約列表</h3>
+                <h3>素材合約列表</h3>
                 <div class="pageList-block">
-                    <div>總計筆數<span>[[${contract.count}]]</span>筆</div>
+                    <div>總計筆數<span>[[${contractMaterial.count}]]</span>筆</div>
                     <div>每頁顯示數量
-                        <select>
-                            <option>20</option>
-                            <option>50</option>
-                            <option>100</option>
+                        <select id="selectPageCount" th:field="${contractMaterial.page_count}">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
                         </select>
                     </div>
                 </div>
                 <div class="list-block">
-                    <div class="grid contractList-grid grid-title">
+                    <div class="grid contractMatList-grid grid-title">
                         <div class="font-size-09">臺灣知識庫<br>授權合約</div>
                         <div class="font-size-09">中華未來教育學會<br>授權合約</div>
-                        <div>合約編號</div>
-                        <div>老師姓名</div>
-                        <div>教案數量<br><span class="font-size-08">(已上傳/已審核/須上傳)</span></div>
-                        <div>命題基本題數量<br><span class="font-size-08">(已上傳/已審核/須上傳)</span></div>
-                        <div>命題題組題數量<br><span class="font-size-08">(已上傳/已審核/須上傳)</span></div>
-                        <div>履行合約</div>
+                        <div>合約流水號</div>
+                        <div>類別</div>
+                        <div>名稱</div>
+                        <div>類型</div>
+                        <div>授權方</div>                        
                         <div>合約時限</div>
                         <div>詳細資料</div>
                     </div>
-                    <div class="grid contractList-grid" th:each="list,stat:${list}">
-                        <div><i class="fas fa-check" th:if="${list.tkb_contract_status}=='1'"></i></div>
-                        <div><i class="fas fa-check" th:if="${list.csofe_contract_status}=='1'"></i></div>
-                        <div>[[${list.contract_id}]]</div>
-                        <div>[[${list.name}]]</div>
-                        <div><span class="text-c-red">[[${list.l_count_file}]]</span>/<span class="text-c-red">[[${list.l_count}]]</span>/<span>[[${list.lesson_num}]]</span></div>
-                        <div><span class="text-c-red">[[${list.p_count_file}]]</span>/<span class="text-c-red">[[${list.p_count_up}]]</span>/<span>[[${list.basic_num}]]</span></div>
-                        <div><span class="text-c-red">[[${list.p_count_file2}]]</span>/<span class="text-c-red">[[${list.p_count_up2}]]</span>/<span>[[${list.questions_group_num}]]</span></div>
-                        <div class="text-c-red">未完成</div>
-                        <div>[[${list.contract_date}]]</div>
-                        <div><a href="#"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                    <div class="grid contractMatList-grid" th:each="list,stat:${list}">
+                        <div th:text="${list.tkb_contract_num}"></div>
+                        <div th:text="${list.csofe_contract_num}"></div>
+                        <div th:text="${list.contract_id}"></div>
+                        <div th:text="${list.lp_type_name}"></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.material_type_name}"></div>
+                        <div th:text="${list.teacher_name}"></div>                        
+                        <div th:classappend="${list.contract_limit} == '過期' ? 'text-c-red' : ''" th:text="${list.contract_limit}"></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
+                <div class="page-block" th:include="front/load/pages :: pages" th:if="${total_page}>1" th:with="page_length=5,page_avg=${page_length}/2"></div>
             </div>            
         </div>
     </section>    
 
     <div th:include="front/load/js :: js"></div>
-
+	
+	<script>
+		$(function(){
+			$("#changePage").change(function(){
+				var total_page = $("#changePage").attr("data-totalPage");
+				var page = $("#changePage").val()<1 ? 1 : ($("#changePage").val()>total_page?total_page:$("#changePage").val());
+				toList(page);
+			});
+			$("#selectPageCount").change(function(){
+				$("#pageCount").val($("#selectPageCount").val());
+				var page = 1;
+				toList(page);
+			});
+		})
+	
+		function toList(page) {
+			
+			$("#page").val(page);
+			$("#mainForm").attr("action", "/contract/material");
+			$("#mainForm").submit();
+			
+		}
+		
+		function toContent(id) {
+			
+			$("#id").val(id);
+			$("#mainForm").attr("action", "/contract/material/content");
+			$("#mainForm").submit();
+			
+		}
+	</script>
 </body>
 </html>

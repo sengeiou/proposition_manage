@@ -57,7 +57,7 @@
                             <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}">國小</option>
                         </select>                      
                     </div>
-                    <div><span class="required">*</span>年級</div>
+                    <div id="gradeTitle"><span class="required">*</span>年級</div>
                     <div class="basic-h" id="grade">
                         <!-- label的for 與 input的id要一致 -->
                         <input type="hidden" id="gradeOption" th:value="${gradeOption}" />
@@ -110,36 +110,41 @@
 	<script>
 		$(function(){
 			$("#schoolType").change(function(){
-				$.ajax({
-					url: '/proposition/basic/get/grade',
-					cache: false,
-					async: false,
-					dataType: 'json',
-					type: 'POST',
-					data: {
-						id: $(this).val()
-					},
-					error: function(xhr) {
-						alert("取得資料錯誤");
-					},
-					success: function(data) {
-						if(data != null && data.length > 0) {
-							$("#gradeTitle").show();
-							$("#grade").show();
-							$("#grade").empty();
-							var str = "";
-							for(i=0; i<data.length; i++) {
-								var child = data[i];
-								str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
-									+  "<div class='checkbox-square'></div>"
-									+  "<span>"+child.NAME+"</span>"
-									+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
-									+  "</label>"
+				if($("#schoolType").val() != "0") {
+					$.ajax({
+						url: '/proposition/basic/get/grade',
+						cache: false,
+						async: false,
+						dataType: 'json',
+						type: 'POST',
+						data: {
+							id: $(this).val()
+						},
+						error: function(xhr) {
+							alert("取得資料錯誤");
+						},
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								$("#gradeTitle").show();
+								$("#grade").show();
+								$("#grade").empty();
+								var str = "";
+								for(i=0; i<data.length; i++) {
+									var child = data[i];
+									str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+										+  "<div class='checkbox-square'></div>"
+										+  "<span>"+child.NAME+"</span>"
+										+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+										+  "</label>"
+								}
+								$("#grade").append(str);
 							}
-							$("#grade").append(str);
 						}
-					}
-				});
+					});
+				} else {
+					$("#gradeTitle").hide();
+					$("#grade").hide();
+				}
 			});
 			$("#content").click(function(){
 				$("#mainForm").attr("action", "/proposition/basic/content");

@@ -39,10 +39,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
 				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
 				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
@@ -75,10 +76,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT LP.*, PMF.NAME AS FIELD_NAME, "
+		String sql = " SELECT LP.*, PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " WHERE LP.AUDITOR = ? "
 				   + " AND LP.FILE_STATUS = 'Y' "
 				   + " AND LP.UPLOAD_STATUS = 'Y' "
@@ -131,10 +133,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
 				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
 				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " WHERE LP.CREATE_BY = ? "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
