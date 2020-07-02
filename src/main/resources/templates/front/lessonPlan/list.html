@@ -52,6 +52,7 @@
                         <div>合約序號</div>
                         <div>教案名稱</div>
                         <div>學習領域</div>
+                        <div>學制</div>
                         <div>檔案狀態</div>
                         <div>上傳狀態</div>
                         <div>建立時間</div>
@@ -62,6 +63,7 @@
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
                         <div th:text="${list.upload_status_name}"></div>
                         <div th:text="${list.create_date}"></div>
@@ -74,6 +76,7 @@
                         <div>合約序號</div>
                         <div>教案名稱</div>
                         <div>學習領域</div>
+                        <div>學制</div>
                         <div>檔案狀態</div>
                         <div>上傳狀態</div>
                         <div>建立時間</div>
@@ -83,6 +86,7 @@
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
                         <div th:text="${list.upload_status_name}"></div>
                         <div th:text="${list.create_date}"></div>
@@ -94,6 +98,7 @@
                         <div>合約序號</div>
                         <div>教案名稱</div>
                         <div>學習領域</div>
+                        <div>學制</div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
@@ -101,6 +106,7 @@
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.education_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>

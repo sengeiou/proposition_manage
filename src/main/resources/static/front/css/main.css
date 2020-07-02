@@ -60,30 +60,6 @@ button.btn-submit {
     margin-bottom: 40px;  
     color: var(--primary-dark);      
 }
-button.btn-import {    
-    border-radius: 5px;
-    padding: 8px 15px;
-}
-.btn-block {
-    margin-bottom: 40px;
-    text-align: center;
-}
-.btn-block button{
-    margin: 0 10px;
-}
-button.btn-md {
-    border-radius: 5px;
-    padding: 8px 15px;
-    color: var(--primary-dark);
-}
-button.btn-sm {
-    border-radius: 5px;
-    padding: 5px 10px;
-}
-button.btn-submit:hover , button.btn-import:hover , button.btn-sm:hover , button.btn-md:hover {
-    color: #ffffff;
-    background-color: var(--primary-dark);
-}
 button.btn-closeLightBox {
     border: none;
     color: var(--primary);
@@ -102,6 +78,34 @@ button.btn-openLightBox {
     padding: 7px 15px;
     cursor: pointer;
     border: none;
+}
+.btn-block {
+    margin-bottom: 40px;
+    text-align: center;
+}
+.btn-block button{
+    margin: 0 10px;
+}
+button.btn-md {
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: var(--primary-dark);
+}
+button.btn-sm {
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+button.btn-mdSolid {
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: #ffffff;
+    background-color: var(--secondary);
+    display: unset;
+    border: none;
+}
+button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover {
+    color: #ffffff;
+    background-color: var(--primary-dark);
 }
 .radio-circle {
     box-sizing: border-box;
@@ -145,7 +149,10 @@ span.btn-file {
     margin: 0 auto;
 }
 .text-c-red { color: #FF0000; }
-.font-size-09 { font-size: 0.9rem; }
+.font-size-09 { 
+    font-size: 0.9rem; 
+    line-height: 1.1rem;
+}
 .font-size-08 { font-size: 0.8rem; }
 .p-left-14px { padding-left: 14px; }
 .failTag { background-color: #af4448; }
@@ -153,6 +160,11 @@ span.btn-file {
 .v-center {
     display: flex;
     align-items: center;
+}
+.text-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 /* index.html start */
@@ -297,7 +309,8 @@ span.btn-file {
     box-shadow: 0px 0px 10px rgba(172, 97, 87, 0.856);
     transform: translate(-50%, -50%);
     width: 326px;
-    height: 160px;
+    /* height: 160px; */
+    min-height: 160px;
 }
 .lightBoxContent{    
     position: fixed;
@@ -340,7 +353,8 @@ span.btn-file {
     line-height: 1.5rem;
 }
 .lightBoxContent.lessonOutline-lightBox , .lightBoxContent.lessonIntro-lightBox , .lightBoxContent.learningPerformace-lightBox , .lightBoxContent.learningContent-lightBox {
-    width: 50%;
+    /* width: 50%; */
+    width: 600px;
     min-height: 200px;    
 }
 .lightBoxContent.lessonOutline-lightBox .container , .lightBoxContent.lessonIntro-lightBox .container , .lightBoxContent.learningPerformace-lightBox .container , .lightBoxContent.learningContent-lightBox .container {
@@ -351,7 +365,10 @@ span.btn-file {
     display: block;
     margin-bottom: 5px;    
 }
-
+.edit-teacherName-lightBox , .edit-teacherID-lightBox , .edit-teacherBank-lightBox {
+    width: 400px;
+    min-height: 270px;
+}
 /* 燈箱 end */
 
 
@@ -754,6 +771,9 @@ div.basic-h {
     display: flex;
     justify-content: space-between;    
 }
+.topWrap button:first-child { /* 老師列表的「範例下載」、「資料匯入」按鈕 */
+    margin-right: 20px;
+}
 .list-content {
     color: #4b4b4b;    
 }
@@ -781,14 +801,17 @@ div.basic-h {
     word-break: break-all;
 }
 .grid>div {    
-    padding: 20px 0;
+    padding: 20px 8px;
 }
 .grid a {
     color: #4b4b4b;
 }
 .list-content .grid-title {
     background-color: var(--primary-light);
-    border: none;        
+    border: none;
+}
+.list-content .grid-title>div {
+    padding: 20px 0;
 }
 .list-content>.page-block {
     text-align: center;
@@ -836,7 +859,7 @@ div.basic-h {
     margin: 0 5px;
 }
 .list-content .teacherList-grid { /* 老師列表 */
-    grid-template-columns: 1fr 1fr 1fr 2fr 1fr 2fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 2fr 1fr 3fr 1fr 1fr;
 }
 .list-content .contractList-grid { /* 合約列表 */
     grid-template-columns: 2fr 2fr 2fr 75px 3fr 3fr 3fr 75px 75px 75px;
@@ -845,13 +868,13 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-內容老師 */
-    grid-template-columns: 1fr 6fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr;
 }
 .list-content .lessonList-content-grid { /* 教案列表-內容老師 */
-    grid-template-columns: 1fr 6fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr;
 }
 .list-content .lessonList-verify-grid { /* 教案列表--審核老師 */
-    grid-template-columns: 1fr 6fr 1fr 1fr 1fr ;
+    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr;
 }
 .list-content .lessonList-grid>div {
     text-overflow: ellipsis;
@@ -870,7 +893,7 @@ div.basic-h {
     color: #FF0000;
 }
 .list-content .contractMatList-grid {
-    grid-template-columns: 2fr 2fr 2fr 1fr 4fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 4fr 1fr 1fr 1fr 1fr;
 }
 /* 列表 end */
 /* 搜尋區塊 start */
@@ -900,7 +923,75 @@ button.btn-search:hover {
     margin-bottom: 20px;
 }
 /* 搜尋區塊 end */
-
+/* 分類管理 start */
+.category-block {
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.category-block .block {
+    border: 1px solid #4b4b4b;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 40%;
+}
+.category-block h3 {
+    font-size: 1.4rem;
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #4b4b4b;
+    background-color: var(--primary-light);
+}
+.category-block .block .item-group , .category-block .block .none {
+    min-height: 200px;
+    padding: 20px;
+}
+.category-block .block .none {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #6b6b6b;
+}
+.category-block .block .item-group .item {
+    border: 1px solid var(--primary);    
+    cursor: pointer;
+    padding: 10px 0 10px 5px;    
+    margin-bottom: 15px;
+}
+.category-block .block .item-group .item:last-child {
+    border-bottom: 1px solid var(--primary);
+}
+.category-block .block .item-group .item:hover {
+    background-color: var(--secondary);
+    color: #ffffff;
+}
+.category-block .block .item-group .item.active {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+.category-block .block .btns-group {
+    display: flex;
+}
+.category-block .block .btns-group button {    
+    width: 16.66%;
+    border-bottom: none;
+    border-left: none;
+    color: var(--primary-dark);
+    flex-grow: 1;
+    padding: 10px 0;
+    background-color: var(--primary-light);
+}
+.category-block .block .btns-group button:last-child {
+    border-right: none;
+}
+.category-block .block .btns-group button:hover {
+    background-color: var(--primary-dark);
+    color: #ffffff;    
+}
+/* 分類管理 start */
 
 
 .dis-n { display: none; }

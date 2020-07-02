@@ -56,7 +56,7 @@
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.lp_type_name}"></div>
                         <div th:text="${list.name}"></div>
-                        <div th:text="${list.material_type_name}"></div>
+                        <div class="text-overflow" th:title="${list.material_type_name}" th:text="${list.material_type_name}"></div>
                         <div th:text="${list.teacher_name}"></div>                        
                         <div th:classappend="${list.contract_limit} == '過期' ? 'text-c-red' : ''" th:text="${list.contract_limit}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>

@@ -154,7 +154,11 @@ $(function(){
             console.log('高中年級的ajax在這~~~')
         }
     })
-
+    
+    $(".btnDownFile").on('click',function(){
+        location.href="/teacher/download";
+    })
+    
     $(".btn-search").on("click",function(){
         console.log('搜尋在這邊～～～老師姓名：：' + $("input[name='teacherName']").val())
         console.log('搜尋在這邊～～～履行合約：：' + $("input[name='state']:checked").val())
@@ -337,6 +341,12 @@ $(function(){
         }else if (material && $("input[name='contractType']:checked").length == 0) {
             status = false
             text = '請勾選類型'
+        }else if (!material && $("#specialSkill").val() == 0) {
+            status = false
+            text = '請選擇領域'
+        }else if (!material && $("#schoolType").val() == 0) {
+            status = false
+            text = '請選擇學制'
         }else if (!$("#contractStart").val()) {
             status = false
             text = '請輸入合約開始時間'
@@ -346,16 +356,16 @@ $(function(){
         }else if  (Date.parse($("#contractStart").val()) >= Date.parse($("#contractEnd").val())) {
             status = false
             text = '合約結束時間請大於開始時間'
-        }else if (!$("#lessonNum").val() && !$("#propoBasicNum").val() && !$("#propoGroupNum").val()) {
+        }else if (!material && !$("#lessonNum").val() && !$("#propoBasicNum").val() && !$("#propoGroupNum").val()) {
             status = false
             text = '合約授權內容必須至少填寫一欄'
-        }else if ($("#lessonNum").val() && !numCheck.test($("#lessonNum").val())) {
+        }else if (!material && $("#lessonNum").val() && !numCheck.test($("#lessonNum").val())) {
             status = false
             text = '請輸入正確的教案數量'
-        }else if ($("#propoBasicNum").val() && !numCheck.test($("#propoBasicNum").val())) {
+        }else if (!material && $("#propoBasicNum").val() && !numCheck.test($("#propoBasicNum").val())) {
             status = false
             text = '請輸入正確的命題基本題數量'
-        }else if ($("#propoGroupNum").val() && !numCheck.test($("#propoGroupNum").val())) {
+        }else if (!material && $("#propoGroupNum").val() && !numCheck.test($("#propoGroupNum").val())) {
             status = false
             text = '請輸入正確的命題題組題數量'
         }
@@ -567,5 +577,77 @@ $(function(){
             
         }
     }
-
+    
+	//分類管理-學制年級
+    var gradeArr = []
+    gradeItem()
+    
+    function gradeItem() {
+        gradeArr = []
+        $(".item").each(function(){            
+            gradeArr.push($(this).text())
+        })
+        console.log(gradeArr)
+    }
+    function mapGradeItem() {
+        $(".item-group").html('')
+        gradeArr.forEach(e => {
+            $(".item-group").append(`<p class="item">${e}</p>`)
+        })
+    }
+    $(".item-group").on('click','.item',function(){ //點擊選項        
+        $(this).toggleClass('active')
+    })
+    $("#deleteBtn").on('click',function(){ //點擊「刪除」按鈕
+        // $(".item-group .item.active").each(function(){            
+        //     let i = gradeArr.indexOf($(this).text())
+        //     gradeArr.splice( i , 1)
+        // })        
+        $(".item-group .item.active").remove()
+        gradeItem()        
+    })
+    $("#upBtn").on('click',function(){        
+        $(".item-group .item.active").each(function(){  
+            
+            let i = gradeArr.indexOf($(this).text())
+            let newI 
+            if ((i-1) <= 0) {
+                newI =0
+            }else {
+                newI = i-1
+            }
+            // move(gradeArr , i , newI)   //移動array某元素至指定下標
+                                 
+            
+            let el = document.querySelector('.active');
+            let index = [].indexOf.call(el.parentElement.children, el);
+            let item = document.createElement("p");            
+            item.innerHTML = `${$(this).text()}`;            
+            item.classList.add("item")
+            item.classList.add("active")
+            let group = document.querySelector('.item-group')
+            group.insertBefore(item , group.childNodes[index])
+            $(this).remove()
+        })
+        //   var el = document.querySelector('.active');
+        //   var index = [].indexOf.call(el.parentElement.children, el);
+        //   console.log(index)
+        //   mapGradeItem()        
+    })
+    // function move(arr, old_index, new_index) {  //移動array某元素至指定下標
+    //     while (old_index < 0) {
+    //         old_index += arr.length;
+    //     }
+    //     while (new_index < 0) {
+    //         new_index += arr.length;
+    //     }
+    //     if (new_index >= arr.length) {
+    //         var k = new_index - arr.length;
+    //         while ((k--) + 1) {
+    //             arr.push(undefined)
+    //         }
+    //     }
+    //      arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);  
+    //    return arr;
+    // }    
 })
