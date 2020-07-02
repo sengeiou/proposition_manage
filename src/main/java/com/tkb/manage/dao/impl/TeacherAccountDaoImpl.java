@@ -208,4 +208,26 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public Map<String, Object> callNum(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.teacher_account "
+				   + " WHERE CONTENT_AUDIT = '1' "
+				   + " AND FIELD_ID = ? "
+				   + " AND ID <> ? "
+				   + " ORDER BY RAND() ";
+		
+		args.add(account.getField_id());
+		args.add(account.getId());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

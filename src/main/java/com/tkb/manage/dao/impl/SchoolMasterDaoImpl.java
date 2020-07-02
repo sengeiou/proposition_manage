@@ -170,8 +170,10 @@ public class SchoolMasterDaoImpl implements SchoolMasterDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT * FROM proposition_manage.school_master "
-				   + " WHERE INSTR(NAME, ?) > 0 ";
+				   + " WHERE INSTR(COUNTRY_NAME, ?) > 0 "
+				   + " AND INSTR(NAME, ?) > 0 ";
 		
+		args.add(schoolMaster.getCountry_name());
 		args.add(schoolMaster.getName());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
