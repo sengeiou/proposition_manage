@@ -147,6 +147,9 @@ public class IndexController {
 	@Value("${teacher.download}") 
 	private String teacherDownload;
 	
+	@Value("${teacher.uploadName}") 
+	private String teacherUploadName;
+	
 	@Value("${teacher.fileName}") 
 	private String teacherFileName;
 	
@@ -467,7 +470,7 @@ public class IndexController {
         File TrxFiles[] = scFileDir.listFiles();
         String fileName = "";
         for(int i=0; i<TrxFiles.length; i++) {
-        	if(TrxFiles[i].toString().indexOf("export.xls") >= 0) {
+        	if(TrxFiles[i].toString().indexOf(teacherUploadName) >= 0) {
         		fileName = TrxFiles[i].getName();		//下載的檔名
         	}
         }
@@ -500,10 +503,10 @@ public class IndexController {
                         os.write(buffer, 0, i);
                         i = bis.read(buffer);
                     }
-                    System.out.println("Download the song successfully!");
+//                    System.out.println("Download the song successfully!");
                 }
                 catch (Exception e) {
-                    System.out.println("Download the song failed!");
+//                    System.out.println("Download the song failed!");
                 }
                 finally {
                     if (bis != null) {
@@ -545,17 +548,18 @@ public class IndexController {
 	        for(int i=1	; i<rowCount; i++) {
 	        	
 	        	String name = sheet.getCell(0, i).getContents() == "" ? null : sheet.getCell(0, i).getContents();
-//	        	String school_name = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String id_no = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
-	        	String phone = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String email = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
-	        	String address = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
-	        	String bank = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
-	        	String branch = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
-	        	String remittance_account = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
-	        	String field_name = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
-	        	String content_provision = "".equals(sheet.getCell(9, i).getContents()) ? null : ("是".equals(sheet.getCell(9, i).getContents()) ? "1" : "0");
-	        	String content_audit = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
+	        	String country_name = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
+	        	String school_name = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
+	        	String id_no = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
+	        	String phone = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
+	        	String email = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
+	        	String address = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
+	        	String bank = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
+	        	String branch = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
+	        	String remittance_account = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();
+	        	String field_name = sheet.getCell(10, i).getContents() == "" ? null : sheet.getCell(10, i).getContents();
+	        	String content_provision = "".equals(sheet.getCell(11, i).getContents()) ? null : ("是".equals(sheet.getCell(11, i).getContents()) ? "1" : "0");
+	        	String content_audit = "".equals(sheet.getCell(12, i).getContents()) ? null : ("是".equals(sheet.getCell(12, i).getContents()) ? "1" : "0");
 	        	String status = "1";
 	        	
 	        	if(name == null) {
@@ -582,10 +586,11 @@ public class IndexController {
 	        	Map<String, Object> levelId = identityService.getDataByLevel(identity);
 	        	String identity_id = levelId.get("ID").toString();
 	        	
-//	        	SchoolMaster schoolMaster = new SchoolMaster();
-//	        	schoolMaster.setName(school_name);
-//	        	Map<String ,Object> schoolId = schoolMasterService.searchName(schoolMaster);
-//	        	String school_master_id = schoolId!=null ? schoolId.get("ID").toString() : null;
+	        	SchoolMaster schoolMaster = new SchoolMaster();
+	        	schoolMaster.setCountry_name(country_name);
+	        	schoolMaster.setName(school_name);
+	        	Map<String ,Object> schoolId = schoolMasterService.searchName(schoolMaster);
+	        	String school_master_id = schoolId!=null ? schoolId.get("ID").toString() : null;
 	        	
 	        	Field field = new Field();
 	        	field.setName(field_name);
@@ -596,6 +601,7 @@ public class IndexController {
 	        	account.setAccount(email);
 	        	account.setPassword(phone);
 	        	account.setName(name);
+	        	account.setSchool_master_id(school_master_id);
 	        	account.setId_no(id_no);
 	        	account.setPhone(phone);
 	        	account.setEmail(email);
@@ -1017,9 +1023,13 @@ public class IndexController {
 		try {
 			
 			//取得相關領域審核人
-			Contract contract = new Contract();
-			contract.setContract_id(lessonPlan.getContract_id());
-			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+//			Contract contract = new Contract();
+//			contract.setContract_id(lessonPlan.getContract_id());
+//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+			Account account = new Account();
+			account.setId(accountSession.getId());
+			account.setField_id(lessonPlan.getField_id());
+			Map<String, Object> callNum = teacherAccountService.callNum(account);
 			lessonPlan.setAuditor(callNum.get("ACCOUNT").toString());
 			lessonPlan.setFile_status("Y");
 			lessonPlan.setUpload_status("Y");
@@ -1566,9 +1576,13 @@ public class IndexController {
 		try {
 			
 			//取得相關領域審核人
-			Contract contract = new Contract();
-			contract.setContract_id(proposition.getContract_id());
-			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+//			Contract contract = new Contract();
+//			contract.setContract_id(proposition.getContract_id());
+//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+			Account account = new Account();
+			account.setId(accountSession.getId());
+			account.setField_id(proposition.getField_id());
+			Map<String, Object> callNum = teacherAccountService.callNum(account);
 			proposition.setQuestion_type("1");
 			proposition.setAuditor(callNum.get("ACCOUNT").toString());
 			proposition.setFile_status("Y");
@@ -2117,9 +2131,13 @@ public class IndexController {
 		try {
 			
 			//取得相關領域審核人
-			Contract contract = new Contract();
-			contract.setContract_id(proposition.getContract_id());
-			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+//			Contract contract = new Contract();
+//			contract.setContract_id(proposition.getContract_id());
+//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+			Account account = new Account();
+			account.setId(accountSession.getId());
+			account.setField_id(proposition.getField_id());
+			Map<String, Object> callNum = teacherAccountService.callNum(account);
 			proposition.setQuestion_type("2");
 			proposition.setAuditor(callNum.get("ACCOUNT").toString());
 			proposition.setFile_status("Y");

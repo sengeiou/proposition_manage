@@ -52,4 +52,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		return teacherAccountDao.getDataByAccount(account);
 	}
 	
+	public Map<String, Object> callNum(Account account) {
+		return teacherAccountDao.callNum(account);
+	}
+	
 }

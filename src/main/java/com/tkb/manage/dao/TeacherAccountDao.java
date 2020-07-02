@@ -16,5 +16,6 @@ public interface TeacherAccountDao {
 	public void delete(Account account);
 	public void updateIdentity(Account account);
 	public Map<String, Object> getDataByAccount(Account account);
+	public Map<String, Object> callNum(Account account);
 	
 }
