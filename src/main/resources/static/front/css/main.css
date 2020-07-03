@@ -157,6 +157,10 @@ span.btn-file {
 .p-left-14px { padding-left: 14px; }
 .failTag { background-color: #af4448; }
 .successTag { background-color: #00897b; }
+.display-spaBetween {
+    display: flex;
+    justify-content: space-between;
+}
 .v-center {
     display: flex;
     align-items: center;
@@ -326,8 +330,11 @@ span.btn-file {
     transform: translate(-50%, -50%);
 }
 .lightBoxContent.teacherImportData-lightBox {
-    width: 380px;
-    height: 220px;
+    width: 680px;
+    min-height: 220px;
+}
+.lightBoxContent.teacherImportData-lightBox .select-school-box {
+    margin-bottom: 20px;
 }
 .lightBoxContent h3 {
     font-size: 1.2rem;
@@ -818,7 +825,7 @@ div.basic-h {
     margin-bottom: 60px;
 }
 .list-content>.page-block a{
-    width: 30px;
+    padding: 0 10px;
     height: 30px;
     border: 1px solid var(--primary-dark);
     display: inline-block;
@@ -853,10 +860,11 @@ div.basic-h {
 }
 .list-content>.page-block .pageInput {
     height: 30px;
-    width: 35px;
+    width: 50px;
     text-align: center;
     border-radius: 5px;
     margin: 0 5px;
+    padding: 0 3px;
 }
 .list-content .teacherList-grid { /* 老師列表 */
     grid-template-columns: 1fr 1fr 1fr 2fr 1fr 3fr 1fr 1fr;
@@ -924,18 +932,18 @@ button.btn-search:hover {
 }
 /* 搜尋區塊 end */
 /* 分類管理 start */
-.category-block {
-    height: calc(100vh - 200px);
+.category-block {    
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    justify-content: center;    
+    margin-top: 30px;
 }
 .category-block .block {
     border: 1px solid #4b4b4b;
     border-radius: 5px;
     overflow: hidden;
     width: 40%;
+    position: relative;
 }
 .category-block h3 {
     font-size: 1.4rem;
@@ -947,6 +955,7 @@ button.btn-search:hover {
 .category-block .block .item-group , .category-block .block .none {
     min-height: 200px;
     padding: 20px;
+    margin-bottom: 50px;
 }
 .category-block .block .none {
     display: flex;
@@ -974,9 +983,14 @@ button.btn-search:hover {
 }
 .category-block .block .btns-group {
     display: flex;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 .category-block .block .btns-group button {    
     width: 16.66%;
+    border-top: 1px solid var(--primary-dark);
+    border-right: 1px solid var(--primary-dark);
     border-bottom: none;
     border-left: none;
     color: var(--primary-dark);

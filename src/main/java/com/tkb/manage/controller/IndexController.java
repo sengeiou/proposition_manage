@@ -293,6 +293,11 @@ public class IndexController {
 		account.setCount(count);
 		account.setTotal_page((account.getCount()/account.getPage_count())<1 ? 1 : ((account.getCount()/account.getPage_count())+((account.getCount()%account.getPage_count()) > 0 ? 1 : 0)));
 		
+		//取得學校清單
+		SchoolMaster schoolMaster = new SchoolMaster();
+		List<Map<String, Object>> schoolMasterList = schoolMasterService.getList(schoolMaster);
+		model.addAttribute("schoolMasterList", schoolMasterList);
+		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
@@ -538,6 +543,8 @@ public class IndexController {
 		
 		try {
 			
+			String school_master_id = pRequest.getParameter("school_master_id") != null ? pRequest.getParameter("school_master_id") : "";
+			
 			Part filePart = pRequest.getPart("import");
 			InputStream is = filePart.getInputStream();
 			Workbook book = Workbook.getWorkbook(is);  
@@ -548,18 +555,16 @@ public class IndexController {
 	        for(int i=1	; i<rowCount; i++) {
 	        	
 	        	String name = sheet.getCell(0, i).getContents() == "" ? null : sheet.getCell(0, i).getContents();
-	        	String country_name = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
-	        	String school_name = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String id_no = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
-	        	String phone = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
-	        	String email = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
-	        	String address = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
-	        	String bank = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
-	        	String branch = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
-	        	String remittance_account = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();
-	        	String field_name = sheet.getCell(10, i).getContents() == "" ? null : sheet.getCell(10, i).getContents();
-	        	String content_provision = "".equals(sheet.getCell(11, i).getContents()) ? null : ("是".equals(sheet.getCell(11, i).getContents()) ? "1" : "0");
-	        	String content_audit = "".equals(sheet.getCell(12, i).getContents()) ? null : ("是".equals(sheet.getCell(12, i).getContents()) ? "1" : "0");
+	        	String id_no = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
+	        	String phone = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
+	        	String email = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
+	        	String address = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
+	        	String bank = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
+	        	String branch = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
+	        	String remittance_account = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
+	        	String field_name = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
+	        	String content_provision = "".equals(sheet.getCell(9, i).getContents()) ? null : ("是".equals(sheet.getCell(9, i).getContents()) ? "1" : "0");
+	        	String content_audit = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
 	        	String status = "1";
 	        	
 	        	if(name == null) {
@@ -586,11 +591,11 @@ public class IndexController {
 	        	Map<String, Object> levelId = identityService.getDataByLevel(identity);
 	        	String identity_id = levelId.get("ID").toString();
 	        	
-	        	SchoolMaster schoolMaster = new SchoolMaster();
-	        	schoolMaster.setCountry_name(country_name);
-	        	schoolMaster.setName(school_name);
-	        	Map<String ,Object> schoolId = schoolMasterService.searchName(schoolMaster);
-	        	String school_master_id = schoolId!=null ? schoolId.get("ID").toString() : null;
+//	        	SchoolMaster schoolMaster = new SchoolMaster();
+//	        	schoolMaster.setCountry_name(country_name);
+//	        	schoolMaster.setName(school_name);
+//	        	Map<String ,Object> schoolId = schoolMasterService.searchName(schoolMaster);
+//	        	String school_master_id = schoolId!=null ? schoolId.get("ID").toString() : null;
 	        	
 	        	Field field = new Field();
 	        	field.setName(field_name);

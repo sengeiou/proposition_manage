@@ -63,11 +63,11 @@
                     <div>
                         <select id="select-school" class="custom-select" th:field="*{school_master_id}">
                             <option value="0">請選擇學校</option>
-                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME+' - '+schoolMaster.ADDRESS}"></option>
                         </select>
                     </div>
                     <div><span class="required">*</span>匯款銀行</div>
-                    <div>
+                    <div class="display-spaBetween">
                         <input type="text" placeholder="請輸入匯款銀行代碼" id="bankNum" th:field="*{bank}">
                         <span class="bank-web">分行<input type="text" placeholder="請輸入分行代碼" id="subBankNum" th:field="*{branch}"></span>
                     </div>

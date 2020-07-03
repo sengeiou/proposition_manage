@@ -20,7 +20,7 @@
                         </ul>
                     </li>
                     <li class="nav-mobile menu">
-                        <a href="#" class="btn-menu" th:title="${accountSession.name}+'您好'"><i class="fas fa-user-circle fa-lg"></i></a>
+                        <i class="fas fa-user-circle fa-lg" th:title="${accountSession.name}+'您好'"></i>
                         <ul class="sub-menu">
                         	<li th:if="${accountSession.content_provision=='1' && accountSession.content_audit=='1'}"><a href="#" class="btn-subMenu">更改身份</a></li>
                             <li><a href="/logout" class="btn-subMenu">登出</a></li>

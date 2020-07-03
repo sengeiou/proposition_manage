@@ -13,7 +13,8 @@
 ----------------------------------*/
 .custom-select {
   position: relative;
-  width: 320px;
+  /* width: 320px; */  /*zoe*/
+  width: 100%;   /*zoe*/
   height: 36px;
   border: 1px solid #888;
   background: #fff;
@@ -25,9 +26,11 @@
 }
 .custom-select a {
   display: inline-block;
-  width: 300px;
+  /* width: 300px; */   /*zoe*/
+  width: 100%;   /*zoe*/
   height: 20px;
-  padding: 8px 10px;
+  /* padding: 8px 10px; */  /*zoe*/
+  padding: 8px 0 8px 10px; /*zoe*/
   color: #000;
   text-decoration: none;
   cursor: pointer;
