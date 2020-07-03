@@ -64,8 +64,31 @@ $(function(){
 
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')
-        $("section.lightBoxBG").removeClass('dis-n').addClass('dis-b')
-        $(`section.${lightBox}-lightBox`).removeClass('dis-n').addClass('dis-b')
+        let state = true
+        if (lightBox == 'edit-categoryGrade') {
+            let item = $(this).parent().siblings('.item-group').find('.active')
+            if (item.length == 0) {
+                state = false                
+            }else {
+                $(`section.${lightBox}-lightBox .container p`).text(item.text())                
+                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
+            }           
+        }else if (lightBox == 'edit-categorySubject') {
+            let item = $(this).parent().siblings('.item-group').find('.active')
+            if (item.length == 0) {
+                state = false                
+            }else {
+                $(`section.${lightBox}-lightBox .container p`).eq(0).text(item.children().eq(0).text())
+                $(`section.${lightBox}-lightBox .container p`).eq(1).text(item.children().eq(1).text())
+                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))
+                // console.log($(`section.${lightBox}-lightBox .container input`).data('id'))
+            }
+        }
+
+        if (state) {
+            $("section.lightBoxBG").removeClass('dis-n').addClass('dis-b')
+            $(`section.${lightBox}-lightBox`).removeClass('dis-n').addClass('dis-b')
+        }
     })
 
     $(".keyWord").on("change",function(){  //關鍵字輸入框生成tag
@@ -74,8 +97,25 @@ $(function(){
         }else {
             let item = `<div class="lightboxItem"><span>${$(this).val()}</span><button class="deleteTag"><i class="fas fa-times"></i></button></div>`        
             $(this).parent().append(item)
+            $(this).val('')
         }        
     })
+    
+    $(".keyWord").keydown(function(e){
+        if (e.keyCode == 13){alert("11");
+            let item = `<div class="lightboxItem"><span>${$(this).val()}</span><button class="deleteTag"><i class="fas fa-times"></i></button></div>`        
+            $(this).parent().append(item)
+            $(this).val('')
+        }
+    })
+
+    // $('#formid').on('keyup keypress', function(e) {
+    //     var keyCode = e.keyCode || e.which
+    //     if (keyCode === 13) { 
+    //       e.preventDefault()
+    //       return false
+    //     }
+    // })
 
     $(".create-content").on("click",".deleteTag",function(){  //tag刪除按鈕        
         let val = $(this).data('value')
@@ -101,7 +141,7 @@ $(function(){
 
     $(".editNewDataBtn").on("click",function(){ //燈箱確定按鈕，生成新資料
         let newData = $(this).data('newdata')
-        let location = $(`button.btn-openLightBox[data-lb='${newData}']`).siblings('.editNewData') //新資料放置位置
+        let location = $(`button.btn-openLightBox[data-lb='${newData}']`).siblings('.editNewData') //老師編輯-新資料放置位置
         let inputIDName = newData.split('-')[1] //新資料的輸入框
         var state = true
         var text = ''
@@ -126,6 +166,22 @@ $(function(){
             }else {
                 state = false
                 text = '請輸入完整的匯款資訊'
+            }
+        }else if (newData.indexOf('edit-categoryGrade') > -1) {
+            let val = $(`input#${inputIDName}`).val()
+            if (val != '') {
+                let itemId = $(`section.${newData}-lightBox .container input`).data('id')
+                console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val)
+                $(`input#${inputIDName}`).val('')
+            }
+        }else if (newData.indexOf('edit-categorySubject') > -1) {
+            let val = $(`input#${inputIDName}`).val()
+            let subVal = $(`input#sub${inputIDName}`).val()
+            if (val != '') {
+                let itemId = $(`section.${newData}-lightBox .container input`).data('id')
+                console.log('要編輯的 id 為：'+itemId+'，新名稱為：'+val+'，新縮寫名稱為：'+subVal)
+                $(`input#${inputIDName}`).val('')
+                $(`input#sub${inputIDName}`).val('')
             }
         }
 
@@ -578,76 +634,92 @@ $(function(){
         }
     }
     
-	//分類管理-學制年級
-    var gradeArr = []
-    gradeItem()
-    
-    function gradeItem() {
-        gradeArr = []
-        $(".item").each(function(){            
-            gradeArr.push($(this).text())
-        })
-        console.log(gradeArr)
-    }
-    function mapGradeItem() {
-        $(".item-group").html('')
-        gradeArr.forEach(e => {
-            $(".item-group").append(`<p class="item">${e}</p>`)
-        })
-    }
-    $(".item-group").on('click','.item',function(){ //點擊選項        
-        $(this).toggleClass('active')
-    })
-    $("#deleteBtn").on('click',function(){ //點擊「刪除」按鈕
-        // $(".item-group .item.active").each(function(){            
-        //     let i = gradeArr.indexOf($(this).text())
-        //     gradeArr.splice( i , 1)
-        // })        
-        $(".item-group .item.active").remove()
-        gradeItem()        
-    })
-    $("#upBtn").on('click',function(){        
-        $(".item-group .item.active").each(function(){  
-            
-            let i = gradeArr.indexOf($(this).text())
-            let newI 
-            if ((i-1) <= 0) {
-                newI =0
-            }else {
-                newI = i-1
+	//分類管理
+    $(".block").on('click','.item',function(){ //點擊選項         
+        $(this).addClass('active')
+        $(this).siblings('.item').removeClass('active')
+        if ($(this).data('type') == 'grade') {
+            $(".subItemGroup").html('')
+            if ($(this).attr('id') == 'elementary') {
+                console.log('學制--國小')
+                // 放進相對應的年級
+                let html = '<p class="item" id="one">一年級</p><p class="item" id="two">二年級</p><p class="item" id="three">三年級</p><p class="item" id="four">四年級</p><p class="item" id="five">五年級</p><p class="item" id="six">六年級</p>'
+                $(".subItemGroup").removeClass('none').addClass('item-group').html(html)
+            }else if ($(this).attr('id') == 'junior') {
+                console.log('學制--國中')
+                // 放進相對應的年級
+                let html = '<p class="item" id="one">一年級</p><p class="item" id="two">二年級</p><p class="item" id="three">三年級</p>'
+                $(".subItemGroup").removeClass('none').addClass('item-group').html(html)
+            }else if ($(this).attr('id') == 'hight') {
+                console.log('學制--高中')
+                // 放進相對應的年級
+                let html = '<p class="item" id="one">一年級</p><p class="item" id="two">二年級</p><p class="item" id="three">三年級</p>'
+                $(".subItemGroup").removeClass('none').addClass('item-group').html(html)
             }
-            // move(gradeArr , i , newI)   //移動array某元素至指定下標
-                                 
-            
-            let el = document.querySelector('.active');
-            let index = [].indexOf.call(el.parentElement.children, el);
-            let item = document.createElement("p");            
-            item.innerHTML = `${$(this).text()}`;            
-            item.classList.add("item")
-            item.classList.add("active")
-            let group = document.querySelector('.item-group')
-            group.insertBefore(item , group.childNodes[index])
-            $(this).remove()
-        })
-        //   var el = document.querySelector('.active');
-        //   var index = [].indexOf.call(el.parentElement.children, el);
-        //   console.log(index)
-        //   mapGradeItem()        
+        }        
     })
-    // function move(arr, old_index, new_index) {  //移動array某元素至指定下標
-    //     while (old_index < 0) {
-    //         old_index += arr.length;
-    //     }
-    //     while (new_index < 0) {
-    //         new_index += arr.length;
-    //     }
-    //     if (new_index >= arr.length) {
-    //         var k = new_index - arr.length;
-    //         while ((k--) + 1) {
-    //             arr.push(undefined)
-    //         }
-    //     }
-    //      arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);  
-    //    return arr;
-    // }    
+    $(".deleteBtn").on('click',function(){ //點擊「刪除」按鈕
+        let item = $(this).parent().siblings('.item-group').find('.active').attr('id')   
+        console.log('刪除按鈕在這～～要刪除的id : '+item)
+    })
+    $(".upBtn").on('click',function(){ //點擊「上移」按鈕
+        $(this).parent().siblings('.item-group').find('.active').each(function(){                     
+            if ($(this).index() > 0) {
+                let itemId = $(this).attr('id')        
+                console.log('上移按鈕在這～～要上移的id : '+itemId)                
+                $(this).prev().before($(this))
+                // $(this).prev().before(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()
+            }else {
+                return
+            }
+        })    
+    })
+    $(".downBtn").on('click',function(){  //點擊「下移」按鈕
+        $(this).parent().siblings('.item-group').find('.active').each(function(){                               
+            let itemLength = $(this).siblings().length
+            if ($(this).index() < itemLength ) {
+                let itemId = $(this).attr('id')        
+                console.log('下移按鈕在這～～要下移的id : '+itemId)                
+                $(this).next().after($(this))
+                // $(this).next().after(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()                
+            }else {
+                return
+            }
+        })
+    })
+    $(".firstBtn").on('click',function(){ //點擊「置頂」按鈕
+        $(this).parent().siblings('.item-group').find('.active').each(function(){  
+            if ($(this).index() > 0) {
+                let itemId = $(this).attr('id')        
+                console.log('置頂按鈕在這～～要置頂的id : '+itemId)
+                let group = $(this).parent()[0]
+//                let item = document.createElement("p");            
+//                item.innerHTML = `${$(this).text()}`;            
+//                item.classList.add("item")
+//                item.classList.add("active")
+//                item.setAttribute('id',itemId)                                
+//                group.insertBefore(item , group.childNodes[0])                
+//                $(this).remove()
+                group.insertBefore($(this)[0] , group.childNodes[0])
+            }else {
+                return
+            }
+        })
+    })
+    $(".lastBtn").on('click',function(){  //點擊「置底」按鈕        
+        $(this).parent().siblings('.item-group').find('.active').each(function(){              
+            let itemLength = $(this).siblings().length
+            if ($(this).index() < itemLength ) {
+                let itemId = $(this).attr('id')        
+                console.log('置底按鈕在這～～要置底的id : '+itemId)
+                $(this).parent().append($(this))
+                // $(this).parent().append(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()
+            }else {
+                return
+            }
+        })
+    })
 })
