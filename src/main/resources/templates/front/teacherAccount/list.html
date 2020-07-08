@@ -53,7 +53,7 @@
                 </div>
                 <div class="list-block">
                     <div class="grid teacherList-grid grid-title">
-                        <div>內容提供</div>
+                        <div>創作教師</div>
                         <div>內容審核</div>
                         <div>姓名</div>
                         <div>電子信箱</div>
@@ -86,12 +86,12 @@
         <hr>
         <form id="importForm" method="POST" th:object="${account}" enctype="multipart/form-data">
 	        <div class="container">
-	        	<div class="select-school-box">
-	                <select id="select-school" class="custom-select" th:field="*{school_master_id}">
-	                    <option value="0">請選擇學校</option>
-	                    <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME+' - '+schoolMaster.ADDRESS}"></option>
-	                </select>
-	            </div>
+<!-- 	        	<div class="select-school-box"> -->
+<!-- 	                <select id="select-school" class="custom-select" th:field="*{school_master_id}"> -->
+<!-- 	                    <option value="0">請選擇學校</option> -->
+<!-- 	                    <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME+' - '+schoolMaster.ADDRESS}"></option> -->
+<!-- 	                </select> -->
+<!-- 	            </div> -->
 	            <label for="teacherImportFile">
 	                <input type="file" class="dis-n btnFile" id="teacherImportFile" name="import" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="teacherImportFileText">
 	                <span class="btn-file">選擇檔案</span>
