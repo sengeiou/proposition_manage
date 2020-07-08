@@ -359,7 +359,7 @@ public class IndexController {
     	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
     	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
-		account.setAccount(account.getEmail());
+		account.setAccount(account.getId_no());
 		account.setPassword(account.getPhone());
 		account.setIdentity_id(identity_id);
 		account.setContent_provision(content_provision);
@@ -494,6 +494,7 @@ public class IndexController {
                 response.setContentType("application/octet-stream");
                 // 下載檔案能正常顯示中文
                 response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(teacherFileName, "UTF-8"));
+//                response.setHeader("Content-Disposition:", "attachment;filename*=utf-8''" + URLEncoder.encode(teacherFileName, "UTF-8"));
 
                 // 實現檔案下載
                 byte[] buffer = new byte[1024];
@@ -543,8 +544,6 @@ public class IndexController {
 		
 		try {
 			
-			String school_master_id = pRequest.getParameter("school_master_id") != null ? pRequest.getParameter("school_master_id") : "";
-			
 			Part filePart = pRequest.getPart("import");
 			InputStream is = filePart.getInputStream();
 			Workbook book = Workbook.getWorkbook(is);  
@@ -555,16 +554,17 @@ public class IndexController {
 	        for(int i=1	; i<rowCount; i++) {
 	        	
 	        	String name = sheet.getCell(0, i).getContents() == "" ? null : sheet.getCell(0, i).getContents();
-	        	String id_no = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
-	        	String phone = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String email = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
-	        	String address = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
-	        	String bank = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
-	        	String branch = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
-	        	String remittance_account = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
-	        	String field_name = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
-	        	String content_provision = "".equals(sheet.getCell(9, i).getContents()) ? null : ("是".equals(sheet.getCell(9, i).getContents()) ? "1" : "0");
-	        	String content_audit = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
+	        	String school_master_id = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
+	        	String id_no = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
+	        	String phone = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
+	        	String email = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
+	        	String address = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
+	        	String bank = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
+	        	String branch = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
+	        	String remittance_account = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
+	        	String field_name = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();
+	        	String content_provision = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
+	        	String content_audit = "".equals(sheet.getCell(11, i).getContents()) ? null : ("是".equals(sheet.getCell(101, i).getContents()) ? "1" : "0");
 	        	String status = "1";
 	        	
 	        	if(name == null) {
@@ -603,7 +603,7 @@ public class IndexController {
 	        	String field_id = fieldId!=null ? fieldId.get("ID").toString() : null;
 	        	
 	        	account = new Account();
-	        	account.setAccount(email);
+	        	account.setAccount(id_no);
 	        	account.setPassword(phone);
 	        	account.setName(name);
 	        	account.setSchool_master_id(school_master_id);

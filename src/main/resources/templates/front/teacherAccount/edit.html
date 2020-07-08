@@ -64,7 +64,7 @@
 	                    <div class="basic-h">
 	                        <label for="content-teacher">
 	                            <div class="checkbox-square" th:classappend="${account.content_provision}=='0'?'':'active'"></div>
-	                            <span>內容提供</span>
+	                            <span>創作教師</span>
 	                            <input type="checkbox" id="content-teacher" class="dis-n identityState" name="content_provision" th:checked="${account.content_provision}=='0'?'false':'true'">
 	                        </label>
 	                        <label for="verify-teacher">
@@ -77,7 +77,7 @@
 	                    <div>
 	                        <select id="select-school" class="custom-select" th:field="*{school_master_id}">
 	                            <option value="0">請選擇學校</option>
-	                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+	                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME+' - '+schoolMaster.ADDRESS}"></option>
 	                        </select>
 	                    </div>
 	                    <div><span class="required">*</span>匯款銀行</div>
