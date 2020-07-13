@@ -65,7 +65,7 @@ $(function(){
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')
         let state = true
-        if (lightBox == 'edit-categoryGrade' || lightBox == 'edit-categoryMaterial') {
+        if (lightBox == 'edit-categoryGrade') {
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
@@ -73,11 +73,11 @@ $(function(){
                 $(`section.${lightBox}-lightBox .container p`).text(item.text())                
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
             }           
-        }else if (lightBox == 'edit-categorySubjectType') {
+        }else if (lightBox == 'edit-categorySubject') {
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
-            }else {                
+            }else {
                 $(`section.${lightBox}-lightBox .container p`).eq(0).text(item.children().eq(0).text())
                 $(`section.${lightBox}-lightBox .container p`).eq(1).text(item.children().eq(1).text())
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))
@@ -145,13 +145,13 @@ $(function(){
         let inputIDName = newData.split('-')[1] //新資料的輸入框
         var state = true
         var text = ''
-        if (newData == 'edit-teacherID') {
+        if (newData.indexOf('edit-teacherID') > -1) {
             let status = checkID($(`input#${inputIDName}`).val()).status            
             if (!status) {                
                 state = false
                 text = checkID($(`input#${inputIDName}`).val()).text                             
             }
-        }else if (newData == 'edit-teacherBank') {
+        }else if (newData.indexOf('edit-teacherBank') > -1) {
             let bankNum = $("input#bankNum").val()
             let subBankNum = $("input#subBankNum").val()
             let accountNum = $("input#accountNum").val()
@@ -167,7 +167,7 @@ $(function(){
                 state = false
                 text = '請輸入完整的匯款資訊'
             }
-        }else if (newData == 'edit-categoryGrade' || newData == 'edit-categorySubject' || newData == 'edit-categoryMaterial') {
+        }else if (newData.indexOf('edit-categoryGrade') > -1) {
             let val = $(`input#${inputIDName}`).val()
             if (val != '') {
                 let itemId = $(`section.${newData}-lightBox .container input`).data('id')
@@ -175,16 +175,13 @@ $(function(){
                 $(`p#${itemId}`).text(val)
                 $(`input#${inputIDName}`).val('')
             }
-        }else if (newData == 'edit-categorySubjectType') {           
-            let val = $(`input#${inputIDName}`).val()
-            let subVal = $(`input#sub${inputIDName}`).val()
-            if (val != '' && subVal != '') {
+        }else if (newData.indexOf('edit-categorySubject') > -1) {
+        	let val = $(`input#${inputIDName}`).val()
+            if (val != '') {
                 let itemId = $(`section.${newData}-lightBox .container input`).data('id')
-                console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val +'，新縮寫資料為：'+subVal)
-                $(`p#${itemId} span`).eq(0).text(val)
-                $(`p#${itemId} span`).eq(1).text(subVal)
+                console.log('要編輯的 id 為：'+itemId+'，新名稱為：'+val)
+                $(`p#${itemId}`).text(val)
                 $(`input#${inputIDName}`).val('')
-                $(`input#sub${inputIDName}`).val('')
             }
         }
 
@@ -197,6 +194,12 @@ $(function(){
         }
 
     })
+
+    //lesson-content.html 審核區塊
+    // $("input[name='verify']").on("change",function(){
+    //     $("#lessonVerifyFile").val('')
+    //     $(".lessonVerifyFileText").text('')
+    // })
 
     $("#schoolType").on("change",function(){        
         if ($(this).val() == 1) {
@@ -395,16 +398,17 @@ $(function(){
         let text = ''
         let numCheck = /^(|[1-9][0-9]*)$/
         
-        if (material && !$("#contractNumA").val()) {
-            status = false
-            text = '請輸入授權於臺灣知識庫合約編號'
-        }else if (material && $(".contractFileTextA").text() == '') {
-            status = false
-            text = '請選擇授權於臺灣知識庫合約檔案'
-        }else if (material && !$("#2ndPartyA").val()) {
-            status = false
-            text = '請輸入授權於臺灣知識庫乙方名稱'
-        }else if (!$("#contractNumB").val()) {
+//        if (!$("#contractNumA").val()) {
+//            status = false
+//            text = '請輸入授權於臺灣知識庫合約編號'
+//        }else if ($(".contractFileTextA").text() == '') {
+//            status = false
+//            text = '請選擇授權於臺灣知識庫合約檔案'
+//        }else if (material && !$("#2ndPartyA").val()) {
+//            status = false
+//            text = '請輸入授權於臺灣知識庫乙方名稱'
+//        }else
+        if (!$("#contractNumB").val()) {
             status = false
             text = '請輸入授權於授權於中華未來教育學會合約編號'
         }else if ($(".contractFileTextB").text() == '') {
@@ -687,6 +691,8 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('上移按鈕在這～～要上移的id : '+itemId)                
                 $(this).prev().before($(this))
+                // $(this).prev().before(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()
             }else {
                 return
             }
@@ -698,7 +704,9 @@ $(function(){
             if ($(this).index() < itemLength ) {
                 let itemId = $(this).attr('id')        
                 console.log('下移按鈕在這～～要下移的id : '+itemId)                
-                $(this).next().after($(this))            
+                $(this).next().after($(this))
+                // $(this).next().after(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()                
             }else {
                 return
             }
@@ -710,6 +718,13 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('置頂按鈕在這～～要置頂的id : '+itemId)
                 let group = $(this).parent()[0]
+//                let item = document.createElement("p");            
+//                item.innerHTML = `${$(this).text()}`;            
+//                item.classList.add("item")
+//                item.classList.add("active")
+//                item.setAttribute('id',itemId)                                
+//                group.insertBefore(item , group.childNodes[0])                
+//                $(this).remove()
                 group.insertBefore($(this)[0] , group.childNodes[0])
             }else {
                 return
@@ -723,6 +738,8 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('置底按鈕在這～～要置底的id : '+itemId)
                 $(this).parent().append($(this))
+                // $(this).parent().append(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
+                // $(this).remove()
             }else {
                 return
             }

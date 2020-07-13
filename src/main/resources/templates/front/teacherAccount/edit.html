@@ -40,12 +40,12 @@
 	                    <div>
 	                        <span class="editOldData">[[${account.id_no}]]</span>
 	                        <span class="editNewData"></span>
+	                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
 	                        <button class="btn-openLightBox" data-lb="edit-teacherID" type="button">更改身份證字號</button>                        
 	                    </div>
 	                    <div><span class="required">*</span>電子信箱</div>
 	                    <div>
 	                        <input type="text" placeholder="請輸入電子信箱" value="" id="teacherEmail" th:field="*{email}">
-	                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
 	                    </div>
 	                    <div><span class="required">*</span>手機</div>
 	                    <div>
@@ -60,8 +60,26 @@
 	                        </select>
 	                        <span class="memo">註：將作為內容審核的選擇基準</span>
 	                    </div>
-	                    <div><span class="required">*</span>系統身份</div>
+	                    <div><span class="required">*</span>老師身份</div>
 	                    <div class="basic-h">
+	                        <label for="teacher">
+	                            <div class="radio-circle" th:classappend="${account.position}=='1' ? 'active'"></div>
+	                            <span>一般老師</span>
+	                            <input type="radio" class="dis-n" id="teacher" th:field="*{position}" th:value="1">
+	                        </label>
+	                        <label for="team-leader">
+	                            <div class="radio-circle" th:classappend="${account.position}=='2' ? 'active'"></div>
+	                            <span>組長</span>
+	                            <input type="radio" class="dis-n" id="team-leader" th:field="*{position}" th:value="2">
+	                        </label>
+	                        <label for="principal">
+	                            <div class="radio-circle" th:classappend="${account.position}=='3' ? 'active'"></div>
+	                            <span>校長</span>
+	                            <input type="radio" class="dis-n" id="principal" th:field="*{position}" th:value="3">
+	                        </label>
+	                    </div>
+	                    <div class="teacherBlock" th:classappend="${account.position}!=1 ? 'dis-n'"><span class="required">*</span>系統身份</div>
+	                    <div class="basic-h teacherBlock" th:classappend="${account.position}!=1 ? 'dis-n'">
 	                        <label for="content-teacher">
 	                            <div class="checkbox-square" th:classappend="${account.content_provision}=='0'?'':'active'"></div>
 	                            <span>創作教師</span>
@@ -73,6 +91,24 @@
 	                            <input type="checkbox" id="verify-teacher" class="dis-n identityState" name="content_audit" th:checked="${account.content_audit}=='0'?'false':'true'">
 	                        </label>
 	                    </div>
+	                    <div class="principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'"><span class="required">*</span>監督範圍</div>
+	                    <div class="basic-h principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'">
+	                    	<input type="hidden" id="educationOption" th:value="${educationStr}" />
+	                        <label class="les-labelBlock" th:for="${education.name}" th:each="education:${educationList}">
+	                            <div class="checkbox-square" th:id="'eduAct'+${education.id}"></div>
+	                            <span>[[${education.name}]]</span>
+	                            <input type="checkbox" th:id="${education.name}" class="dis-n schoolType" name="education" th:value="${education.id}">
+	                        </label>
+	                    </div>
+	                    <div class="principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'"></div>
+		                    <div class="basic-h principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'">
+		                    	<input type="hidden" id="fieldOption" th:value="${fieldStr}" />
+		                        <label class="les-labelBlock" th:for="${field.name}" th:each="field:${fieldList}">
+		                            <div class="checkbox-square" th:id="'fieldAct'+${field.id}"></div>
+		                            <span>[[${field.name}]]</span>
+		                            <input type="checkbox" th:id="${field.name}" class="dis-n specialSkill" name="field" th:value="${field.id}">
+		                        </label>
+		                    </div>
 	                    <div><span class="required">*</span>服務學校</div>
 	                    <div>
 	                        <select id="select-school" class="custom-select" th:field="*{school_master_id}">
@@ -161,6 +197,32 @@
 				$("#mainForm").attr("action", "/teacher/content");
 				$("#mainForm").submit();
 			})
+			//學制自動選取
+			if($("#educationOption").val() != null) {
+				var education = new Array();
+				education = $("#educationOption").val().split(",");
+				$("input[name='education']").each(function(){
+					for(var i=0; i<education.length; i++) {
+						if($(this).val() == education[i]) {
+							$(this).attr("checked", true);
+							$("#eduAct"+$(this).val()).addClass("active");
+						}
+					}
+				});
+			}
+			//領域自動選取
+			if($("#fieldOption").val() != null) {
+				var field = new Array();
+				field = $("#fieldOption").val().split(",");
+				$("input[name='field']").each(function(){
+					for(var i=0; i<field.length; i++) {
+						if($(this).val() == field[i]) {
+							$(this).attr("checked", true);
+							$("#fieldAct"+$(this).val()).addClass("active");
+						}
+					}
+				});
+			}
 		})
 	</script>
 </body>

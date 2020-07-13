@@ -30,6 +30,7 @@ public class Account extends Base {
 	private String branch;				//匯款分行
 	private String remittance_account;	//匯款帳號
 	private String field_id;			//領域流水號
+	private String position;			//老師身份(1：一般老師，2：組長，3：校長)
 	private String content_provision;	//內容提供(0：否，1：是)
 	private String content_audit;		//內容審核(0：否，1：是)
 	
@@ -38,6 +39,8 @@ public class Account extends Base {
 	private String school_master_name;	//學校名稱
 	private String content_provision_name;	//內容提供名稱
 	private String content_audit_name;		//內容審核名稱
+	private String field_list;				//領域選取清單
+	private String education_list;			//學制選取清單
 	
 	public String getId() {
 		return id;
@@ -195,6 +198,12 @@ public class Account extends Base {
 	public void setField_id(String field_id) {
 		this.field_id = field_id;
 	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
 	public String getContent_provision() {
 		return content_provision;
 	}
@@ -236,6 +245,18 @@ public class Account extends Base {
 	}
 	public void setContent_audit_name(String content_audit_name) {
 		this.content_audit_name = content_audit_name;
+	}
+	public String getField_list() {
+		return field_list;
+	}
+	public void setField_list(String field_list) {
+		this.field_list = field_list;
+	}
+	public String getEducation_list() {
+		return education_list;
+	}
+	public void setEducation_list(String education_list) {
+		this.education_list = education_list;
 	}
 	
 }

@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
+<body th:class="${accountSession.level=='3' ? 'style-content-teacher' : accountSession.level=='4' ? 'style-verify-teacher' : 'style-admin'}">    
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
     <form id="mainForm" method="POST" th:object="${proposition}" enctype="multipart/form-data">
 		<input type="hidden" id="id" th:field="*{id}" />
@@ -38,10 +38,10 @@
                         </label>
                         <label>
                             <div class="radio-circle"></div>
-                            <span>不通過</span>
+                            <span>待修正</span>
                             <input type="radio" name="verify" value="0" class="dis-n">
                         </label>
-                        <span class="memo">註：若選擇不通過，則回饋檔案為必填</span>
+                        <span class="memo">註：若選擇待修正，則回饋檔案為必填</span>
                     </div>
                     <div class="p-left-14px">審核回饋檔案</div>
                     <div>
@@ -88,18 +88,14 @@
             </div>    
 
             <!-- 僅內容老師、審核老師有此區塊 -->
-<!--             <div class="create-content lessonFile"> -->
-<!--                 <h3><i class="fas fa-book"></i>檔案歷程<i class="fas fa-book"></i></h3> -->
-<!--                 <div class="container"> -->
-<!--                     <div>內容上傳</div> -->
-<!--                     <div>審核回饋</div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                 </div> -->
-<!--             </div> -->
+            <div class="create-content lessonFile">
+                <h3><i class="fas fa-book"></i>檔案歷程<i class="fas fa-book"></i></h3>
+                <div class="container">
+                    <div>內容上傳</div>
+                    <div>審核回饋</div>
+                    <div th:each="list:${contentList}"><a th:href="'/upload/file/proposition/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a><span>[[${list.create_date}]]</span></div>
+                </div>
+            </div>
             
         </div>
     </section>

@@ -31,8 +31,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '已上傳' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修訂' "
+				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
 				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
@@ -125,8 +125,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '已上傳' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修訂' "
+				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
 				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
@@ -163,6 +163,162 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " WHERE CREATE_BY = ? ";
 		
 		args.add(lessonPlan.getCreate_by());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> principalList(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT LP.*, "
+				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
+				   + " FROM proposition_manage.lesson_plan LP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " WHERE LP.FIELD_ID IN ("+lessonPlan.getField_id()+") "
+				   + " AND LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " ORDER BY LP.CREATE_TIME DESC ";
+		
+		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer principalCount(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan "
+				   + " WHERE FIELD_ID IN ("+lessonPlan.getField_id()+") "
+				   + " AND EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") ";
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> leaderList(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT LP.*, "
+				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
+				   + " TA.NAME AS AUDITOR_NAME "
+				   + " FROM proposition_manage.lesson_plan LP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
+				   + " WHERE LP.FIELD_ID IN ("+lessonPlan.getField_id()+") "
+				   + " AND LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " ORDER BY LP.CREATE_TIME DESC ";
+		
+		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer leaderCount(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan "
+				   + " WHERE FIELD_ID IN ("+lessonPlan.getField_id()+") "
+				   + " AND EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") ";
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> secretaryGeneralList(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT LP.*, "
+				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
+				   + " TA.NAME AS AUDITOR_NAME "
+				   + " FROM proposition_manage.lesson_plan LP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
+				   + " ORDER BY LP.CREATE_TIME DESC ";
+		
+//		args.add(lessonPlan.getField_id());
+//		args.add(lessonPlan.getEducation_id());
+		
+		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer secretaryGeneralCount(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan ";
+		
+//		args.add(lessonPlan.getField_id());
+//		args.add(lessonPlan.getEducation_id());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

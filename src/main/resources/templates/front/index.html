@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
+<body th:class="${accountSession.level=='3' ? 'style-content-teacher' : accountSession.level=='4' ? 'style-verify-teacher' : 'style-admin'}">
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
     <section class="main-content">
         <div class="fixed-width">
@@ -30,11 +30,11 @@
                     </div>                    
                 </div>
                 <div class="memo" th:if="${accountSession.level == '3'}"> 
-                    <h3>待修訂</h3>
+                    <h3>待修正</h3>
                     <div>
-                        <p>尚有<span th:classappend="${lessonEditCount > 0} ? 'text-c-red' : ''">[[${lessonEditCount}]]</span>份教案待修訂</p>
-                        <p>尚有<span th:classappend="${basicEditCount > 0} ? 'text-c-red' : ''">[[${basicEditCount}]]</span>份命題基本題待修訂</p>
-                        <p>尚有<span th:classappend="${questionsGroupEditCount > 0} ? 'text-c-red' : ''">[[${questionsGroupEditCount}]]</span>份命題題組題待修訂</p>
+                        <p>尚有<span th:classappend="${lessonEditCount > 0} ? 'text-c-red' : ''">[[${lessonEditCount}]]</span>份教案待修正</p>
+                        <p>尚有<span th:classappend="${basicEditCount > 0} ? 'text-c-red' : ''">[[${basicEditCount}]]</span>份命題基本題待修正</p>
+                        <p>尚有<span th:classappend="${questionsGroupEditCount > 0} ? 'text-c-red' : ''">[[${questionsGroupEditCount}]]</span>份命題題組題待修正</p>
                     </div>                    
                 </div>
                 
@@ -46,6 +46,22 @@
                         <p>尚有<span th:classappend="${unBasicAuditCount > 0} ? 'text-c-red' : ''">[[${unBasicAuditCount}]]</span>份命題基本題未審核</p>
                         <p>尚有<span th:classappend="${unGroupAuditCount > 0} ? 'text-c-red' : ''">[[${unGroupAuditCount}]]</span>份命題題組題未審核</p>
                     </div>                    
+                </div>
+                <!-- 校長、組長 -->
+                <div class="principal-memo" th:if="${accountSession.level == '5' || accountSession.level == '6' || accountSession.level == '7'}" th:each="fieldList:${fieldList}">
+                    <h3>[[${fieldList.name}]]</h3>
+                    <div class="principal-grid">
+                        <div class="title">學制</div>
+                        <div class="title">已上傳</div>
+                        <div class="title">完稿</div>
+                        <div class="title">須上傳</div>
+                    </div>
+                    <div class="principal-grid" th:each="education:${educationList}" th:if="${education.FIELD_ID.toString() == fieldList.id.toString()}">
+                        <div>[[${education.EDUCATION_NAME}]]</div>
+                        <div>[[${education.UPLOAD_NUM}]]</div>
+                        <div>[[${education.COMPLETE_NUM}]]</div>
+                        <div>[[${education.TOTAL_NUM}]]</div>
+                    </div>
                 </div>
             </div>
         </div>

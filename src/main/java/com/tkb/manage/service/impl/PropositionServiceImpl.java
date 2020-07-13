@@ -40,6 +40,30 @@ public class PropositionServiceImpl implements PropositionService {
 		return propositionDao.teacherCount(proposition);
 	}
 	
+	public List<Map<String, Object>> principalList(Proposition proposition) {
+		return propositionDao.principalList(proposition);
+	}
+	
+	public Integer principalCount(Proposition proposition) {
+		return propositionDao.principalCount(proposition);
+	}
+	
+	public List<Map<String, Object>> leaderList(Proposition proposition) {
+		return propositionDao.leaderList(proposition);
+	}
+	
+	public Integer leaderCount(Proposition proposition) {
+		return propositionDao.leaderCount(proposition);
+	}
+	
+	public List<Map<String, Object>> secretaryGeneralList(Proposition proposition) {
+		return propositionDao.secretaryGeneralList(proposition);
+	}
+	
+	public Integer secretaryGeneralCount(Proposition proposition) {
+		return propositionDao.secretaryGeneralCount(proposition);
+	}
+	
 	public Integer uploadStatusCount(Proposition proposition) {
 		return propositionDao.uploadStatusCount(proposition);
 	}

@@ -386,4 +386,40 @@ public class ContractDaoImpl implements ContractDao {
 		
 	}
 	
+	public Map<String, Object> getDataByFieldEducation(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT FIELD_NAME, FIELD_ID, EDUCATION_NAME, EDUCATION_ID, "
+				   + " SUM(L_UPLOAD+P_UPLOAD) AS UPLOAD_NUM, "
+				   + " SUM(L_COMPLETE+P_COMPLETE) AS COMPLETE_NUM, "
+				   + " SUM(LESSON_NUM+BASIC_NUM+QUESTIONS_GROUP_NUM) AS TOTAL_NUM "
+				   + " FROM( "
+				   + " SELECT PMC.CONTRACT_ID, "
+				   + " PMC.LESSON_NUM, PMC.BASIC_NUM, PMC.QUESTIONS_GROUP_NUM, "
+				   + " PME.NAME AS EDUCATION_NAME, PMF.NAME AS FIELD_NAME, PME.ID AS EDUCATION_ID, PMF.ID AS FIELD_ID, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID ) AS L_UPLOAD, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND UPLOAD_STATUS = 'C') AS L_COMPLETE, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition PMP WHERE PMC.CONTRACT_ID = PMP.CONTRACT_ID) AS P_UPLOAD, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition PMP WHERE PMC.CONTRACT_ID = PMP.CONTRACT_ID AND UPLOAD_STATUS = 'C') AS P_COMPLETE "
+				   + " FROM proposition_manage.contract PMC "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMC.FIELD_ID = PMF.ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PMC.EDUCATION_ID = PME.ID "
+				   + " WHERE PMC.FIELD_ID = ? "
+				   + " AND PMC.EDUCATION_ID = ? "
+				   + " ) L1 "
+				   + " GROUP BY FIELD_NAME, FIELD_ID, EDUCATION_NAME, EDUCATION_ID ";
+		
+		args.add(contract.getField_id());
+		args.add(contract.getEducation_id());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

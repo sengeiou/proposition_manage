@@ -21,5 +21,6 @@ public interface ContractService {
 	public Map<String, Object> callNum(Contract contract, Account account);
 	public Integer allUndoneNum(Contract contract);
 	public Integer expired(Contract contract);
+	public Map<String, Object> getDataByFieldEducation(Contract contract);
 	
 }

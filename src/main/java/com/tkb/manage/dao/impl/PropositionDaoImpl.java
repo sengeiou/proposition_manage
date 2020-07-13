@@ -31,8 +31,8 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '已上傳' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修訂' "
+				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
 				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
@@ -135,8 +135,8 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '已上傳' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修訂' "
+				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
 				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
@@ -177,6 +177,174 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		args.add(proposition.getQuestion_type());
 		args.add(proposition.getCreate_by());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> principalList(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT PMP.*, "
+				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
+				   + " FROM proposition_manage.proposition PMP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " WHERE PMP.QUESTION_TYPE = ? "
+				   + " AND PMP.FIELD_ID IN ("+proposition.getField_id()+") "
+				   + " AND PMP.EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " ORDER BY PMP.CREATE_TIME DESC ";
+		
+		args.add(proposition.getQuestion_type());
+		
+		sql += " LIMIT "+((proposition.getPage()-1)*proposition.getPage_count())+","+proposition.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer principalCount(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition "
+				   + " WHERE QUESTION_TYPE = ? "
+				   + " AND FIELD_ID IN ("+proposition.getField_id()+") "
+				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") ";
+		
+		args.add(proposition.getQuestion_type());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> leaderList(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT PMP.*, "
+				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
+				   + " TA.NAME AS AUDITOR_NAME "
+				   + " FROM proposition_manage.proposition PMP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.AUDITOR "
+				   + " WHERE PMP.QUESTION_TYPE = ? "
+				   + " AND PMP.FIELD_ID IN ("+proposition.getField_id()+") "
+				   + " AND PMP.EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " ORDER BY PMP.CREATE_TIME DESC ";
+		
+		args.add(proposition.getQuestion_type());
+		
+		sql += " LIMIT "+((proposition.getPage()-1)*proposition.getPage_count())+","+proposition.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer leaderCount(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition "
+				   + " WHERE QUESTION_TYPE = ? "
+				   + " AND FIELD_ID IN ("+proposition.getField_id()+") "
+				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") ";
+		
+		args.add(proposition.getQuestion_type());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> secretaryGeneralList(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT PMP.*, "
+				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
+				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " ELSE '' END FILE_STATUS_NAME, "
+				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
+				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
+				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
+				   + " ELSE '' END UPLOAD_STATUS_NAME, "
+				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
+				   + " TA.NAME AS AUDITOR_NAME "
+				   + " FROM proposition_manage.proposition PMP "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.AUDITOR "
+				   + " WHERE PMP.QUESTION_TYPE = ? "
+				   + " ORDER BY PMP.CREATE_TIME DESC ";
+		
+		args.add(proposition.getQuestion_type());
+		
+		sql += " LIMIT "+((proposition.getPage()-1)*proposition.getPage_count())+","+proposition.getPage_count();
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Integer secretaryGeneralCount(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition "
+				   + " WHERE QUESTION_TYPE = ? ";
+		
+		args.add(proposition.getQuestion_type());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

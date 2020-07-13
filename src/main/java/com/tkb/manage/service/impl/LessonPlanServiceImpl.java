@@ -40,6 +40,30 @@ public class LessonPlanServiceImpl implements LessonPlanService {
 		return lessonPlanDao.teacherCount(lessonPlan);
 	}
 	
+	public List<Map<String, Object>> principalList(LessonPlan lessonPlan) {
+		return lessonPlanDao.principalList(lessonPlan);
+	}
+	
+	public Integer principalCount(LessonPlan lessonPlan) {
+		return lessonPlanDao.principalCount(lessonPlan);
+	}
+	
+	public List<Map<String, Object>> leaderList(LessonPlan lessonPlan) {
+		return lessonPlanDao.leaderList(lessonPlan);
+	}
+	
+	public Integer leaderCount(LessonPlan lessonPlan) {
+		return lessonPlanDao.leaderCount(lessonPlan);
+	}
+	
+	public List<Map<String, Object>> secretaryGeneralList(LessonPlan lessonPlan) {
+		return lessonPlanDao.secretaryGeneralList(lessonPlan);
+	}
+	
+	public Integer secretaryGeneralCount(LessonPlan lessonPlan) {
+		return lessonPlanDao.secretaryGeneralCount(lessonPlan);
+	}
+	
 	public Integer uploadStatusCount(LessonPlan lessonPlan) {
 		return lessonPlanDao.uploadStatusCount(lessonPlan);
 	}

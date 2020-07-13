@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}">    
+<body th:class="${accountSession.level=='3' ? 'style-content-teacher' : accountSession.level=='4' ? 'style-verify-teacher' : 'style-admin'}">    
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
     <form id="mainForm" method="POST" th:object="${proposition}">
 		<input type="hidden" id="id" th:field="*{id}" />
@@ -54,7 +54,7 @@
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>檔案狀態</div>
-                        <div>上傳狀態</div>
+<!--                         <div>上傳狀態</div> -->
                         <div>建立時間</div>
                         <div>詳細資料</div>
                         <div>新增合約</div>
@@ -65,20 +65,20 @@
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
-                        <div th:text="${list.upload_status_name}"></div>
+<!--                         <div th:text="${list.upload_status_name}"></div> -->
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                         <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${list.field_id}]],[[${list.education_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
-                <div class="list-block" th:if="${accountSession.level == '3'}"> <!-- 內容老師，顯示列表 -->                    
+                <div class="list-block" th:if="${accountSession.level == '3' || accountSession.level == '5'}"> <!-- 內容老師、組長，顯示列表 -->                    
                     <div class="grid lessonList-content-grid grid-title">
                         <div>合約序號</div>
                         <div>命題名稱</div>
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>檔案狀態</div>
-                        <div>上傳狀態</div>
+<!--                         <div>上傳狀態</div> -->
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
@@ -88,7 +88,7 @@
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
-                        <div th:text="${list.upload_status_name}"></div>
+<!--                         <div th:text="${list.upload_status_name}"></div> -->
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>
@@ -107,6 +107,30 @@
                         <div th:text="${list.name}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
+                        <div th:text="${list.create_date}"></div>
+                        <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
+                    </div>
+                </div>
+                <div class="list-block" th:if="${accountSession.level == '6'}"> <!-- 校長，顯示列表 -->
+                    <div class="grid lessonList-principal-grid grid-title">
+                        <div>合約序號</div>
+                        <div>教案名稱</div>
+                        <div>學習領域</div>
+                        <div>學制</div>
+                        <div>檔案狀態</div>
+                        <!-- <div>上傳狀態</div> -->
+                        <div>審核老師</div>
+                        <div>建立時間</div>
+                        <div>詳細資料</div>
+                    </div>
+                    <div class="grid lessonList-principal-grid" th:each="list,stat:${list}">
+                        <div th:text="${list.contract_id}"></div>
+                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.field_name}"></div>
+                        <div th:text="${list.education_name}"></div>
+                        <div th:text="${list.file_status_name}"></div>
+                        <!-- <div>待審核</div> -->
+                        <div th:text="${list.auditor_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>

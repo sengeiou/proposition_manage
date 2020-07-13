@@ -47,13 +47,14 @@ public class LessonPlanFileDaoImpl implements LessonPlanFileDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM proposition_manage.lesson_plan_file "
+		String sql = " SELECT *, DATE_FORMAT(CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
+				   + " FROM proposition_manage.lesson_plan_file "
 				   + " WHERE LESSON_PLAN_ID = ? "
-				   + " AND TYPE = ? "
+//				   + " AND TYPE = ? "
 				   + " ORDER BY CREATE_TIME DESC ";
 		
 		args.add(lessonPlanFile.getLesson_plan_id());
-		args.add(lessonPlanFile.getType());
+//		args.add(lessonPlanFile.getType());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

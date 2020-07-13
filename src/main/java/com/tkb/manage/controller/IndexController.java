@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ import com.tkb.manage.model.PropositionFile;
 import com.tkb.manage.model.PropositionOption;
 import com.tkb.manage.model.SchoolMaster;
 import com.tkb.manage.model.Subject;
+import com.tkb.manage.model.TeacherAccountOption;
 import com.tkb.manage.service.CommonService;
 import com.tkb.manage.service.ContractMaterialOptionService;
 import com.tkb.manage.service.ContractMaterialService;
@@ -71,6 +73,7 @@ import com.tkb.manage.service.PropositionOptionService;
 import com.tkb.manage.service.PropositionService;
 import com.tkb.manage.service.SchoolMasterService;
 import com.tkb.manage.service.SubjectService;
+import com.tkb.manage.service.TeacherAccountOptionService;
 import com.tkb.manage.service.TeacherAccountService;
 
 import jxl.Sheet;
@@ -86,6 +89,9 @@ public class IndexController {
 	
 	@Autowired
 	private TeacherAccountService teacherAccountService;
+	
+	@Autowired
+	private TeacherAccountOptionService teacherAccountOptionService;
 	
 	@Autowired
 	private IdentityService identityService;
@@ -255,6 +261,41 @@ public class IndexController {
 			proposition.setAuditor(accountSession.getAccount());
 			int unGroupAuditCount = propositionService.auditCount(proposition);
 			model.addAttribute("unGroupAuditCount", unGroupAuditCount);
+		} else if(level == 5 || level == 6 || level == 7) {
+			Field field = new Field();
+			field.setId(accountSession.getField_list());
+			List<Map<String, Object>> fieldList = fieldService.getListInId(field);
+			model.addAttribute("fieldList", fieldList);
+			if(fieldList != null) {
+				String[] educationArr = accountSession.getEducation_list().split(",");
+				List<Map<String, Object>> educationList = new ArrayList<Map<String, Object>>();
+				for(int i=0; i<fieldList.size(); i++) {
+					for(int j=0; j<educationArr.length; j++) {
+						contract = new Contract();
+						contract.setField_id(fieldList.get(i).get("ID").toString());
+						contract.setEducation_id(educationArr[j]);
+						Map<String, Object> getListByFieldEducation = contractService.getDataByFieldEducation(contract);
+						if(getListByFieldEducation != null) {
+							educationList.add(getListByFieldEducation);
+						} else {
+							Education education = new Education();
+							education.setId(educationArr[j]);
+							education = educationService.data(education);
+							
+							Map<String, Object> map = new HashMap<String, Object>();
+							map.put("FIELD_NAME", fieldList.get(i).get("NAME").toString());
+							map.put("FIELD_ID", fieldList.get(i).get("ID").toString());
+							map.put("EDUCATION_NAME", education.getName());
+							map.put("EDUCATION_ID", education.getId());
+							map.put("UPLOAD_NUM", "0");
+							map.put("COMPLETE_NUM", "0");
+							map.put("TOTAL_NUM", "0");
+							educationList.add(map);
+						}
+					}
+				}
+				model.addAttribute("educationList", educationList);
+			}
 		}
 		
 		//選單
@@ -317,6 +358,12 @@ public class IndexController {
 		List<Map<String, Object>> fieldList = fieldService.getList(field);
 		model.addAttribute("fieldList", fieldList);
 		
+		//取得學制清單
+		Education education = new Education();
+		education.setLayer("1");
+		List<Map<String, Object>> educationList = educationService.getList(education);
+		model.addAttribute("educationList", educationList);
+		
 		//取得身份清單
 		Identity identity = new Identity();
 		identity.setParent_id("0");
@@ -341,15 +388,27 @@ public class IndexController {
     		HttpServletRequest pRequest,
     		Model model){
 		
+		String[] educationList = pRequest.getParameterValues("education")!=null ? pRequest.getParameterValues("education") : null;
+		String[] fieldList = pRequest.getParameterValues("field")!=null ? pRequest.getParameterValues("field") : null;
 		String content_provision = pRequest.getParameter("content_provision") == null ? "0" : "1";
 		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
 		
 		String level = "4";
-    	if("1".equals(content_provision)) {
-    		level = "3";
-    	} else {
-    		level = "4";
-    	}
+		if("1".equals(account.getPosition())) {
+	    	if("1".equals(content_provision)) {
+	    		//創作教師
+	    		level = "3";
+	    	} else {
+	    		//內容審核
+	    		level = "4";
+	    	}
+		} else if("2".equals(account.getPosition())) {
+			//組長
+			level = "5";
+		} else {
+			//校長
+			level = "6";
+		}
     	
     	Identity identity = new Identity();
     	identity.setLevel(level);
@@ -367,9 +426,32 @@ public class IndexController {
 		account.setStatus("1");
 		account.setCreate_by(accountSession.getAccount());
 		account.setUpdate_by(accountSession.getAccount());
-		teacherAccountService.add(account);
+		int id = teacherAccountService.add(account);
 		
-//		model.addAttribute("id", id);
+		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
+		if(educationList != null) {
+			for(int i=0; i<educationList.length; i++) {
+//				System.out.println(educationList[i]);
+				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
+				teacherAccountOption.setType("3");
+				teacherAccountOption.setCode(educationList[i]);
+				teacherAccountOption.setCreate_by(accountSession.getAccount());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
+		
+		if(fieldList != null) {
+			teacherAccountOption = new TeacherAccountOption();
+			for(int i=0; i<fieldList.length; i++) {
+//				System.out.println(fieldList[i]);
+				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
+				teacherAccountOption.setType("1");
+				teacherAccountOption.setCode(fieldList[i]);
+				teacherAccountOption.setCreate_by(accountSession.getAccount());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
+		
 		model.addAttribute("PATH", "/teacher");
 		return "front/path";
     }
@@ -405,6 +487,12 @@ public class IndexController {
 		List<Map<String, Object>> fieldList = fieldService.getList(field);
 		model.addAttribute("fieldList", fieldList);
 		
+		//取得學制清單
+		Education education = new Education();
+		education.setLayer("1");
+		List<Map<String, Object>> educationList = educationService.getList(education);
+		model.addAttribute("educationList", educationList);
+		
 		//取得身份清單
 		Identity identity = new Identity();
 		identity.setParent_id("0");
@@ -415,6 +503,22 @@ public class IndexController {
 		SchoolMaster schoolMaster = new SchoolMaster();
 		List<Map<String, Object>> schoolMasterList = schoolMasterService.getList(schoolMaster);
 		model.addAttribute("schoolMasterList", schoolMasterList);
+		
+		//取得學制清單
+		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
+		teacherAccountOption.setTeacher_account_id(account.getId());
+		teacherAccountOption.setType("3");
+		Map<String, Object> educationOption = teacherAccountOptionService.option(teacherAccountOption);
+		String educationStr = educationOption!=null ? educationOption.get("OPTION").toString() : "";
+		model.addAttribute("educationStr", educationStr);
+		
+		//取得領域清單
+		teacherAccountOption = new TeacherAccountOption();
+		teacherAccountOption.setTeacher_account_id(account.getId());
+		teacherAccountOption.setType("1");
+		Map<String, Object> fieldOption = teacherAccountOptionService.option(teacherAccountOption);
+		String fieldStr = fieldOption!=null ? fieldOption.get("OPTION").toString() : "";
+		model.addAttribute("fieldStr", fieldStr);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -429,15 +533,27 @@ public class IndexController {
     		HttpServletRequest pRequest,
     		Model model){
 		
+		String[] educationList = pRequest.getParameterValues("education")!=null ? pRequest.getParameterValues("education") : null;
+		String[] fieldList = pRequest.getParameterValues("field")!=null ? pRequest.getParameterValues("field") : null;
 		String content_provision = pRequest.getParameter("content_provision") == null ? "0" : "1";
 		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
 		
 		String level = "4";
-    	if("1".equals(content_provision)) {
-    		level = "3";
-    	} else {
-    		level = "4";
-    	}
+		if("1".equals(account.getPosition())) {
+	    	if("1".equals(content_provision)) {
+	    		//創作教師
+	    		level = "3";
+	    	} else {
+	    		//內容審核
+	    		level = "4";
+	    	}
+		} else if("2".equals(account.getPosition())) {
+			//組長
+			level = "5";
+		} else {
+			//校長
+			level = "6";
+		}
     	
     	Identity identity = new Identity();
     	identity.setLevel(level);
@@ -455,6 +571,36 @@ public class IndexController {
 		account.setStatus("1");
 		account.setUpdate_by(accountSession.getAccount());
 		teacherAccountService.update(account);
+		
+		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
+		if(educationList != null) {
+			teacherAccountOption.setTeacher_account_id(account.getId());
+			teacherAccountOption.setType("3");
+			teacherAccountOptionService.delete(teacherAccountOption);
+			for(int i=0; i<educationList.length; i++) {
+//				System.out.println(educationList[i]);
+				teacherAccountOption.setTeacher_account_id(account.getId());
+				teacherAccountOption.setType("3");
+				teacherAccountOption.setCode(educationList[i]);
+				teacherAccountOption.setCreate_by(accountSession.getAccount());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
+		
+		if(fieldList != null) {
+			teacherAccountOption = new TeacherAccountOption();
+			teacherAccountOption.setTeacher_account_id(account.getId());
+			teacherAccountOption.setType("1");
+			teacherAccountOptionService.delete(teacherAccountOption);
+			for(int i=0; i<fieldList.length; i++) {
+//				System.out.println(fieldList[i]);
+				teacherAccountOption.setTeacher_account_id(account.getId());
+				teacherAccountOption.setType("1");
+				teacherAccountOption.setCode(fieldList[i]);
+				teacherAccountOption.setCreate_by(accountSession.getAccount());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
 		
 		//分頁
 		model.addAttribute("page", account.getPage());
@@ -565,6 +711,7 @@ public class IndexController {
 	        	String field_name = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();
 	        	String content_provision = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
 	        	String content_audit = "".equals(sheet.getCell(11, i).getContents()) ? null : ("是".equals(sheet.getCell(101, i).getContents()) ? "1" : "0");
+	        	String position = "1";
 	        	String status = "1";
 	        	
 	        	if(name == null) {
@@ -617,6 +764,7 @@ public class IndexController {
 	        	account.setAddress(address);
 	        	account.setField_id(field_id);
 	        	account.setIdentity_id(identity_id);
+	        	account.setPosition(position);
 	        	account.setContent_provision(content_provision);
 	        	account.setContent_audit(content_audit);
 	        	account.setStatus(status);
@@ -677,7 +825,7 @@ public class IndexController {
 		model.addAttribute("page", contract.getPage());
 		model.addAttribute("total_page", contract.getTotal_page());
 		
-		return "front/contract/list";
+		return "front/contract/teacher/list";
 	}
 	
 	@RequestMapping(value = "/contract/teacher/add" , method = {RequestMethod.GET, RequestMethod.POST})
@@ -698,21 +846,26 @@ public class IndexController {
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
 		
-		return "front/contract/add";
+		return "front/contract/teacher/add";
 	}
 	
 	@RequestMapping(value = "/contract/teacher/addSubmit" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String contractAddSubmit(Model model,
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Contract contract,
-			@RequestParam("tkbContractFile") MultipartFile tkbContractFile,
+//			@RequestParam("tkbContractFile") MultipartFile tkbContractFile,
 			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
 			) {
 		
 		try {
 			
-			contract.setTkb_contract_file(!"".equals(tkbContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(tkbContractFile, uploadedFolder+"file/contract/") : null);
-			contract.setTkb_contract_name(tkbContractFile.getOriginalFilename());
+			contract.setTkb_contract_num(null);
+			contract.setTkb_contract_file(null);
+			contract.setTkb_contract_name(null);
+			contract.setTkb_partya(null);
+			contract.setTkb_partyb(null);
+//			contract.setTkb_contract_file(!"".equals(tkbContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(tkbContractFile, uploadedFolder+"file/contract/") : null);
+//			contract.setTkb_contract_name(tkbContractFile.getOriginalFilename());
 			contract.setCsofe_contract_file(!"".equals(csofeContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(csofeContractFile, uploadedFolder+"file/contract/") : null);
 			contract.setCsofe_contract_name(csofeContractFile.getOriginalFilename());
 			contract.setLesson_num((contract.getLesson_num()==null || "".equals(contract.getLesson_num())) ? "0" : contract.getLesson_num());
@@ -749,7 +902,7 @@ public class IndexController {
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
 		
-		return "front/contract/content";
+		return "front/contract/teacher/content";
 	}
 	
 	/**
@@ -962,6 +1115,19 @@ public class IndexController {
 			lessonPlan.setAuditor(accountSession.getAccount());
 			list = lessonPlanService.auditList(lessonPlan);
 			count = lessonPlanService.auditCount(lessonPlan);
+		} else if(level == 5) {
+			lessonPlan.setField_id(accountSession.getField_list());
+			lessonPlan.setEducation_id(accountSession.getEducation_list());
+			list = lessonPlanService.principalList(lessonPlan);
+			count = lessonPlanService.principalCount(lessonPlan);
+		} else if(level == 6) {
+			lessonPlan.setField_id(accountSession.getField_list());
+			lessonPlan.setEducation_id(accountSession.getEducation_list());
+			list = lessonPlanService.leaderList(lessonPlan);
+			count = lessonPlanService.leaderCount(lessonPlan);
+		} else if(level == 7) {
+			list = lessonPlanService.secretaryGeneralList(lessonPlan);
+			count = lessonPlanService.secretaryGeneralCount(lessonPlan);
 		} else {
 			list = null;
 			count = 0;
@@ -1138,16 +1304,16 @@ public class IndexController {
 		//取得內容上傳歷程
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setType("1");
+//		lessonPlanFile.setType("1");
 		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
 		model.addAttribute("contentList", contentList);
 		
 		//取得審核回饋歷程
-		lessonPlanFile = new LessonPlanFile();
-		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setType("2");
-		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
-		model.addAttribute("auditList", auditList);
+//		lessonPlanFile = new LessonPlanFile();
+//		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
+//		lessonPlanFile.setType("2");
+//		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
+//		model.addAttribute("auditList", auditList);
 		
 		//取得最新檔案
 		model.addAttribute("nowFile", contentList.get(0));
@@ -1515,6 +1681,19 @@ public class IndexController {
 			proposition.setAuditor(accountSession.getAccount());
 			list = propositionService.auditList(proposition);
 			count = propositionService.auditCount(proposition);
+		} else if(level == 5) {
+			proposition.setField_id(accountSession.getField_list());
+			proposition.setEducation_id(accountSession.getEducation_list());
+			list = propositionService.principalList(proposition);
+			count = propositionService.principalCount(proposition);
+		} else if(level == 6) {
+			proposition.setField_id(accountSession.getField_list());
+			proposition.setEducation_id(accountSession.getEducation_list());
+			list = propositionService.leaderList(proposition);
+			count = propositionService.leaderCount(proposition);
+		} else if(level == 7) {
+			list = propositionService.secretaryGeneralList(proposition);
+			count = propositionService.secretaryGeneralCount(proposition);
 		} else {
 			list = null;
 			count = 0;
@@ -1692,16 +1871,16 @@ public class IndexController {
 		//取得內容上傳歷程
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
+//		propositionFile.setType("1");
 		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
 		model.addAttribute("contentList", contentList);
 		
 		//取得審核回饋歷程
-		propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("2");
-		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("auditList", auditList);
+//		propositionFile = new PropositionFile();
+//		propositionFile.setProposition_id(proposition.getId());
+//		propositionFile.setType("2");
+//		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
+//		model.addAttribute("auditList", auditList);
 		
 		//取得最新檔案
 		model.addAttribute("nowFile", contentList.get(0));
@@ -2070,6 +2249,19 @@ public class IndexController {
 			proposition.setAuditor(accountSession.getAccount());
 			list = propositionService.auditList(proposition);
 			count = propositionService.auditCount(proposition);
+		} else if(level == 5) {
+			proposition.setField_id(accountSession.getField_list());
+			proposition.setEducation_id(accountSession.getEducation_list());
+			list = propositionService.principalList(proposition);
+			count = propositionService.principalCount(proposition);
+		} else if(level == 6) {
+			proposition.setField_id(accountSession.getField_list());
+			proposition.setEducation_id(accountSession.getEducation_list());
+			list = propositionService.leaderList(proposition);
+			count = propositionService.leaderCount(proposition);
+		} else if(level == 7) {
+			list = propositionService.secretaryGeneralList(proposition);
+			count = propositionService.secretaryGeneralCount(proposition);
 		} else {
 			list = null;
 			count = 0;
@@ -2247,16 +2439,16 @@ public class IndexController {
 		//取得內容上傳歷程
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
+//		propositionFile.setType("1");
 		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
 		model.addAttribute("contentList", contentList);
 		
 		//取得審核回饋歷程
-		propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("2");
-		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("auditList", auditList);
+//		propositionFile = new PropositionFile();
+//		propositionFile.setProposition_id(proposition.getId());
+//		propositionFile.setType("2");
+//		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
+//		model.addAttribute("auditList", auditList);
 		
 		//取得最新檔案
 		model.addAttribute("nowFile", contentList.get(0));
