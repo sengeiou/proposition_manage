@@ -30,9 +30,12 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM proposition_manage.teacher_account "
-				   + " WHERE ACCOUNT = ? "
-				   + " AND PASSWORD = ? ";
+		String sql = " SELECT TA.*, "
+				   + " (SELECT GROUP_CONCAT(CODE) FROM proposition_manage.teacher_account_option WHERE TYPE = '1' AND TEACHER_ACCOUNT_ID = TA.ID) FIELD_LIST, "
+				   + " (SELECT GROUP_CONCAT(CODE) FROM proposition_manage.teacher_account_option WHERE TYPE = '3' AND TEACHER_ACCOUNT_ID = TA.ID) EDUCATION_LIST "
+				   + " FROM proposition_manage.teacher_account TA "
+				   + " WHERE TA.ACCOUNT = ? "
+				   + " AND TA.PASSWORD = ? ";
 		
 		args.add(account.getAccount());
 		args.add(account.getPassword());
@@ -111,11 +114,11 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		String sql = " INSERT INTO proposition_manage.teacher_account "
 				   + " (UUID, ACCOUNT, PASSWORD, NAME, TEACHER_STATUS, SCHOOL_MASTER_ID, "
 				   + " ID_NO, PHONE, EMAIL, ADDRESS, BANK, BRANCH, REMITTANCE_ACCOUNT, "
-				   + " FIELD_ID, IDENTITY_ID, CONTENT_PROVISION, CONTENT_AUDIT, STATUS, "
+				   + " FIELD_ID, IDENTITY_ID, POSITION, CONTENT_PROVISION, CONTENT_AUDIT, STATUS, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :account, :password, :name, "
 				   + " :teacher_status, :school_master_id, :id_no, :phone, :email, :address, "
-				   + " :bank, :branch, :remittance_account, :field_id, :identity_id, :content_provision, "
+				   + " :bank, :branch, :remittance_account, :field_id, :identity_id, :position, :content_provision, "
 				   + " :content_audit, :status, :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -134,7 +137,7 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 				   + " SET NAME = ?, TEACHER_STATUS = ?, "
 				   + " SCHOOL_MASTER_ID = ?, ID_NO = ?, PHONE = ?, EMAIL = ?, ADDRESS = ?, "
 				   + " BANK = ?, BRANCH = ?, REMITTANCE_ACCOUNT = ?, FIELD_ID = ?, "
-				   + " IDENTITY_ID = ?, CONTENT_PROVISION = ?, CONTENT_AUDIT = ?, STATUS = ?, "
+				   + " IDENTITY_ID = ?, POSITION = ?, CONTENT_PROVISION = ?, CONTENT_AUDIT = ?, STATUS = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
@@ -152,6 +155,7 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		args.add(account.getRemittance_account());
 		args.add(account.getField_id());
 		args.add(account.getIdentity_id());
+		args.add(account.getPosition());
 		args.add(account.getContent_provision());
 		args.add(account.getContent_audit());
 		args.add(account.getStatus());

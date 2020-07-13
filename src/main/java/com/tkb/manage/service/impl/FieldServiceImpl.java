@@ -64,4 +64,8 @@ public class FieldServiceImpl implements FieldService {
 		return fieldDao.searchName(field);
 	}
 	
+	public List<Map<String, Object>> getListInId(Field field) {
+		return fieldDao.getListInId(field);
+	}
+	
 }

@@ -27,11 +27,11 @@
                     <div><span class="required">*</span>身份證字號</div>
                     <div>
                         <input type="text" placeholder="請輸入身份證字號" id="teacherID" th:field="*{id_no}">
+                        <span class="memo">註：將作為使用者的帳號，請正確填寫</span>
                     </div>
                     <div><span class="required">*</span>電子信箱</div>
                     <div>
                         <input type="text" placeholder="請輸入電子信箱" id="teacherEmail" th:field="*{email}">
-                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
                     </div>
                     <div><span class="required">*</span>手機</div>
                     <div>
@@ -46,8 +46,26 @@
                         </select>
                         <span class="memo">註：將作為內容審核的選擇基準</span>
                     </div>
-                    <div><span class="required">*</span>系統身份</div>
+                    <div><span class="required">*</span>老師身份</div>
                     <div class="basic-h">
+                        <label for="teacher">
+                            <div class="radio-circle"></div>
+                            <span>一般老師</span>
+                            <input type="radio" class="dis-n" id="teacher" name="position" value="1">
+                        </label>
+                        <label for="team-leader">
+                            <div class="radio-circle"></div>
+                            <span>組長</span>
+                            <input type="radio" class="dis-n" id="team-leader" name="position" value="2">
+                        </label>
+                        <label for="principal">
+                            <div class="radio-circle"></div>
+                            <span>校長</span>
+                            <input type="radio" class="dis-n" id="principal" name="position" value="3">
+                        </label>
+                    </div>
+                    <div class="dis-n teacherBlock"><span class="required">*</span>系統身份</div>
+                    <div class="basic-h dis-n teacherBlock">
                         <label for="content-teacher">
                             <div class="checkbox-square"></div>
                             <span>創作教師</span>
@@ -57,6 +75,22 @@
                             <div class="checkbox-square"></div>
                             <span>內容審核</span>
                             <input type="checkbox" id="verify-teacher" class="dis-n identityState" name="content_audit">
+                        </label>
+                    </div>
+                    <div class="dis-n principalBlock"><span class="required">*</span>監督範圍</div>
+                    <div class="basic-h dis-n principalBlock">
+                        <label class="les-labelBlock" th:for="${education.name}" th:each="education:${educationList}">
+                            <div class="checkbox-square"></div>
+                            <span>[[${education.name}]]</span>
+                            <input type="checkbox" th:id="${education.name}" class="dis-n schoolType" name="education" th:value="${education.id}">
+                        </label>
+                    </div>
+                    <div class="dis-n principalBlock"></div>
+                    <div class="basic-h dis-n principalBlock">
+                        <label class="les-labelBlock" th:for="${field.name}" th:each="field:${fieldList}">
+                            <div class="checkbox-square"></div>
+                            <span>[[${field.name}]]</span>
+                            <input type="checkbox" th:id="${field.name}" class="dis-n specialSkill" name="field" th:value="${field.id}">
                         </label>
                     </div>
                     <div><span class="required">*</span>服務學校</div>

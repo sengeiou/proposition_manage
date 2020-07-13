@@ -69,4 +69,8 @@ public class ContractServiceImpl implements ContractService {
 		return contractDao.expired(contract);
 	}
 	
+	public Map<String, Object> getDataByFieldEducation(Contract contract) {
+		return contractDao.getDataByFieldEducation(contract);
+	}
+	
 }

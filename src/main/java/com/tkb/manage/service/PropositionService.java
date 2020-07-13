@@ -13,6 +13,12 @@ public interface PropositionService {
 	public Integer auditCount(Proposition proposition);
 	public List<Map<String, Object>> teacherList(Proposition proposition);
 	public Integer teacherCount(Proposition proposition);
+	public List<Map<String, Object>> principalList(Proposition proposition);
+	public Integer principalCount(Proposition proposition);
+	public List<Map<String, Object>> leaderList(Proposition proposition);
+	public Integer leaderCount(Proposition proposition);
+	public List<Map<String, Object>> secretaryGeneralList(Proposition proposition);
+	public Integer secretaryGeneralCount(Proposition proposition);
 	public Integer uploadStatusCount(Proposition proposition);
 	public Integer add(Proposition proposition);
 	public void update(Proposition proposition);

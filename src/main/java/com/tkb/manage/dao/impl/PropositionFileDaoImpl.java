@@ -47,13 +47,14 @@ public class PropositionFileDaoImpl implements PropositionFileDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM proposition_manage.proposition_file "
+		String sql = " SELECT *, DATE_FORMAT(CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
+				   + " FROM proposition_manage.proposition_file "
 				   + " WHERE PROPOSITION_ID = ? "
-				   + " AND TYPE = ? "
+//				   + " AND TYPE = ? "
 				   + " ORDER BY CREATE_TIME DESC ";
 		
 		args.add(propositionFile.getProposition_id());
-		args.add(propositionFile.getType());
+//		args.add(propositionFile.getType());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

@@ -65,7 +65,7 @@ $(function(){
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')
         let state = true
-        if (lightBox == 'edit-categoryGrade') {
+        if (lightBox == 'edit-categoryGrade' || lightBox == 'edit-categoryMaterial') {
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
@@ -73,11 +73,11 @@ $(function(){
                 $(`section.${lightBox}-lightBox .container p`).text(item.text())                
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
             }           
-        }else if (lightBox == 'edit-categorySubject') {
+        }else if (lightBox == 'edit-categorySubjectType') {
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
-            }else {
+            }else {                
                 $(`section.${lightBox}-lightBox .container p`).eq(0).text(item.children().eq(0).text())
                 $(`section.${lightBox}-lightBox .container p`).eq(1).text(item.children().eq(1).text())
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))
@@ -145,13 +145,13 @@ $(function(){
         let inputIDName = newData.split('-')[1] //新資料的輸入框
         var state = true
         var text = ''
-        if (newData.indexOf('edit-teacherID') > -1) {
+        if (newData == 'edit-teacherID') {
             let status = checkID($(`input#${inputIDName}`).val()).status            
             if (!status) {                
                 state = false
                 text = checkID($(`input#${inputIDName}`).val()).text                             
             }
-        }else if (newData.indexOf('edit-teacherBank') > -1) {
+        }else if (newData == 'edit-teacherBank') {
             let bankNum = $("input#bankNum").val()
             let subBankNum = $("input#subBankNum").val()
             let accountNum = $("input#accountNum").val()
@@ -167,19 +167,22 @@ $(function(){
                 state = false
                 text = '請輸入完整的匯款資訊'
             }
-        }else if (newData.indexOf('edit-categoryGrade') > -1) {
+        }else if (newData == 'edit-categoryGrade' || newData == 'edit-categorySubject' || newData == 'edit-categoryMaterial') {
             let val = $(`input#${inputIDName}`).val()
             if (val != '') {
                 let itemId = $(`section.${newData}-lightBox .container input`).data('id')
                 console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val)
+                $(`p#${itemId}`).text(val)
                 $(`input#${inputIDName}`).val('')
             }
-        }else if (newData.indexOf('edit-categorySubject') > -1) {
+        }else if (newData == 'edit-categorySubjectType') {           
             let val = $(`input#${inputIDName}`).val()
             let subVal = $(`input#sub${inputIDName}`).val()
-            if (val != '') {
+            if (val != '' && subVal != '') {
                 let itemId = $(`section.${newData}-lightBox .container input`).data('id')
-                console.log('要編輯的 id 為：'+itemId+'，新名稱為：'+val+'，新縮寫名稱為：'+subVal)
+                console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val +'，新縮寫資料為：'+subVal)
+                $(`p#${itemId} span`).eq(0).text(val)
+                $(`p#${itemId} span`).eq(1).text(subVal)
                 $(`input#${inputIDName}`).val('')
                 $(`input#sub${inputIDName}`).val('')
             }
@@ -195,12 +198,6 @@ $(function(){
 
     })
 
-    //lesson-content.html 審核區塊
-    // $("input[name='verify']").on("change",function(){
-    //     $("#lessonVerifyFile").val('')
-    //     $(".lessonVerifyFileText").text('')
-    // })
-
     $("#schoolType").on("change",function(){        
         if ($(this).val() == 1) {
             console.log('國小！！年級的ajax在這~~~')
@@ -213,6 +210,19 @@ $(function(){
     
     $(".btnDownFile").on('click',function(){
         location.href="/teacher/download";
+    })
+    
+    $("input[name='position']").on('click',function(){
+        let position = $(this).attr('id')
+        if (position != 'teacher') {
+            $(`div[class*='Block']`).addClass('dis-n').find("input[type='checkbox']").prop('checked',false).siblings('div.checkbox-square').removeClass('active')
+            $("div.principalBlock").removeClass('dis-n')
+        }else {
+            $(`div[class*='Block']`).addClass('dis-n').find("input[type='checkbox']").prop('checked',false).siblings('div.checkbox-square').removeClass('active')
+            $("div.teacherBlock").removeClass('dis-n')
+        }
+        // $(`div[class*='Block']`).addClass('dis-n').find("input[type='checkbox']").prop('checked',false).siblings('div.checkbox-square').removeClass('active')
+        // $(`div.${position}Block`).removeClass('dis-n')        
     })
     
     $(".btn-search").on("click",function(){
@@ -293,9 +303,18 @@ $(function(){
         }else if ($("#specialSkill").val() == 0) {
             status = false
             text = '請選擇領域'
-        }else if ($("input.identityState:checked").length == 0) {
+        }else if (!$("input[name='position']:checked").val()) {            
+            status = false
+            text = '請選擇老師身份'
+        }else if ($("input[name='position']:checked").attr('id') == 'teacher' && $("input.identityState:checked").length == 0) { //老師身份為「一般老師」時的必填欄位
             status = false
             text = '請勾選系統身份'
+        }else if ($("input[name='position']:checked").attr('id') != 'teacher' && $("input.schoolType:checked").length == 0) { //老師身份為「校長」、「組長」時的必填欄位
+            status = false
+            text = '請勾選監督範圍的學制'
+        }else if ($("input[name='position']:checked").attr('id') != 'teacher' && $("input.specialSkill:checked").length == 0) { //老師身份為「校長」、「組長」時的必填欄位
+            status = false
+            text = '請勾選監督範圍的領域'
         }else if ($("#select-school").val() == 0) {
             status = false
             text = '請選擇服務學校'
@@ -376,10 +395,10 @@ $(function(){
         let text = ''
         let numCheck = /^(|[1-9][0-9]*)$/
         
-        if (!$("#contractNumA").val()) {
+        if (material && !$("#contractNumA").val()) {
             status = false
             text = '請輸入授權於臺灣知識庫合約編號'
-        }else if ($(".contractFileTextA").text() == '') {
+        }else if (material && $(".contractFileTextA").text() == '') {
             status = false
             text = '請選擇授權於臺灣知識庫合約檔案'
         }else if (material && !$("#2ndPartyA").val()) {
@@ -548,7 +567,7 @@ $(function(){
         let text = ''
         if ($(".lessonVerifyFileText").text() == '') {
             status = false
-            text = '請選擇修訂檔案'
+            text = '請選擇修正檔案'
         }
 
         if (!status) {
@@ -559,15 +578,15 @@ $(function(){
         	if (type == 'lessonEditTeacher') {
             	$("#mainForm").attr("action", "/lesson/editSubmit");
                 $("#mainForm").submit();
-                console.log('教案檔案修訂通過')
+                console.log('教案檔案修正通過')
             }else if (type == 'propoGroupEditTeacher') {
             	$("#mainForm").attr("action", "/proposition/group/editSubmit");
                 $("#mainForm").submit();
-                console.log('命題-題組題：：檔案修訂通過')
+                console.log('命題-題組題：：檔案修正通過')
             }else if (type == 'propoBasicEditTeacher') {
             	$("#mainForm").attr("action", "/proposition/basic/editSubmit");
                 $("#mainForm").submit();
-                console.log('命題-基本題：：檔案修訂通過')
+                console.log('命題-基本題：：檔案修正通過')
             }
         }
     }
@@ -668,8 +687,6 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('上移按鈕在這～～要上移的id : '+itemId)                
                 $(this).prev().before($(this))
-                // $(this).prev().before(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
-                // $(this).remove()
             }else {
                 return
             }
@@ -681,9 +698,7 @@ $(function(){
             if ($(this).index() < itemLength ) {
                 let itemId = $(this).attr('id')        
                 console.log('下移按鈕在這～～要下移的id : '+itemId)                
-                $(this).next().after($(this))
-                // $(this).next().after(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
-                // $(this).remove()                
+                $(this).next().after($(this))            
             }else {
                 return
             }
@@ -695,13 +710,6 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('置頂按鈕在這～～要置頂的id : '+itemId)
                 let group = $(this).parent()[0]
-//                let item = document.createElement("p");            
-//                item.innerHTML = `${$(this).text()}`;            
-//                item.classList.add("item")
-//                item.classList.add("active")
-//                item.setAttribute('id',itemId)                                
-//                group.insertBefore(item , group.childNodes[0])                
-//                $(this).remove()
                 group.insertBefore($(this)[0] , group.childNodes[0])
             }else {
                 return
@@ -715,8 +723,6 @@ $(function(){
                 let itemId = $(this).attr('id')        
                 console.log('置底按鈕在這～～要置底的id : '+itemId)
                 $(this).parent().append($(this))
-                // $(this).parent().append(`<p class="item active" id="${itemId}">${$(this).text()}</p>`)
-                // $(this).remove()
             }else {
                 return
             }

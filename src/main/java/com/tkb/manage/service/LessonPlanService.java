@@ -13,6 +13,12 @@ public interface LessonPlanService {
 	public Integer auditCount(LessonPlan lessonPlan);
 	public List<Map<String, Object>> teacherList(LessonPlan lessonPlan);
 	public Integer teacherCount(LessonPlan lessonPlan);
+	public List<Map<String, Object>> principalList(LessonPlan lessonPlan);
+	public Integer principalCount(LessonPlan lessonPlan);
+	public List<Map<String, Object>> leaderList(LessonPlan lessonPlan);
+	public Integer leaderCount(LessonPlan lessonPlan);
+	public List<Map<String, Object>> secretaryGeneralList(LessonPlan lessonPlan);
+	public Integer secretaryGeneralCount(LessonPlan lessonPlan);
 	public Integer uploadStatusCount(LessonPlan lessonPlan);
 	public Integer add(LessonPlan lessonPlan);
 	public void update(LessonPlan lessonPlan);

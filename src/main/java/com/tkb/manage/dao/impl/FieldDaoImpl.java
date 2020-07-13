@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.tkb.manage.dao.FieldDao;
+import com.tkb.manage.model.Education;
 import com.tkb.manage.model.Field;
 
 @Repository
@@ -229,6 +230,22 @@ public class FieldDaoImpl implements FieldDao {
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
 			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> getListInId(Field field) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.field "
+				   + " WHERE ID IN ("+field.getId()+") ";
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
 		} else {
 			return null;
 		}

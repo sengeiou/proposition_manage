@@ -19,5 +19,6 @@ public interface FieldDao {
 	public void updateSortByDelete(Field field);
 	public List<Map<String, Object>> getList(Field field);
 	public Map<String, Object> searchName(Field field);
+	public List<Map<String, Object>> getListInId(Field field);
 	
 }
