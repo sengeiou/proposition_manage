@@ -57,7 +57,7 @@
             </div>  
 
             <div class="create-content lessonContent contentPage">
-                <div class="statusTag failTag" th:if="${data.upload_status == 'N'}">待修訂</div> <!-- 僅管理者、內容老師有此tag -->  
+                <div class="statusTag failTag" th:if="${data.upload_status == 'N'}">待修正</div> <!-- 僅管理者、內容老師有此tag -->  
                 <div class="statusTag successTag" th:if="${data.upload_status == 'C'}">通過</div> <!-- 僅管理者、內容老師有此tag，目前用dis-n隱藏 -->  
                 <h3><i class="fas fa-book"></i>詳細資料<i class="fas fa-book"></i></h3>
                 <div class="create-grid">

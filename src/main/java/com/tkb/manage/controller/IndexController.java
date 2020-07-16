@@ -1158,6 +1158,13 @@ public class IndexController {
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
 		
+		//設定合約
+		lessonPlan.setContract_id(contractList.get(0).get("CONTRACT_ID").toString());
+		//設定領域
+		lessonPlan.setField_id(contractList.get(0).get("FIELD_ID").toString());
+		//設定學制
+		lessonPlan.setEducation_id(contractList.get(0).get("EDUCATION_ID").toString());
+		
 		//取得領域清單
 		Field field = new Field();
 		List<Map<String, Object>> fieldList = fieldService.getList(field);
@@ -1603,6 +1610,24 @@ public class IndexController {
 		
 		model.addAttribute("PATH", "/lesson");
 		return "front/path";
+	}
+	
+	@RequestMapping(value = "/lesson/get/field" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getField(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Field field = new Field();
+		
+		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
+		field.setParent_id(id);
+
+		List<Map<String, Object>> list = fieldService.getChild(field);
+		
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
+		
 	}
 	
 	@RequestMapping(value = "/lesson/get/grade" , method = {RequestMethod.GET, RequestMethod.POST})

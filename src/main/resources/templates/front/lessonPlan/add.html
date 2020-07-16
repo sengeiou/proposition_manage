@@ -91,46 +91,83 @@
 
     <div th:include="front/load/js :: js"></div>  
 	<script>
-		$("#gradeTitle").hide();
-		$("#grade").hide();
+// 		$("#gradeTitle").hide();
+// 		$("#grade").hide();
+		getGrade($("#schoolType").val());
 		$("#schoolType").change(function(){
 			if($("#schoolType").val() != "0") {
-				$.ajax({
-					url: '/lesson/get/grade',
-					cache: false,
-					async: false,
-					dataType: 'json',
-					type: 'POST',
-					data: {
-						id: $(this).val()
-					},
-					error: function(xhr) {
-						alert("取得資料錯誤");
-					},
-					success: function(data) {
-						if(data != null && data.length > 0) {
-							$("#gradeTitle").show();
-							$("#grade").show();
-							$("#grade").empty();
-							var str = "";
-							for(i=0; i<data.length; i++) {
-								var child = data[i];
-								str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
-									+  "<div class='checkbox-square'></div>"
-									+  "<span>"+child.NAME+"</span>"
-									+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
-									+  "</label>"
-							}
-							$("#grade").append(str);
-						}
-					}
-				});
+				getGrade($(this).val());
 			} else {
 				$("#gradeTitle").hide();
 				$("#grade").hide();
 			}
 		});
-	
+		
+		function getField(id) {
+			$.ajax({
+				url: '/lesson/get/field',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						$("#gradeTitle").show();
+						$("#grade").show();
+						$("#grade").empty();
+						var str = "";
+						for(i=0; i<data.length; i++) {
+							var child = data[i];
+							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+								+  "<div class='checkbox-square'></div>"
+								+  "<span>"+child.NAME+"</span>"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+								+  "</label>"
+						}
+						$("#grade").append(str);
+					}
+				}
+			});
+		}
+		
+		function getGrade(id) {
+			$.ajax({
+				url: '/lesson/get/grade',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						$("#gradeTitle").show();
+						$("#grade").show();
+						$("#grade").empty();
+						var str = "";
+						for(i=0; i<data.length; i++) {
+							var child = data[i];
+							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+								+  "<div class='checkbox-square'></div>"
+								+  "<span>"+child.NAME+"</span>"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+								+  "</label>"
+						}
+						$("#grade").append(str);
+					}
+				}
+			});
+		}
 	</script>
 </body>
 </html>
