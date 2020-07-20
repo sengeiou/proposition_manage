@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:include="admin/load/css :: css"></head>
+	<head th:include="admin/load/js :: js"></head>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title th:text="${bankMaster.id} ? '銀行 - 修改': '銀行 - 新增'"></title>
+		<meta name="description" content="Drag &amp; drop hierarchical list" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+	</head>
+
+	<body class="no-skin">
+		
+		<!-- header -->
+		<div th:include="admin/load/header :: header">&nbsp;</div>
+		
+		<div class="main-container ace-save-state" id="main-container">
+			<script type="text/javascript">
+				try{ace.settings.loadState('main-container')}catch(e){}
+			</script>
+
+			<!-- menu -->
+			<div id="sidebar" class="sidebar responsive ace-save-state" th:include="admin/load/menu :: menu"></div>
+
+			<div class="main-content">
+				<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<span style="font-size:20px; padding-left: 10px" id="title_text"></span>
+					</div>
+
+					<div class="page-content">
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+<!-- 								<form class="form-horizontal" role="form"> -->
+								<form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${bankMaster}" enctype="multipart/form-data">
+									<input type="hidden" id="id" th:field="*{id}" th:value="*{id}" />
+									<input type="hidden" id="page" th:field="*{page}" th:value="*{page}" />
+									<input type="hidden" id="totalPage" th:field="*{total_page}" th:value="*{total_page}" />
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">代碼<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="code" class="col-xs-10 col-sm-5" th:field="*{code}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">名稱<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="name" class="col-xs-10 col-sm-5" th:field="*{name}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">地址<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="address" class="col-xs-10 col-sm-5" th:field="*{address}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-input-readonly">排序<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<input type="text" id="sort" class="col-xs-10 col-sm-5" th:field="*{sort}" />
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<div class="col-sm-1"></div>
+										<label class="col-sm-1 control-label no-padding-right" for="form-field-4">顯示<font color="red">*</font></label>
+
+										<div class="col-sm-8">
+											<select id="display" th:field="*{display}">
+												<option value="0">否</option>
+												<option value="1">是</option>
+											</select>
+										</div>
+									</div>
+									
+									<div class="clearfix form-actions">
+										<div class="col-md-offset-1 col-md-9">
+											<button class="btn btn-info" type="button" onclick="update()">
+												<i class="ace-icon fa fa-check bigger-110"></i>
+												送出
+											</button>
+
+											<button class="btn" type="button" onclick="backList()">
+												<i class="ace-icon fa fa-undo bigger-110"></i>
+												返回
+											</button>
+										</div>
+									</div>
+								</form>
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div>
+			</div><!-- /.main-content -->
+
+			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+			</a>
+		</div><!-- /.main-container -->
+
+		<script type="text/javascript">
+// 		var year_list = new Array();
+		
+		$(function(){
+			
+			//選單選取判斷
+			$(".menu").removeClass("active");
+			$(".menu").parent("ul").parent("li").removeClass("open");
+			$(".menu").parent("ul").parent("li").removeClass("active");
+			$(".bankMaster").addClass("active");
+			$(".bankMaster").parent("ul").parent("li").addClass("open");
+			$(".bankMaster").parent("ul").parent("li").addClass("active");
+			
+			if($("#id").val()== null || $("#id").val()== "") {
+				$("#title_text").text("學校 - 新增");
+			} else {
+				$("#title_text").text("學校 - 修改");
+			}
+		    
+		});
+		
+		//修改
+		function update() {
+			
+			if(checkNull($("#code"))) {
+				alert("請輸入代碼");
+				return false;
+			}
+			
+			if(checkLength($("#code"), "1", "10")) {
+				alert("代碼不可超過10個字");
+				$("#code").focus();
+				return false;
+			}
+			
+			if(checkNull($("#name"))) {
+				alert("請輸入名稱");
+				return false;
+			}
+			
+			if(checkLength($("#name"), "1", "25")) {
+				alert("名稱不可超過25個字");
+				$("#name").focus();
+				return false;
+			}
+			
+			if(checkNull($("#address"))) {
+				alert("請輸入地址");
+				return false;
+			}
+			
+			if(checkLength($("#address"), "1", "50")) {
+				alert("地址不可超過50個字");
+				$("#address").focus();
+				return false;
+			}
+			
+			if(checkNum($("#sort"), "0", "11")) {
+				alert("排序輸入錯誤");
+				$("#sort").focus();
+				return false;
+			}
+			
+			if($("#id").val()== null || $("#id").val()== "") {
+				$("#mainForm").attr("action", "addSubmit");
+			} else {
+				$("#mainForm").attr("action", "updateSubmit");
+			}
+			
+			$("#mainForm").submit();
+			
+		}
+		
+		//返回
+		function backList() {
+			
+			$("#mainForm").attr("action", "list");
+			$("#mainForm").submit();
+			
+		}
+		
+		</script>
+	</body>
+</html>

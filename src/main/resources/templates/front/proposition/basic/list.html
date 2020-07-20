@@ -27,7 +27,7 @@
                 <i>/</i>
                 <a href="#">命題管理</a>
                 <i>/</i>
-                <a href="#">命題-基本題列表</a>                
+                <a href="#">命題-選擇題列表</a>                
             </div>                             
             <div class="list-content">
                 <h3>命題-基本題列表</h3>
@@ -50,7 +50,7 @@
                 <div class="list-block" th:if="${accountSession.level <= '2'}"> <!-- 管理者，顯示列表 -->                    
                     <div class="grid lessonList-admin-grid grid-title">
                         <div>合約序號</div>
-                        <div>命題名稱</div>
+                        <div>創作教師</div>
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>檔案狀態</div>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="grid lessonList-admin-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
-                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.teacher_name}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
@@ -74,7 +74,7 @@
                 <div class="list-block" th:if="${accountSession.level == '3' || accountSession.level == '5'}"> <!-- 內容老師、組長，顯示列表 -->                    
                     <div class="grid lessonList-content-grid grid-title">
                         <div>合約序號</div>
-                        <div>命題名稱</div>
+                        <div>創作教師</div>
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>檔案狀態</div>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="grid lessonList-content-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
-                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.teacher_name}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
@@ -96,7 +96,7 @@
                 <div class="list-block" th:if="${accountSession.level == '4'}"> <!-- 審核老師，顯示列表 --> 
                     <div class="grid lessonList-verify-grid grid-title">
                         <div>合約序號</div>
-                        <div>命題名稱</div>
+                        <div>創作教師</div>
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>建立時間</div>
@@ -104,7 +104,7 @@
                     </div>
                     <div class="grid lessonList-verify-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
-                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.teacher_name}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.create_date}"></div>
@@ -114,18 +114,18 @@
                 <div class="list-block" th:if="${accountSession.level == '6'}"> <!-- 校長，顯示列表 -->
                     <div class="grid lessonList-principal-grid grid-title">
                         <div>合約序號</div>
-                        <div>教案名稱</div>
+                        <div>創作教師</div>
                         <div>學習領域</div>
                         <div>學制</div>
                         <div>檔案狀態</div>
                         <!-- <div>上傳狀態</div> -->
-                        <div>審核老師</div>
+                        <div>審議委員</div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
                     <div class="grid lessonList-principal-grid" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
-                        <div th:text="${list.name}"></div>
+                        <div th:text="${list.teacher_name}"></div>
                         <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
