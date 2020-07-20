@@ -1,5 +1,12 @@
 package com.tkb.manage.model;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class Base {
 	
 	private Integer page;			//當前頁碼
@@ -7,36 +14,9 @@ public class Base {
 	private Integer count;			//總筆數
 	private Integer page_count;		//每頁筆數
 	private String keyword;
-	
-	public Integer getPage() {
-		return page;
-	}
-	public void setPage(Integer page) {
-		this.page = page;
-	}
-	public Integer getTotal_page() {
-		return total_page;
-	}
-	public void setTotal_page(Integer total_page) {
-		this.total_page = total_page;
-	}
-	public Integer getCount() {
-		return count;
-	}
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-	public Integer getPage_count() {
-		return page_count;
-	}
-	public void setPage_count(Integer page_count) {
-		this.page_count = page_count;
-	}
-	public String getKeyword() {
-		return keyword;
-	}
-	public void setKeyword(String keyword) {
-		this.keyword = keyword;
-	}
+	private String create_by;		//創建者
+	private String create_time;		//創建時間
+	private String update_by;		//編輯者
+	private String update_time;		//編輯日期
 	
 }
