@@ -1,3 +1,12 @@
+:root {
+    --green: #00897b;
+    --lightGreen: #49c9bc;
+    --darkGreen: #02665c;
+    --red: #af4448;
+    --lightRed: #FF0000;
+    --gray: #6b6b6b;
+    --lightGray: #999;
+}
 .style-admin {
     --primary: #948574;
     --primary-light: #f2f2e8;
@@ -40,12 +49,12 @@ a {color: #ffffff;}
 
 
 span.required {
-    color: #FF0000;
+    color: var(--lightRed);
     margin: 0 3px;
 }
 span.memo {
     font-size: 0.93rem;
-    color: #6b6b6b;
+    color: var(--gray);
 }
 button {
     border: 1px solid var(--primary-dark);
@@ -71,7 +80,7 @@ button.btn-closeLightBox {
 button.btn-closeLightBox:hover {
     transform: scale(1.1)
 }
-button.btn-openLightBox {
+button.btn-openLightBox , button.btn-openArea {
     display: block;
     color: #fff;
     background-color: var(--secondary);
@@ -86,6 +95,11 @@ button.btn-openLightBox {
 .btn-block button{
     margin: 0 10px;
 }
+button.btn-xl {
+    padding: 10px 20px;
+    border-radius: 5px;    
+    color: var(--primary-dark);
+}
 button.btn-md {
     border-radius: 5px;
     padding: 8px 15px;
@@ -94,6 +108,7 @@ button.btn-md {
 button.btn-sm {
     border-radius: 5px;
     padding: 5px 10px;
+    color: var(--primary-dark);
 }
 button.btn-mdSolid {
     border-radius: 5px;
@@ -103,7 +118,7 @@ button.btn-mdSolid {
     display: unset;
     border: none;
 }
-button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover {
+button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover , button.btn-xl:hover {
     color: #ffffff;
     background-color: var(--primary-dark);
 }
@@ -145,15 +160,18 @@ span.btn-file {
     width: 1200px;    
     margin: 0 auto;
 }
-.text-c-red { color: #FF0000; }
+.text-c-red { color: var(--lightRed); }
 .font-size-09 { 
     font-size: 0.9rem; 
     line-height: 1.1rem;
 }
 .font-size-08 { font-size: 0.8rem; }
 .p-left-14px { padding-left: 14px; }
-.failTag { background-color: #af4448; }
-.successTag { background-color: #00897b; }
+.m-top-20px { margin-top: 20px; }
+.failTag { background-color: var(--red); }
+.successTag-1 { background-color:var(--lightGreen) }
+.successTag-2 { background-color: var(--green); }
+.successTag-3 { background-color: var(--darkGreen); }
 .display-spaBetween {
     display: flex;
     justify-content: space-between;
@@ -161,6 +179,9 @@ span.btn-file {
 .v-center {
     display: flex;
     align-items: center;
+}
+.flex-wrap {
+    flex-wrap: wrap;
 }
 .text-overflow {
     text-overflow: ellipsis;
@@ -200,7 +221,10 @@ span.btn-file {
     background-color: #dd5600;
 }
 .index-container button.btn-admin:hover {
-    background-color: #948574;
+    background-color: var(--primary);
+}
+.index-container button.btn-join:hover {
+    background-color: #5a3d80;
 }
 .login-container {
     display: flex;
@@ -227,23 +251,33 @@ span.btn-file {
 .login-container .login-block i {
     margin: 0 3px;
 }
-.login-container .login-block div:nth-child(2) {
-    margin: 20px 0 40px 0;
+.login-container .login-block input[type='password'] {
+   margin: 20px 0 5px 0;
 } 
 .login-container .login-block div input {
     margin-left: 10px;
     width: 250px;
 }
-.login-container .login-block div button {
+.login-container .login-block button {
     background: inherit;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin: 0 10px;
-    color: var(--primary-dark);
 }
-.login-container .login-block div button:hover {
-    background: var(--primary-dark);
-    color: #ffffff;
+.login-container .login-block .forget {
+    text-align: right;
+}
+.login-container .login-block .forget a {
+    color: var(--primary-dark);    
+}
+.login-container .login-block .forget a:hover {    
+    color: var(--secondary);
+}
+.login-container .login-block .forget i {
+    margin-left: 5px;
+}
+.login-container .login-block button {
+    margin: 40px 10px 10px 10px;
+}
+.login-container .login-block button:hover {
+    background: var(--primary-dark);    
 }
 .index-memoBlock {    
     display: flex;
@@ -252,56 +286,50 @@ span.btn-file {
     font-size: 1.3rem;  
     padding-top: 30px;  
 }
-.index-memoBlock .memo , .index-memoBlock .principal-memo {
+.index-memoBlock .memo {
     border: 1px solid #4b4b4b;
     border-radius: 5px;
     overflow: hidden;
-    width: 40%;    
-}
-.index-memoBlock .principal-memo {
-    width: 45%;
     margin-bottom: 40px;
 }
-.index-memoBlock .memo:nth-child(2) , .index-memoBlock .principal-memo:nth-child(even){
-    margin-left: 30px;
-}
-.index-memoBlock .memo h3 , .index-memoBlock .principal-memo h3 {
+.index-memoBlock .memo h3 {
     font-size: 1.4rem;
     text-align: center;
     padding: 20px 0;
     border-bottom: 1px solid #4b4b4b;
     background-color: var(--primary-light);
 }
-.index-memoBlock .memo>div {
-    min-height: 150px;
-    display: flex;
-    flex-wrap: wrap;    
-    align-content: center;
+.index-memoBlock .memo .title {
+    background: var(--secondary);
+    color: white;
+    padding: 10px 0;
+    border-bottom: 1px #111 solid;
+}
+.index-memoBlock .admin-memo { width: 55%; }
+.index-memoBlock .principal-memo { width: 90%; }
+.index-memoBlock .verify-memo { width: 60%; }
+.index-memoBlock .admin-memo>div.admin-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr;
+    text-align: center;
+    padding: 0 0 15px 0;
 }
 .index-memoBlock .principal-memo>div.principal-grid {    
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;    
+    grid-template-columns: 1.2fr 1fr 1fr 1.2fr 1fr 1fr 1.2fr;
+    text-align: center;
+    padding: 0 0 15px 0;
+}
+.index-memoBlock .verify-memo>div.verify-grid {    
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 1.5fr;;
     text-align: center;
     padding: 0 0 15px 0;
 }
 .index-memoBlock .principal-memo>div.principal-grid:last-child {
     padding-bottom: 30px;
 }
-.index-memoBlock .principal-memo>div.principal-grid .title {
-    background: var(--secondary);
-    color: white;
-    padding: 10px 0;
-    border-bottom: 1px #111 solid;
-}
-.index-memoBlock .memo>div p {
-    width: 100%;
-    text-align: center;
-    line-height: 2.5rem;
-}
-.index-memoBlock .memo>div p span {
-    padding: 0 10px;
-    border-bottom: 1px solid #111111;
-} 
+
 .bac-c-lightBrown { background-color: #f2f2e8; }
 /* index.html end */
 
@@ -348,7 +376,7 @@ span.btn-file {
     transform: translate(-50%, -50%);
 }
 .lightBoxContent.teacherImportData-lightBox {
-    width: 680px;
+    width: 400px; /* 若需「選擇學校」的select 寬度為680px */
     min-height: 220px;
 }
 .lightBoxContent.teacherImportData-lightBox .select-school-box {
@@ -369,13 +397,22 @@ span.btn-file {
 .lightBoxContent .container {
     margin-bottom: 30px;
 }
-.lightBoxContent .container input[type='text'] {
+.lightBoxContent .container input[type='text'] , .lightBoxContent .container input[type='password'] {
     margin: 10px 0 20px 0;
 }
 .lightBoxAlert .container {
     margin-bottom: 35px;
     text-align: center;
     line-height: 1.5rem;
+}
+.MemolightBox .container {
+    line-height: 2rem;
+    width: 300px;
+    text-align: center;
+}
+.lightBoxBtnBlock{
+    display: flex;
+    justify-content: center;
 }
 .lightBoxContent.lessonOutline-lightBox , .lightBoxContent.lessonIntro-lightBox , .lightBoxContent.learningPerformace-lightBox , .lightBoxContent.learningContent-lightBox {
     /* width: 50%; */
@@ -424,6 +461,12 @@ span.btn-file {
     width: 100%;
     text-align: center;
     margin-bottom: 30px;
+    font-size: 1.5rem;
+}
+.header .register-logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
     font-size: 1.5rem;
 }
 .header .account-name {    
@@ -546,7 +589,7 @@ span.btn-file {
     color: #4b4b4b;
 }
 .breadcrumb a:last-child {
-    color: #6b6b6b;
+    color: var(--gray);
 }
 .breadcrumb a:hover {
     color: var(--secondary);
@@ -604,7 +647,7 @@ div.basic-h {
 }
 .create-content.teacher .create-grid .editOldData { /*編輯老師*/
     line-height: 36px;    
-    color: #6b6b6b;
+    color: var(--gray);
     margin-right: 30px;
 }
 .create-content.teacher .create-grid .editNewData {
@@ -710,14 +753,14 @@ div.basic-h {
 }
 .create-content.lessonContent .statusTag {
     position: absolute;
-    right: -40px;
-    width: 170px;
+    right: -50px;
+    width: 190px;
     font-size: 1.3rem;    
     color: #fff;
     text-align: center;
     padding: 15px 20px;
-    transform: rotate(35deg);
-    top: 14px;
+    transform: rotate(37deg);
+    top: 25px;
 }
 .create-content.lessonContent .create-grid .lesson-item>div {    
     min-height: 25px;
@@ -768,13 +811,19 @@ div.basic-h {
     color: #ffffff;    
     justify-content: center;    
 }
-.create-content.lessonVerify label {
-    margin-right: 10px;
+.create-content.lessonVerify textarea {
+    width: 90%;
+    resize: none;
+    height: 240px;
 }
 /* 教案詳細資料 end */
 
 
 /* 編輯教案 start */
+.lightboxItemWrap {
+    max-height: 70px;
+    overflow-y: auto;
+}
 .lightboxItem {
     display: inline-block;
     background-color: #dfdbdb;
@@ -796,8 +845,8 @@ div.basic-h {
     display: flex;
     justify-content: space-between;    
 }
-.topWrap button:first-child { /* 老師列表的「範例下載」、「資料匯入」按鈕 */
-    margin-right: 20px;
+.topWrap button:nth-child(even) { /* 老師列表的「範例下載」、「資料匯入」按鈕 */
+    margin-left: 20px;
 }
 .list-content {
     color: #4b4b4b;    
@@ -834,6 +883,12 @@ div.basic-h {
 .list-content .grid-title {
     background-color: var(--primary-light);
     border: none;
+}
+.list-content .verify-block .grid-title {
+    background-color: var(--secondary);
+    border: none;
+    color: #ffffff;
+    padding-right: 15px;
 }
 .list-content .grid-title>div {
     padding: 20px 0;
@@ -884,8 +939,20 @@ div.basic-h {
     margin: 0 5px;
     padding: 0 3px;
 }
-.list-content .teacherList-grid { /* 老師列表 */
-    grid-template-columns: 1fr 1fr 1fr 2fr 1fr 3fr 1fr 1fr;
+.list-block label {
+    margin: 0;
+}
+.list-content .teacherList-admin-principalGrid { /* 老師列表-管理者看到的組長、校長列表 */
+    grid-template-columns: 80px 80px 1.2fr 2fr 1.2fr 3fr 1fr 80px;
+}
+.list-content .teacherList-admin-teacherGrid { /* 老師列表-管理者看到的一般教師列表 */
+    grid-template-columns: 90px 90px 60px 60px 90px 1fr 1fr 2fr 90px 75px 75px;
+}
+.list-content .teacherList-principal-grid { /* 老師列表-組長、校長 */
+    grid-template-columns: 90px 90px 60px 60px 90px 1fr 1fr 2fr 90px 75px;
+}
+.list-content .teacherList-principal-verifyGrid { /* 老師列表-組長、校長的審核列表 */
+    grid-template-columns: 90px 90px 60px 60px 90px 1fr 1fr 2fr 80px 80px;
 }
 .list-content .contractList-grid { /* 合約列表 */
     grid-template-columns: 2fr 2fr 75px 3fr 3fr 3fr 75px 75px 75px;
@@ -894,14 +961,13 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr; */ /* 含有「上傳狀態」欄位 */
-    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 97px 1fr 1fr ;
+    grid-template-columns: 0.8fr 1.5fr 6fr 1fr 0.8fr 1fr 97px 1fr 1fr ;
 }
-.list-content .lessonList-content-grid { /* 教案列表-內容老師、組長 */
+.list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */
     /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr; */ /* 含有「上傳狀態」欄位 */
     grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 97px 1fr;
 }
-.list-content .lessonList-verify-grid { /* 教案列表--審核老師 */
+.list-content .lessonList-verify-grid { /* 教案列表--審議委員 */
     grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr;
 }
 .list-content .lessonList-principal-grid { /* 教案列表-校長 */
@@ -927,32 +993,47 @@ div.basic-h {
 .list-content .contractMatList-grid {
     grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 4fr 1fr 1fr 1fr 1fr;
 }
+.list-content .verify-block {
+    margin-bottom: 20px;
+}
+.list-content .list-phone>span:nth-child(even) {
+    display: inline-block;
+    margin-top: 5px;
+}
+.failed-list , .failed-list a , .failed-list span {
+    color: var(--lightGray);
+}  
 /* 列表 end */
 /* 搜尋區塊 start */
 button.btn-search {
-    display: block;
-    margin: 0 auto;
-    background-color: unset;
     border-radius: 5px;
-    padding: 8px 15px;
+    padding: 12px 30px;
     color: var(--primary-dark);
+    align-self: center;
 }
 button.btn-search:hover {
     color: #ffffff;
     background-color: var(--primary-dark);
 }
 .search-block {
-    margin-bottom: 40px;
     background-color: var(--primary-light);
-    width: fit-content;
     margin: 0 auto;
-    padding: 25px;
+    padding: 25px 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;    
+    margin-bottom: 40px;
 }
 .search-block .search-grid {
     display: grid;
     grid-template-columns: 100px 1fr;
-    grid-row-gap: 20px;
-    margin-bottom: 30px;
+    grid-row-gap: 5px;    
+}
+.search-block .search-grid>div:nth-child(odd) {
+    line-height: 36px;
+}
+.search-block.w-60per {
+    width: 60%;
 }
 /* 搜尋區塊 end */
 /* 分類管理 start */
@@ -989,7 +1070,7 @@ button.btn-search:hover {
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    color: #6b6b6b;
+    color: var(--gray);
 }
 .category-block .block .item-group .item {
     border: 1px solid var(--primary);    
@@ -1022,7 +1103,7 @@ button.btn-search:hover {
     width: 100%;
 }
 .category-block .block .btns-group button {    
-    width: 16.66%;
+    width: 14.286%;
     border-top: 1px solid var(--primary-dark);
     border-right: 1px solid var(--primary-dark);
     border-bottom: none;
@@ -1041,6 +1122,28 @@ button.btn-search:hover {
 }
 /* 分類管理 start */
 /* 頁面底部進度條 start */
+@keyframes up {
+    from {
+      height: 0;
+      display: none;    
+    }
+    to {
+      height: 320px;
+      display: block;
+      padding: 25px 0;
+    }
+}
+@keyframes down {
+    from {
+      height: 320px;
+      display: block;
+      padding: 25px 0;   
+    }
+    to {
+      height: 0;
+      display: none;  
+    }
+}
 .progress {
     background-color: var(--primary);
     position: fixed;
@@ -1056,7 +1159,148 @@ button.btn-search:hover {
     color: #ffffff;
     margin-right: 20px;
 }
-/* 頁面底部進度條 end */
 
+  
+.openFileClass {   
+    animation: openFile 1s ease forwards;
+}
+.closeFileClass {   
+    animation: closeFile 1s ease forwards;
+}
+/* 頁面底部進度條 end */
+/* 會員中心 start */
+.member-memo {
+    text-align: center;    
+    margin: 10px 0 60px 0;
+    font-size: 1.1rem;
+    color: var(--gray);
+}
+/* 會員中心 end */
+/* mail start */
+.mail {
+    background-color: var(--primary-light);
+    min-width: 320px;
+}
+.mail .logo {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 1.2rem;
+}
+.mail .content {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    padding: 40px 10px;
+    grid-row-gap: 10px;
+    line-height: 36px;
+}
+.mail textarea {
+    width: 80%;
+    min-width: 320px;
+    min-height: 30vh;
+}
+/* mail end */
+/* 重置密碼 start */
+.update-password {
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 3rem
+}
+.update-password i {
+    margin-right: 10px;
+}
+.update-password #time {
+    border-bottom: 1px solid var(--primary-dark);
+    padding: 0 10px;
+    color: var(--red);
+}
+/* 重置密碼 end */
+/* 地址 start */
+.address-block {
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.sameAbove-block {
+    width: 100%;
+    line-height: 36px;
+}
+#zip , #residencezip {
+    width: 100px;
+}
+.address {
+    width: fit-content;
+}
+.address-road {
+    width: 180px;
+}
+#residenceAddress , #address {
+    width: calc(100% - 400px);
+    margin-bottom: 10px;
+}
+/* 地址 end */
+/* 老師列表-組長、校長身分的審核區塊 start */
+@keyframes open {
+    from {
+      height: 0px;    
+    }
+    to {
+      height: 300px;      
+    }
+}
+@keyframes close {
+    from {
+      height: 300px;      
+    }
+    to {
+      height: 0px;
+    }
+}
+.closeArea {
+    animation: close 1s linear forwards;
+    overflow: hidden;
+}
+.openArea {   
+    animation: open 1s linear forwards;
+    overflow: hidden;
+}
+button.btn-openArea i {
+    margin-left: 10px;
+}
+.verify-block .verify-list {
+    height: 0px;
+    overflow: hidden;    
+}
+.verify-block .verify-list .overflow-auto {
+    height: 220px;
+    overflow-y: auto;
+    border: 1px solid var(--secondary);
+}
+.verify-block .grid button {
+    display: unset;
+    border: 1px solid var(--red);
+    background-color: unset;
+    color: var(--red);
+}
+.verify-block .grid button:hover {    
+    background-color: var(--red);
+    color: #ffffff;
+}
+.verify-lightBox {
+    width: 400px;
+    height: 300px;
+}
+.verify-lightBox .container>div {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-row-gap: 10px;    
+}
+/* 老師列表-組長、校長身分的審核區塊 end */
+.attach-select {
+    width: fit-content;
+    margin: 0 10px;
+}
 .dis-n { display: none; }
 .dis-b { display: block; }
