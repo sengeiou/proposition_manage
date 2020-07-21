@@ -353,10 +353,16 @@ public class IndexController {
 	@RequestMapping(value = "/teacher/add" , method = {RequestMethod.POST, RequestMethod.GET})
     public String teacherAdd(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
+//		//取得領域清單
+//		Field field = new Field();
+//		List<Map<String, Object>> fieldList = subjectService.getList(field);
+//		model.addAttribute("fieldList", fieldList);
+		
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//取得學制清單
 		Education education = new Education();
@@ -416,10 +422,10 @@ public class IndexController {
     	String identity_id = levelId.get("ID").toString();
     	
     	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
-    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
+//    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
 		account.setAccount(account.getId_no());
-		account.setPassword(account.getPhone());
+//		account.setPassword(account.getPhone());
 		account.setIdentity_id(identity_id);
 		account.setContent_provision(content_provision);
 		account.setContent_audit(content_audit);
@@ -561,7 +567,7 @@ public class IndexController {
     	String identity_id = levelId.get("ID").toString();
     	
     	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
-    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
+//    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
 //		account.setAccount(account.getEmail());
 //		account.setPassword(account.getPhone());
@@ -755,13 +761,13 @@ public class IndexController {
 	        	account.setName(name);
 	        	account.setSchool_master_id(school_master_id);
 	        	account.setId_no(id_no);
-	        	account.setPhone(phone);
+//	        	account.setPhone(phone);
 	        	account.setEmail(email);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setBank(bank);
 	        	account.setBranch(branch);
 	        	account.setRemittance_account(remittance_account);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setField_id(field_id);
 	        	account.setIdentity_id(identity_id);
 	        	account.setPosition(position);

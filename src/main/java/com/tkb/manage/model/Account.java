@@ -27,8 +27,8 @@ public class Account extends Base {
 	private String teacher_status;		//老師狀態(0：退休，1：在職)
 	private String school_master_id;	//服務學校流水號
 	private String id_no;				//身份證字號
-	private String phone;				//手機號碼
-	private String address;				//地址
+	private String mobile_phone;		//手機號碼
+	private String telephone;			//市話
 	private String bank;				//匯款銀行
 	private String branch;				//匯款分行
 	private String remittance_account;	//匯款帳號
@@ -36,6 +36,14 @@ public class Account extends Base {
 	private String position;			//老師身份(1：一般老師，2：組長，3：校長)
 	private String content_provision;	//內容提供(0：否，1：是)
 	private String content_audit;		//內容審核(0：否，1：是)
+	private String address_zip ;        //地址(郵遞區號)
+	private String address_city;        //地址(縣市)
+	private String address_area ;       //地址(區)
+	private String address_road;        //地址(路)
+	private String census_zip;          //戶籍(郵遞區號)
+	private String census_city;         //戶籍(縣市)
+	private String census_area;         //戶籍(區)
+	private String census_road;         //戶籍(路)
 	
 	private String level;				//等級
 	private String field_name;			//領域名稱
