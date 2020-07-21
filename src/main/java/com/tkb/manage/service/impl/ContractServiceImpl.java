@@ -73,4 +73,8 @@ public class ContractServiceImpl implements ContractService {
 		return contractDao.getDataByFieldEducation(contract);
 	}
 	
+	public Map<String, Object> getDataByContractId(Contract contract) {
+		return contractDao.getDataByContractId(contract);
+	}
+	
 }

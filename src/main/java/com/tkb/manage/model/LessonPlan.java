@@ -15,6 +15,7 @@ public class LessonPlan extends Base {
 	private String name;					//名稱
 	private String field_id;				//學習領域流水號
 	private String education_id;			//學制流水號
+	private String subject_id;				//學科流水號
 	private String course_length;			//教學時間
 	private String author;					//設計者
 	private String proofreader;				//指導者
