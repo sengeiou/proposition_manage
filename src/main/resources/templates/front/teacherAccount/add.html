@@ -27,16 +27,21 @@
                     <div><span class="required">*</span>身份證字號</div>
                     <div>
                         <input type="text" placeholder="請輸入身份證字號" id="teacherID" th:field="*{id_no}">
-                        <span class="memo">註：將作為使用者的帳號，請正確填寫</span>
+                        <span class="memo">註：將作為使用者的帳號，後四碼為預設密碼，請正確填寫</span>
                     </div>
                     <div><span class="required">*</span>電子信箱</div>
                     <div>
                         <input type="text" placeholder="請輸入電子信箱" id="teacherEmail" th:field="*{email}">
+                        <span class="memo">註：將作為通知用主要管道，請正確填寫</span>
                     </div>
                     <div><span class="required">*</span>手機</div>
                     <div>
-                        <input type="text" placeholder="請輸入手機號碼" id="teacherPhone" th:field="*{phone}">
-                        <span class="memo">註：將作為使用者的預設密碼（可以編輯）</span>
+                        <input type="text" placeholder="請輸入手機號碼" id="teacherPhone" th:field="*{mobile_phone}">
+                    </div>
+                    <div><span class="required">*</span>市話</div>
+                    <div>
+                        <input type="text" placeholder="請輸入市話號碼" id="teacherTel" th:field="*{telephone}">
+                        <span class="memo">範例：02-23315551</span>
                     </div>
                     <div><span class="required">*</span>領域</div>
                     <div>
@@ -113,10 +118,99 @@
                     <div>
                         <input type="text" placeholder="請輸入匯款帳號" id="accountNum" th:field="*{remittance_account}">
                     </div>
-                    <div class="p-left-14px">通訊地址</div>
-                    <div>
-                        <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}">
+                    
+                     <div><span class="required">*</span>戶籍地址</div>
+                    <div class="address-block">
+                        <input type="text" placeholder="郵遞區號" id="residencezip" disabled>
+                        <select class="address selectCity" id="census_city">
+                            <option value="">請選擇縣市</option>
+                            <option value="臺北市">臺北市</option>
+							<option value="基隆市">基隆市</option>
+							<option value="新北市">新北市</option>
+							<option value="連江縣">連江縣</option>
+							<option value="宜蘭縣">宜蘭縣</option>
+							<option value="釣魚臺">釣魚臺</option>
+							<option value="新竹市">新竹市</option>
+							<option value="新竹縣">新竹縣</option>
+							<option value="桃園市">桃園市</option>
+							<option value="苗栗縣">苗栗縣</option>
+							<option value="臺中市">臺中市</option>
+							<option value="彰化縣">彰化縣</option>
+							<option value="南投縣">南投縣</option>
+							<option value="嘉義市">嘉義市</option>
+							<option value="嘉義縣">嘉義縣</option>
+							<option value="雲林縣">雲林縣</option>
+							<option value="臺南市">臺南市</option>
+							<option value="高雄市">高雄市</option>
+							<option value="南海島">南海島</option>
+							<option value="澎湖縣">澎湖縣</option>
+							<option value="金門縣">金門縣</option>
+							<option value="屏東縣">屏東縣</option>
+							<option value="臺東縣">臺東縣</option>
+							<option value="花蓮縣">花蓮縣</option>
+                        </select>
+                        <select class="address selectArea" id="census_area">
+                            <option value="0">請選擇鄉鎮市區</option>
+                        </select>
+                        <input type="text" placeholder="請輸入戶籍地址" id="residenceAddress">
+                        <div class="customselect-residence-block">
+	                        <select id="residenceSelectZip" class="custom-select" >
+	                            <option value="">請選擇對應郵遞區號</option>
+	                        </select>
+                        </div>                        
                     </div>
+                    <div><span class="required">*</span>通訊地址</div>
+                    <div class="address-block">
+                        <div class="sameAbove-block">
+                            <label for="sameAbove">
+                                <div class="checkbox-square"></div>
+                                <span>同上</span>
+                                <input type="checkbox" id="sameAbove" class="dis-n">
+                            </label> 
+                        </div>
+                        <input type="text" placeholder="郵遞區號" id="zip" disabled>
+                        <select class="address selectCity" id="city">
+                            <option value="">請選擇縣市</option>
+                            <option value="臺北市">臺北市</option>
+							<option value="基隆市">基隆市</option>
+							<option value="新北市">新北市</option>
+							<option value="連江縣">連江縣</option>
+							<option value="宜蘭縣">宜蘭縣</option>
+							<option value="釣魚臺">釣魚臺</option>
+							<option value="新竹市">新竹市</option>
+							<option value="新竹縣">新竹縣</option>
+							<option value="桃園市">桃園市</option>
+							<option value="苗栗縣">苗栗縣</option>
+							<option value="臺中市">臺中市</option>
+							<option value="彰化縣">彰化縣</option>
+							<option value="南投縣">南投縣</option>
+							<option value="嘉義市">嘉義市</option>
+							<option value="嘉義縣">嘉義縣</option>
+							<option value="雲林縣">雲林縣</option>
+							<option value="臺南市">臺南市</option>
+							<option value="高雄市">高雄市</option>
+							<option value="南海島">南海島</option>
+							<option value="澎湖縣">澎湖縣</option>
+							<option value="金門縣">金門縣</option>
+							<option value="屏東縣">屏東縣</option>
+							<option value="臺東縣">臺東縣</option>
+							<option value="花蓮縣">花蓮縣</option>
+                        </select>
+                        <select class="address selectArea" id="area">
+                            <option value="">請選擇鄉鎮市區</option>
+                        </select>
+                        <input type="text" placeholder="請輸入通訊地址" id="address">
+                        <div class="customselect-block">
+                        	<select id="selectZip" class="custom-select" >
+                            	<option value="">請選擇對應郵遞區號</option>
+                        	</select>
+                        </div>                                               
+                    </div>
+                    
+<!--                     <div class="p-left-14px">通訊地址</div> -->
+<!--                     <div> -->
+<!--                         <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}"> -->
+<!--                     </div> -->
                 </div>
                 <button class="btn-submit" data-type="teacherCreate" type="button">送出</button>
             </div>
@@ -135,6 +229,110 @@
     </section>
 
     <div th:include="front/load/js :: js"></div>
+	<script>
 	
+	$("#census_city").on('change',function(){ //點擊戶籍地址City
+		$("#census_area").empty();
+        if($("#census_city").val() != ""){
+        	$.getJSON('/front/json/area.json', function (obj) {
+    			var area = obj.filter(function(item, index, array){
+    			  return (item.City.indexOf($("#census_city").val()) >= 0 );       
+    			});
+    			var str = "<option value=''>請選擇鄉鎮市區</option>";
+    			if(area.length > 0){
+    				for(var i =0;i < area.length;i++){
+    					str += "<option value='"+area[i].Area+"'>"+area[i].Area+"</option>";
+    				}
+    			}
+    			$("#census_area").append(str);
+    		});
+        }
+    });
+
+$("#census_area").on('change',function(){ //點擊戶籍地址Area
+		$("#residenceSelectZip").empty();
+        if($("#census_city").val() != "" && $("#census_area").val() != "" ){
+			$(this).siblings(".customselect-residence-block").html(' ');
+        	
+			$.getJSON('/front/json/allcity.json', function (obj) {
+    			var road = obj.filter(function(item, index, array){
+    			  return (item.City.indexOf($("#census_city").val()) >= 0 && item.Area.indexOf($("#census_area").val()) >= 0);       
+    			});
+    			console.log(road);
+    			var str = "<option value=''>請選擇對應郵遞區號</option>";
+    			if(road.length > 0){
+    				for(var i =0;i < road.length;i++){
+    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    				}
+    			}								
+    			//$("#residenceSelectZip").append(str);
+    			$(".customselect-residence-block").html("<select id='residenceSelectZip' class='custom-select'>"+str+"</select>")
+    		});        	
+        	
+			$("#residenceSelectZip").customselect();
+// 			$('#residenceSelectZip').trigger('render');
+        }else{
+        	alert("請選擇縣市及鄉鎮市區");
+        }
+    });
+
+	$("#city").on('change',function(){ //點擊通訊地址City
+		$("#area").empty();
+        if($("#city").val() != ""){
+        	$.getJSON('/front/json/area.json', function (obj) {
+    			var area = obj.filter(function(item, index, array){
+    			  return (item.City.indexOf($("#city").val()) >= 0 );       
+    			});
+    			var str = "<option value=''>請選擇鄉鎮市區</option>";
+    			if(area.length > 0){
+    				for(var i =0;i < area.length;i++){
+    					str += "<option value='"+area[i].Area+"'>"+area[i].Area+"</option>";
+    				}
+    			}
+    			$("#area").append(str);
+    		});
+        }
+    });
+
+	$("#area").on('change',function(){ //點擊戶籍地址Area
+		$("#selectZip").empty();
+        if($("#city").val() != "" && $("#area").val() != "" ){
+			$(this).siblings(".customselect-block").html(' ');
+        	
+			$.getJSON('/front/json/allcity.json', function (obj) {
+    			var road = obj.filter(function(item, index, array){
+    			  return (item.City.indexOf($("#city").val()) >= 0 && item.Area.indexOf($("#area").val()) >= 0);       
+    			});
+    			console.log(road);
+    			var str = "<option value=''>請選擇對應郵遞區號</option>";
+    			if(road.length > 0){
+    				for(var i =0;i < road.length;i++){
+    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    				}
+    			}								
+    			//$("#residenceSelectZip").append(str);
+    			$(".customselect-block").html("<select id='selectZip' class='custom-select'>"+str+"</select>")
+    		});        	
+        	
+			$("#selectZip").customselect();
+// 			$('#residenceSelectZip').trigger('render');
+        }else{
+        	alert("請選擇縣市及鄉鎮市區");
+        }
+    });
+    
+	function getjson(){
+		var user_city;
+		var user_area;
+		var user_road;
+		$.getJSON('/front/json/7435fd74d0a7eca79b7a65a80e84c30f_export.json', function (obj) {
+			var country = obj.filter(function(item, index, array){
+			  return (item.City.indexOf('臺北市') >= 0 );       
+			});
+			console.log(obj);
+			console.log(country);
+		});
+	}
+	</script>
 </body>
 </html>

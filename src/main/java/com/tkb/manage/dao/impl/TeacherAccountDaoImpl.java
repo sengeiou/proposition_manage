@@ -55,7 +55,7 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		String sql = " SELECT TA.*, PMF.NAME AS FIELD_NAME, SM.NAME AS SCHOOL_MASTER_NAME "
 				   + " FROM proposition_manage.teacher_account TA "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = TA.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = TA.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID ";
 		
 		sql += " LIMIT "+((account.getPage()-1)*account.getPage_count())+","+account.getPage_count();
@@ -113,13 +113,17 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		String sql = " INSERT INTO proposition_manage.teacher_account "
 				   + " (UUID, ACCOUNT, PASSWORD, NAME, TEACHER_STATUS, SCHOOL_MASTER_ID, "
-				   + " ID_NO, PHONE, EMAIL, ADDRESS, BANK, BRANCH, REMITTANCE_ACCOUNT, "
+				   + " ID_NO, MOBILE_PHONE, TELEPHONE, EMAIL, BANK, BRANCH, REMITTANCE_ACCOUNT, "
 				   + " FIELD_ID, IDENTITY_ID, POSITION, CONTENT_PROVISION, CONTENT_AUDIT, STATUS, "
+				   + " ADDRESS_ZIP, ADDRESS_CITY, ADDRESS_AREA, ADDRESS_ROAD, "
+				   + " CENSUS_ZIP, CENSUS_CITY, CENSUS_AREA, CENSUS_ROAD, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :account, :password, :name, "
-				   + " :teacher_status, :school_master_id, :id_no, :phone, :email, :address, "
+				   + " :teacher_status, :school_master_id, :id_no, :mobile_phone, :telephone, :email, "
 				   + " :bank, :branch, :remittance_account, :field_id, :identity_id, :position, :content_provision, "
-				   + " :content_audit, :status, :create_by, NOW(), :update_by, NOW()) ";
+				   + " :content_audit, :status, :address_zip, :address_city, :address_area, :address_road, "
+				   + " :census_zip, :census_city, :census_area, :census_road, "
+				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
@@ -147,9 +151,9 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		args.add(account.getTeacher_status());
 		args.add(account.getSchool_master_id());
 		args.add(account.getId_no());
-		args.add(account.getPhone());
+//		args.add(account.getPhone());
 		args.add(account.getEmail());
-		args.add(account.getAddress());
+//		args.add(account.getAddress());
 		args.add(account.getBank());
 		args.add(account.getBranch());
 		args.add(account.getRemittance_account());

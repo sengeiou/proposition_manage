@@ -18,9 +18,11 @@ $(function(){
         $(this).parent().find(".radio-circle").addClass("active")
         $(this).parent().siblings().find(".radio-circle").removeClass("active")
     })
-
-    $("#select-school").customselect()
     
+    $("#select-school").customselect()
+    $("#residenceSelectZip").customselect()
+    $("#selectZip").customselect()
+
     $(window).scroll(function() { //header展開縮和
         var scrollingElement = (document.scrollingElement || document.body)      
         let scrollTop = scrollingElement.scrollTop    
@@ -57,6 +59,19 @@ $(function(){
         $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
         $(`section.${lightBox}-lightBox`).removeClass('dis-b').addClass('dis-n')
     })
+
+    $(".btn-closeMemolightBox").on("click",function(){ //關閉提醒燈箱
+        let btnType = $(this).data('type')
+        if (btnType == 'editPassword') {
+            location.href = "./member.html"
+        }else if (btnType == 'passEditPassword') {
+            alert("暫不修改密碼，需寫進log裡")
+        }
+
+        $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
+        $(`section.MemolightBox`).removeClass('dis-b').addClass('dis-n')
+    })
+
     $(".btn-closelightBoxAlert").on("click",function(){ //關閉燈箱        
         $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
         $(`section.lightBoxAlert`).removeClass('dis-b').addClass('dis-n')
@@ -65,7 +80,7 @@ $(function(){
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')
         let state = true
-        if (lightBox == 'edit-categoryGrade' || lightBox == 'edit-categoryMaterial') {
+        if (lightBox == 'edit-categoryGrade' || lightBox == 'edit-categoryMaterial' || lightBox == 'edit-categorySubject') {            
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
@@ -73,7 +88,7 @@ $(function(){
                 $(`section.${lightBox}-lightBox .container p`).text(item.text())                
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
             }           
-        }else if (lightBox == 'edit-categorySubjectType') {
+        }else if (lightBox == 'edit-categorySubjectType') {            
             let item = $(this).parent().siblings('.item-group').find('.active')
             if (item.length == 0) {
                 state = false                
@@ -83,6 +98,15 @@ $(function(){
                 $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))
                 // console.log($(`section.${lightBox}-lightBox .container input`).data('id'))
             }
+        }else if (lightBox == 'create-categorySubGrade' && $(".subItemGroup").hasClass('none')) {            
+            state = false
+            openlightBoxAlert('請先選擇學制')
+        }else if (lightBox == 'verify') {            
+            $("section.verify-lightBox .container .schoolType").text($(this).parent().siblings('.listSchoolType').text())
+            $("section.verify-lightBox .container .subjectType").text($(this).parent().siblings('.listSubjectType').text())
+            $("section.verify-lightBox .container .name").text($(this).parent().siblings('.listName').text())
+            $("section.verify-lightBox .container .school").text($(this).parent().siblings('.listSchool').text())
+            $("section.verify-lightBox .editNewDataBtn").data('id',$(this).data('id'))
         }
 
         if (state) {
@@ -119,7 +143,7 @@ $(function(){
 
     $(".create-content").on("click",".deleteTag",function(){  //tag刪除按鈕        
         let val = $(this).data('value')
-        let lightBoxName = $(this).parent().parent().find('button.btn-openLightBox').data('lb')        
+        let lightBoxName = $(this).parent().parent().parent().find('button.btn-openLightBox').data('lb')        
         let lightBox = $(`section.${lightBoxName}-lightBox`)        
         lightBox.find(`input[value='${val}']`).prop('checked',false) //燈箱內input移除checked
         lightBox.find(`input[value='${val}']`).siblings('.checkbox-square').removeClass('active')
@@ -128,13 +152,15 @@ $(function(){
 
     $(".createTagBtn").on("click",function(){   //燈箱確定按鈕，生成tag
         let tagName = $(this).data('tag') 
-        let location = $(`button.btn-openLightBox[data-lb='${tagName}']`).parent()  //tag放置位置
+        // let location = $(`button.btn-openLightBox[data-lb='${tagName}']`).parent()  //tag放置位置
+        let location = $(`button.btn-openLightBox[data-lb='${tagName}']`).siblings('.lightboxItemWrap') //tag放置位置
         let checkedInput = $(this).parent().find('input:checked') //燈箱中被勾選的input
         location.find('.lightboxItem').remove() //先移除全部tag
         checkedInput.each(function(){            
             let item = `<div class="lightboxItem"><span>${$(this).siblings('span').text()}</span><button class="deleteTag" data-value="${$(this).val()}"><i class="fas fa-times"></i></button></div>`
             location.append(item)                     
-        })        
+        })
+        location.css('margin-top','10px')       
         $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
         $(`section.${tagName}-lightBox`).removeClass('dis-b').addClass('dis-n')
     })
@@ -144,6 +170,8 @@ $(function(){
         let location = $(`button.btn-openLightBox[data-lb='${newData}']`).siblings('.editNewData') //老師編輯-新資料放置位置
         let inputIDName = newData.split('-')[1] //新資料的輸入框
         var state = true
+        var category = false
+        var member = false
         var text = ''
         if (newData == 'edit-teacherID') {
             let status = checkID($(`input#${inputIDName}`).val()).status            
@@ -186,25 +214,88 @@ $(function(){
                 $(`input#${inputIDName}`).val('')
                 $(`input#sub${inputIDName}`).val('')
             }
+        }else if (newData == 'create-categorySubject' || newData == 'create-categoryMaterial' || newData == 'create-categoryGrade') { //新增跨科管理、素材、學制
+            let categoryItem = $("section.lightBoxContent .container .categoryItem").val()
+            if (categoryItem) {
+                let html = `<p class="item item-grid" id='${categoryItem}'>${categoryItem}</p>`  
+                $(".category-block .item-group").append(html)
+                category = true
+                console.log('新增的名稱為：：'+categoryItem)
+            }
+        }else if (newData == 'create-categorySubGrade' ) { // 新增年級
+            let categoryItem = $("section.create-categorySubGrade-lightBox .container .categoryItem").val()
+            if (categoryItem) {
+                let html = `<p class="item item-grid" id='${categoryItem}'>${categoryItem}</p>`  
+                $(".category-block .subItemGroup").append(html)
+                let schoolType = $(".category-block .item-group .item.active").attr('id')
+                console.log('學制為：：'+schoolType+',要新增的年級在這～～～'+categoryItem)
+                category = true
+            }            
+        }else if (newData == 'create-categorySubjectType') { //新增學科
+            let categoryItem = $("section.lightBoxContent .container .categoryItem").val()
+            let categorySubItem = $("section.lightBoxContent .container .categorySubItem").val()
+            if (categoryItem && categorySubItem) {
+                let html = `<p class="item item-grid" id='${categoryItem}'>                            
+                                <span>${categoryItem}</span>
+                                <span>${categorySubItem}</span>
+                            </p>`  
+                $(".category-block .item-group").append(html)
+                category = true
+                console.log('新增的名稱為：：'+categoryItem+',新增的縮寫為：：'+categorySubItem)
+            }else {
+                state = false
+                text = '請輸入完整資訊'
+            }
+        }else if (newData == 'edit-password') { //會員中心-修改密碼
+            if ($("#password").val() != $("#check-password").val()) {
+                state = false
+                text = '密碼輸入不一致'
+            }else if (!$("#password").val() && !$("#check-password").val()) {
+                member = true
+            }else {
+                member = true
+                $("#passwordText").text('*'.repeat($("#password").val().length))  
+                openlightBoxAlert('密碼修改完成')
+                console.log('密碼修改完成，新密碼：：'+$("#password").val())
+            }            
+        }else if (newData == 'verify') { //老師列表-審核燈箱
+            if ($("input[name='verify']:checked").length != 0) {
+                let teacherID = $(this).data('id')
+                alert('老師身分證字號::'+teacherID+'是否通過::'+$("input[name='verify']:checked").val())
+                $(`section.${newData}-lightBox input[name='verify']`).prop('checked',false)
+                $(`section.${newData}-lightBox div.radio-circle`).removeClass('active')                
+            }           
         }
 
-        if (state) {            
+        if (state && !category && !member) { //編輯老師
             location.text($(`input#${inputIDName}`).val())
             $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
             $(`section.${newData}-lightBox`).removeClass('dis-b').addClass('dis-n')
+        }else if (category) { //分類管理的「新增」功能，清空燈箱值
+            $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
+            $(`section.${newData}-lightBox`).removeClass('dis-b').addClass('dis-n')
+            $("section.lightBoxContent .categoryItem").val('')
+            $("section.lightBoxContent .categorySubItem").val('')
+        }else if (member) { //會員中心的「更改密碼」功能，清空燈箱值
+            $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
+            $(`section.${newData}-lightBox`).removeClass('dis-b').addClass('dis-n')
+            $(`section.${newData}-lightBox input`).val('')
         }else {
             openlightBoxAlert(text)
         }
-
     })
 
     $("#schoolType").on("change",function(){        
-        if ($(this).val() == 1) {
-            console.log('國小！！年級的ajax在這~~~')
-        }else if ($(this).val() == 2) {
-            console.log('國中!!!!!年級的ajax在這~~~')
-        }else if ($(this).val() == 3) {
-            console.log('高中年級的ajax在這~~~')
+        // if ($(this).val() == 1) {
+        //     console.log('國小！！年級的ajax在這~~~')
+        // }else if ($(this).val() == 2) {
+        //     console.log('國中!!!!!年級的ajax在這~~~')
+        // }else if ($(this).val() == 3) {
+        //     console.log('高中年級的ajax在這~~~')
+        // }
+        let searchItem = $(this).data('searchItem')
+        if (searchItem == 'subjectType') {
+            
         }
     })
     
@@ -226,9 +317,14 @@ $(function(){
     })
     
     $(".btn-search").on("click",function(){
-        console.log('搜尋在這邊～～～老師姓名：：' + $("input[name='teacherName']").val())
-        console.log('搜尋在這邊～～～履行合約：：' + $("input[name='state']:checked").val())
-        console.log('搜尋在這邊～～～合約時限：：' + $("input[name='available']:checked").val())        
+        let searchType = $(this).data('search')
+        if (searchType == 'contractList' || searchType == 'contractMatList') {
+            searchContract ()
+        }else if (searchType == 'teacherList') {
+            searchTeacher ()
+        }else if (searchType == 'lessonList') {
+            searchLessonProp ()
+        }
     })
 
     $(".btn-submit").on("click",function(){
@@ -265,21 +361,176 @@ $(function(){
             contentEditAdmin(type)
         }else if (type.indexOf('contractMatCreate') > -1) {
             checkContract(type)
+        }else if (type.indexOf('register') > -1) {
+            checkTeacher(type)
         }
     })
 
-    function openlightBoxAlert(text) {
-        console.log(text)
+    $(".backToInit").on("click",function(){   
+        let initPosition = $("input[name='initPosition']").val()//老師身份     
+        let identityState = $("input[name='initIdentityState']").val() //系統身份
+        let schoolType = $("input[name='initSchoolType']").val() //監督範圍--學制
+        let specialSkill = $("input[name='initSpecialSkill']").val() //監督範圍--學科 
+        // 先將全部input 取消勾選
+        $("input[name='position']").prop('checked',false).siblings('.radio-circle').removeClass('active')
+        $("input[name='content_provision']").prop('checked',false).siblings('.checkbox-square').removeClass('active')
+        $("input[name='education']").prop('checked',false).siblings('.checkbox-square').removeClass('active')
+        $("input[name='field']").prop('checked',false).siblings('.checkbox-square').removeClass('active')
+
+        // 勾選初始值
+        $(`input#${initPosition}`).prop('checked', true).siblings('.radio-circle').addClass('active')
+        if (initPosition == 'teacher') {
+            $("div.teacherBlock").removeClass('dis-n')
+            $("div.principalBlock").addClass('dis-n')
+        }else {
+            $("div.teacherBlock").addClass('dis-n')
+            $("div.principalBlock").removeClass('dis-n')
+        }
+        
+        if (identityState) {
+            identityState.split(',').forEach( function(element, index, array){            
+                $(`input#${element}`).prop('checked', true).siblings('.checkbox-square').addClass('active')
+            })
+        }
+
+        if (schoolType) {
+            schoolType.split(',').forEach( function(element){
+                $(`input#${element}`).prop('checked', true).siblings('.checkbox-square').addClass('active')
+            })
+        }
+                       
+        if (specialSkill) {
+            specialSkill.split(',').forEach( function(element){
+                $(`input#${element}`).prop('checked', true).siblings('.checkbox-square').addClass('active')
+            })
+        }
+       
+    })
+
+    $("#checkAll").on("click",function(){
+        if ($(this).is(":checked")) {
+            $(".listCheckBox").prop('checked',true).siblings('div.checkbox-square').addClass('active')
+        }else {
+            $(".listCheckBox").prop('checked',false).siblings('div.checkbox-square').removeClass('active')
+        }
+        
+    })
+
+    $(".listCheckBox").on("click",function(){
+        let checkAll = true
+        $(".listCheckBox").each(function(){            
+            if (!$(this).is(':checked')) {
+                checkAll = false
+            }
+        })
+        if (checkAll){            
+            $("#checkAll").prop('checked',true).siblings('div.checkbox-square').addClass('active')
+        }else {            
+            $("#checkAll").prop('checked',false).siblings('div.checkbox-square').removeClass('active')
+        }
+    })
+
+    $(".btnDownLessonFile").on("click",function(){
+        let str = ''
+        $(".listCheckBox").each(function(){            
+            if ($(this).is(':checked')) {
+                str += $(this).attr('id') + ','
+            }
+        })        
+        if (str != '') {
+            alert('下載教案或命題檔案在這，檔案的id：：'+str)
+        }        
+    })
+
+    $(".btnOpenMail").on("click",function(){
+        window.open ("mail.html", 
+        "newwindow", 
+        "height=640, width=600, toolbar=no, resizable=no, location=no, status=no")
+    })
+
+    $(".btnForgetPassword").on("click",function(){ // 登入頁「忘記密碼」
+        openlightBoxAlert('已將通知信寄到您註冊信箱，請至信箱進行密碼重置流程')        
+    })
+
+    $(".selectCity").on("change",function(){
+//        alert('選擇的縣市：：'+$(this).val())        
+        // $(this).siblings('.selectArea').html(ajax 出來的鄉鎮放在這邊)
+        sameAbove('selectCity')
+    })
+
+    $(".selectArea").on("change",function(){
+//        alert('選擇的鄉鎮市區：：'+$(this).val())
+        // $(this).siblings('.selectRoad').html(ajax 出來的路段放在這邊)        
+        sameAbove('selectArea')
+    })
+
+    $("#residenceSelectZip").on("change",function(){ //建立老師、編輯老師的戶籍地址郵遞區號select
+    	$("#residencezip").val($("#residenceSelectZip").val());
+        let zipInput = $(this).parent().parent().find("input#residencezip")        
+        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val())
+        sameAbove('residenceSelectZip')
+    })
+
+    $("#selectZip").on("change",function(){ //建立老師、編輯老師的通訊地址郵遞區號select
+    	$("#zip").val($("#selectZip").val());
+        let zipInput = $(this).parent().parent().find("input#zip")      
+        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val())
+        sameAbove('selectZip')
+    })
+
+    $("#sameAbove").on("click",function(){
+        if ($(this).is(":checked")) {
+            $("#zip").val($("#residencezip").val())
+            $("#zip").siblings(".selectCity").val($("#residencezip").siblings(".selectCity").val())
+            $("#zip").siblings(".selectArea").val($("#residencezip").siblings(".selectArea").val())
+            $("#zip").siblings(".selectRoad").val($("#residencezip").siblings(".selectRoad").val())
+            $("#address").val($("#residenceAddress").val())
+            $("#zip").siblings(".custom-select").find('span').text($("#residencezip").siblings(".custom-select").find('span').text())
+            $("#selectZip").val($("#residenceSelectZip").val())
+        }else {
+            $("#zip").val('')
+            $("#zip").siblings(".selectCity").val(0)
+            $("#zip").siblings(".selectArea").val(0)
+            $("#zip").siblings(".selectRoad").val(0)
+            $("#address").val('')
+            $("#selectZip").val(0)
+        }        
+    })
+
+    $(".btn-openArea").on("click",function(){  //老師列表-審核區塊
+        if ($(this).children('i').hasClass('fa-angle-up')) {
+            $(this).children('i').removeClass('fa-angle-up').addClass('fa-angle-down')
+            $(this).siblings('div.verify-list').removeClass('closeArea').addClass('openArea')
+        }else {
+            $(this).children('i').addClass('fa-angle-up').removeClass('fa-angle-down')
+            $(this).siblings('div.verify-list').addClass('closeArea').removeClass('openArea')
+        }
+    })
+
+    $(".attach-select").on("change",function(){
+        if ($(this).val() == 0) {
+            $(this).siblings('.attach-label').addClass('dis-n')            
+        }else {
+            $(this).siblings('.attach-label').removeClass('dis-n')
+        }        
+        //圖片 accept=".jpg,.jpeg,.png"
+        //音檔 accept=".mp3,.wav"
+        //影片 accept=".avi,.mp4,.mpg"
+        
+    })
+
+    function openlightBoxAlert(text) {        
         $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')
         $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
         $("section.lightBoxAlert .container div").text(text)
     }
     
     function checkTeacher(type) {        
-        let create = type=='teacherCreate'? true : false;        
+        let create = type=='teacherCreate' || type=='register'? true : false;        
         let status = true
         let text = ''
         let phoneCheck = /^[09]{2}[0-9]{8}$/;
+        let telCheck = /^0\d{1,2}-?\d{6,7}$/;        
         let emailCheck = /^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/;
 
         if (create && !$("#teacherName").val()) {
@@ -300,9 +551,18 @@ $(function(){
         }else if (!phoneCheck.test($("#teacherPhone").val())){
             text = "請輸入正確的手機號碼";
             status = false;
+        }else if (!$("#teacherTel").val()) {
+            status = false
+            text = '請輸入的市話號碼'
+        }else if (!telCheck.test($("#teacherTel").val())){
+            text = "請輸入正確的市話號碼";
+            status = false;
+        }else if ($("#schoolType").val() == 0) {
+            status = false
+            text = '請選擇學制'
         }else if ($("#specialSkill").val() == 0) {
             status = false
-            text = '請選擇領域'
+            text = '請選擇學科'
         }else if (!$("input[name='position']:checked").val()) {            
             status = false
             text = '請選擇老師身份'
@@ -314,7 +574,7 @@ $(function(){
             text = '請勾選監督範圍的學制'
         }else if ($("input[name='position']:checked").attr('id') != 'teacher' && $("input.specialSkill:checked").length == 0) { //老師身份為「校長」、「組長」時的必填欄位
             status = false
-            text = '請勾選監督範圍的領域'
+            text = '請勾選監督範圍的學科'
         }else if ($("#select-school").val() == 0) {
             status = false
             text = '請選擇服務學校'
@@ -327,6 +587,18 @@ $(function(){
         }else if (create &&!$("#accountNum").val()) {
             status = false
             text = '請填寫匯款帳號'
+        }else if (!$("#residenceAddress").val()) {
+            status = false
+            text = '請填寫完整戶籍地址'
+        }else if ($("#residenceSelectZip").val() == 0) {
+            status = false
+            text = '請選擇戶籍地址對應的郵遞區號'
+        }else if (!$("#address").val()) {
+            status = false
+            text = '請填寫完整通訊地址'
+        }else if ($("#selectZip").val() == 0) {
+            status = false
+            text = '請選擇通訊地址對應的郵遞區號'
         }
 
         if (!status) {
@@ -342,6 +614,8 @@ $(function(){
             	$("#mainForm").attr("action", "/teacher/editSubmit");
                 $("#mainForm").submit();
                 console.log('老師帳號修改驗證通過')
+            }else if (type == 'register') {
+                console.log('註冊驗證通過')
             }
         }
     }
@@ -418,7 +692,7 @@ $(function(){
             text = '請勾選類型'
         }else if (!material && $("#specialSkill").val() == 0) {
             status = false
-            text = '請選擇領域'
+            text = '請選擇學科'
         }else if (!material && $("#schoolType").val() == 0) {
             status = false
             text = '請選擇學制'
@@ -478,7 +752,7 @@ $(function(){
             }                
         }else if ($("#specialSkill").val() == 0) {
             status = false
-            text = '請選擇學習領域'
+            text = '請選擇學科'
         }else if ($("input[name='subject']:checked").length == 0) {
             status = false
             text = '請選擇學科'
@@ -499,19 +773,22 @@ $(function(){
             $("section.lightBoxAlert .container div").text(text)
         }else {
             let text = ''
-            $(".keyWordInput").siblings('.lightboxItem').each(function(){   
+            $(".keyWordInput").siblings('.lightboxItem').each(function(){ //關鍵字input hidden
                 text += `,${$(this).text()}`
             })          
             $(".keyWordInput").val(text.substring(1))      
             console.log('關鍵字的input hidden：：' + $(".keyWordInput").val())
 
-            $(".lightBoxInput").each(function(){
-                var lightBoxText = ''
-                $(this).siblings('.lightboxItem').each(function(){
-                    lightBoxText += `,${$(this).find('span').text()}`                    
+            $(".lightboxItemWrap").each(function(){ //「核心素養總綱」、「核心素養領綱」、「學習表現」、「學習內容」input hidden
+                var lightBoxText = ''                
+                // $(this).siblings('.lightboxItem').each(function(){
+                //     lightBoxText += `,${$(this).find('span').text()}`
+                // })
+                $(this).children('.lightboxItem').each(function(){
+                    lightBoxText += `,${$(this).find('span').text()}`
                 })
-                $(this).val(lightBoxText.substring(1))
-                console.log('核心素養總綱/領綱、學習表現、學習內容input hidden::' + $(this).val())
+                $(this).siblings('.lightBoxInput').val(lightBoxText.substring(1))
+                console.log('核心素養總綱/領綱、學習表現、學習內容input hidden::' + $(this).siblings('.lightBoxInput').val())
             })
 
             if (type == 'lessonCreate') {
@@ -536,9 +813,9 @@ $(function(){
         if ($("input[name='verify']:checked").length == 0) {
             status = false
             text = '請選擇審核結果'
-        }else if ($("input[name='verify']:checked").val() == 0 && $(".lessonVerifyFileText").text() == '') {
+        }else if ($("input[name='verify']:checked").val() == 0 && $(".lessonVerifyFileText").text() == '' && !$(".lessonVerify textarea").val()) {
             status = false
-            text = '請選擇審核回饋檔案'
+            text = '請選擇審核回饋檔案或填寫審核回饋'
         }
 
         if (!status) {
@@ -603,7 +880,7 @@ $(function(){
             }
         }else if ($("#specialSkill").val() == 0) {
             status = false
-            text = '請選擇學習領域'
+            text = '請選擇學科'
         }else if ($("input[name='subject']:checked").length == 0) {
             status = false
             text = '請選擇學科'
@@ -620,20 +897,20 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-            let ketText = ''
-            $(".keyWordInput").siblings('.lightboxItem').each(function(){   
+            let ketText = ''            
+            $(".keyWordInput").siblings('.lightboxItem').each(function(){   //關鍵字input hidden
                 ketText += `,${$(this).text()}`
             })          
             $(".keyWordInput").val(ketText.substring(1))      
             console.log('關鍵字的input hidden：：' + $(".keyWordInput").val())
             
-            $(".lightBoxInput").each(function(){
+            $(".lightboxItemWrap").each(function(){ //「核心素養總綱」、「核心素養領綱」、「學習表現」、「學習內容」input hidden
                 var lightBoxText = ''
-                $(this).siblings('.lightboxItem').each(function(){
-                    lightBoxText += `,${$(this).find('span').text()}`                    
+                $(this).children('.lightboxItem').each(function(){
+                    lightBoxText += `,${$(this).find('span').text()}`
                 })
-                $(this).val(lightBoxText.substring(1))
-                console.log('核心素養總綱/領綱、學習表現、學習內容input hidden::' + $(this).val())
+                $(this).siblings('.lightBoxInput').val(lightBoxText.substring(1))
+                console.log('核心素養總綱/領綱、學習表現、學習內容input hidden::' + $(this).siblings('.lightBoxInput').val())
             })
 
             if (type == 'lessonEditAdmin') {
@@ -650,6 +927,55 @@ $(function(){
                 console.log('命題-基本題：：編輯驗證通過')
             }
             
+        }
+    }
+
+    linkLocation()
+    function linkLocation() {        
+        let index = location.href.lastIndexOf('/')
+        let link = location.href.substring(index+1 , location.href.length)
+        // console.log(link)
+        let IdentityState = ''
+        let SchoolType = ''
+        let SpecialSkill = ''
+
+        
+         
+        $("input[name='initPosition']").val($("input[name='position']:checked").attr('id'))
+        //系統身份初始值
+        $("input[name='content_provision']:checked").each(function(){            
+            IdentityState += $(this).attr('id')+','
+        })        
+        $("input[name='initIdentityState']").val(IdentityState.substr( 0 , IdentityState.length -1 ))        
+
+        //監督範圍--學制初始值
+        $("input[name='education']:checked").each(function(){            
+            SchoolType += $(this).attr('id')+','
+        })        
+        $("input[name='initSchoolType']").val(SchoolType.substr( 0 , SchoolType.length -1 ))
+
+        //監督範圍--學科初始值
+        $("input[name='field']:checked").each(function(){            
+            SpecialSkill += $(this).attr('id')+','
+        })
+        $("input[name='initSpecialSkill']").val(SpecialSkill.substr( 0 , SpecialSkill.length -1 ))
+    }    
+
+    function sameAbove(addressSelect) {
+        let same = true
+        if (addressSelect == 'residenceSelectZip' || addressSelect == 'selectZip') {
+            $("#residenceSelectZip").val() ==  $("#selectZip").val() ? same=true :same=false
+        }else {
+            let valArr = []
+            $(`.${addressSelect}`).each(function(){
+                valArr.includes($(this).val()) ? false : valArr.push($(this).val())
+            })
+            valArr.length == 1 ? same=true : same=false
+        }
+        
+        if (!same) {
+            $("#sameAbove").prop('checked',false)
+            $("#sameAbove").siblings('.checkbox-square').removeClass('active')
         }
     }
     
@@ -728,4 +1054,48 @@ $(function(){
             }
         })
     })
+
+
+    //搜尋區塊
+    function searchContract() {
+        let teacherName = $("input#teacherName").val()
+        let contractType = $("input.contractType:checked").val()
+        let contractTime = $("input.contractTime:checked").val()
+        console.log(teacherName)
+        console.log(contractType)
+        console.log(contractTime)
+    }
+
+    function searchTeacher() {
+        let identity = $("input.identityState:checked").attr('id')
+        let teacherName = $("input#teacherName").val()
+        let teacherEmail = $("input#teacherEmail").val()
+        let subjectType = $("select.subjectType").val()
+        let school = $("select.school").val()
+        console.log('identity::'+identity)
+        console.log('teacherName::'+teacherName)
+        console.log('teacherEmail::'+teacherEmail)
+        console.log('subjectType::'+subjectType)
+        console.log('school::'+school)
+    }
+
+    function searchLessonProp () {
+        let contractNumber = $("input#contractNumber").val()
+        let lessonName = $("input#lessonName").val()    
+        let subjectType = $("select.subjectType").val()        
+        let schoolType = $("input.schoolType:checked").attr('id')
+        let lessonCreateTime = $("input#lessonCreateTime").val()
+
+        let lessonStart = lessonCreateTime.split(' ~ ')[0]
+        let lessonEnd = lessonCreateTime.split(' ~ ')[1]
+
+        console.log('contractNumber::'+contractNumber)
+        console.log('lessonName::'+lessonName)        
+        console.log('subjectType::'+subjectType)
+        console.log('schoolType::'+schoolType)
+        console.log('lessonCreateTime::'+lessonCreateTime)
+        console.log('lessonStart::'+lessonStart)
+        console.log('lessonEnd::'+lessonEnd)
+        
+    }
 })

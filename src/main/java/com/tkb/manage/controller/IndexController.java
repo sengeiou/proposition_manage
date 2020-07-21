@@ -355,7 +355,7 @@ public class IndexController {
 		
 //		//取得領域清單
 //		Field field = new Field();
-//		List<Map<String, Object>> fieldList = fieldService.getList(field);
+//		List<Map<String, Object>> fieldList = subjectService.getList(field);
 //		model.addAttribute("fieldList", fieldList);
 		
 		//取得學科清單
