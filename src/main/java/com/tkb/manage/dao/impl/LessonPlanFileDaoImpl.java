@@ -30,9 +30,9 @@ public class LessonPlanFileDaoImpl implements LessonPlanFileDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlanFile);
 		
 		String sql = " INSERT INTO proposition_manage.lesson_plan_file"
-				   + " (LESSON_PLAN_ID, TYPE, UPLOAD_NAME, FILE_NAME, "
+				   + " (LESSON_PLAN_ID, TYPE, UPLOAD_NAME, FILE_NAME, AUDIT_FEEDBACK, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(:lesson_plan_id, :type, :upload_name, :file_name, "
+				   + " VALUES(:lesson_plan_id, :type, :upload_name, :file_name, :audit_feedback, "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();

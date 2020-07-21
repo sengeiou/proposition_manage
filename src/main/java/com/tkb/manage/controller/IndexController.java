@@ -272,7 +272,7 @@ public class IndexController {
 				for(int i=0; i<fieldList.size(); i++) {
 					for(int j=0; j<educationArr.length; j++) {
 						contract = new Contract();
-						contract.setField_id(fieldList.get(i).get("ID").toString());
+//						contract.setField_id(fieldList.get(i).get("ID").toString());
 						contract.setEducation_id(educationArr[j]);
 						Map<String, Object> getListByFieldEducation = contractService.getDataByFieldEducation(contract);
 						if(getListByFieldEducation != null) {
@@ -353,10 +353,16 @@ public class IndexController {
 	@RequestMapping(value = "/teacher/add" , method = {RequestMethod.POST, RequestMethod.GET})
     public String teacherAdd(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
+//		//取得領域清單
+//		Field field = new Field();
+//		List<Map<String, Object>> fieldList = fieldService.getList(field);
+//		model.addAttribute("fieldList", fieldList);
+		
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//取得學制清單
 		Education education = new Education();
@@ -416,10 +422,10 @@ public class IndexController {
     	String identity_id = levelId.get("ID").toString();
     	
     	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
-    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
+//    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
 		account.setAccount(account.getId_no());
-		account.setPassword(account.getPhone());
+//		account.setPassword(account.getPhone());
 		account.setIdentity_id(identity_id);
 		account.setContent_provision(content_provision);
 		account.setContent_audit(content_audit);
@@ -561,7 +567,7 @@ public class IndexController {
     	String identity_id = levelId.get("ID").toString();
     	
     	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
-    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
+//    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
 //		account.setAccount(account.getEmail());
 //		account.setPassword(account.getPhone());
@@ -755,13 +761,13 @@ public class IndexController {
 	        	account.setName(name);
 	        	account.setSchool_master_id(school_master_id);
 	        	account.setId_no(id_no);
-	        	account.setPhone(phone);
+//	        	account.setPhone(phone);
 	        	account.setEmail(email);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setBank(bank);
 	        	account.setBranch(branch);
 	        	account.setRemittance_account(remittance_account);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setField_id(field_id);
 	        	account.setIdentity_id(identity_id);
 	        	account.setPosition(position);
@@ -831,16 +837,17 @@ public class IndexController {
 	@RequestMapping(value = "/contract/teacher/add" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String contractAdd(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute Contract contract) {
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
 		//取得學制清單
 		Education education = new Education();
 		education.setLayer("1");
 		List<Map<String, Object>> educationList = educationService.getList(education);
 		model.addAttribute("educationList", educationList);
+		
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -859,6 +866,8 @@ public class IndexController {
 		
 		try {
 			
+			String subject_id = contract.getSubject_id();
+			
 			contract.setTkb_contract_num(null);
 			contract.setTkb_contract_file(null);
 			contract.setTkb_contract_name(null);
@@ -874,9 +883,15 @@ public class IndexController {
 			contract.setCreate_by(accountSession.getAccount());;
 			contract.setUpdate_by(accountSession.getAccount());
 			int id = contractService.add(contract);
+			
+			//設定學制代碼
+			String educationCode = "國小".equals(contract.getSubject_name()) ? "A" : "國中".equals(contract.getSubject_name()) ? "B" : "高中".equals(contract.getSubject_name()) ? "C" : "D";
+			
 			//修改合約序號，規則：年月日+流水號後四碼=共10碼
 			contract = new Contract();
 			contract.setId(String.valueOf(id));
+			contract.setContract_id("T"+educationCode);
+			contract.setSubject_id(subject_id);
 			contractService.updateTeacherId(contract);
 			
 		} catch(Exception e) {
@@ -1100,7 +1115,7 @@ public class IndexController {
 			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
-			lessonPlan.setUpload_status("Y");
+			lessonPlan.setFile_status("A");
 			int addCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("addCount", addCount);
 			//待修訂數
@@ -1160,10 +1175,10 @@ public class IndexController {
 		
 		//設定合約
 		lessonPlan.setContract_id(contractList.get(0).get("CONTRACT_ID").toString());
-		//設定領域
-		lessonPlan.setField_id(contractList.get(0).get("FIELD_ID").toString());
 		//設定學制
 		lessonPlan.setEducation_id(contractList.get(0).get("EDUCATION_ID").toString());
+		//設定學科
+		lessonPlan.setSubject_id(contractList.get(0).get("SUBJECT_ID").toString());
 		
 		//取得領域清單
 		Field field = new Field();
@@ -1210,15 +1225,14 @@ public class IndexController {
 			Map<String, Object> callNum = teacherAccountService.callNum(account);
 			lessonPlan.setAuditor(callNum.get("ACCOUNT").toString());
 			lessonPlan.setFile_status("Y");
-			lessonPlan.setUpload_status("Y");
 			lessonPlan.setCreate_by(accountSession.getAccount());
 			lessonPlan.setUpdate_by(accountSession.getAccount());
 			int id = lessonPlanService.add(lessonPlan);
 			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
 			
-			//學科
-			String[] subject = pRequest.getParameterValues("subject");
+			//跨學科
+			String[] subject = pRequest.getParameterValues("crossSubject");
 			for(int i=0; i<subject.length; i++) {
 				lessonPlanOption = new LessonPlanOption();
 				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
@@ -1621,24 +1635,6 @@ public class IndexController {
 		field.setParent_id(id);
 
 		List<Map<String, Object>> list = fieldService.getChild(field);
-		
-		JSONArray tJSONArray = new JSONArray(list);
-		
-		pResponse.setCharacterEncoding("utf-8");
-		PrintWriter out = pResponse.getWriter();
-		out.write(tJSONArray.toString());
-		
-	}
-	
-	@RequestMapping(value = "/lesson/get/grade" , method = {RequestMethod.GET, RequestMethod.POST})
-	public void child(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
-		
-		Education education = new Education();
-		
-		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
-		education.setParent_id(id);
-
-		List<Map<String, Object>> list = educationService.getChild(education);
 		
 		JSONArray tJSONArray = new JSONArray(list);
 		
@@ -2820,5 +2816,71 @@ public class IndexController {
 		
 		model.addAttribute("PATH", "/index");
 		return "front/path";
+	}
+	
+	@RequestMapping(value = "/get/education" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getEducation(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Education education = new Education();
+		
+		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
+		education.setParent_id(id);
+
+		List<Map<String, Object>> list = educationService.getChild(education);
+		
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
+		
+	}
+	
+	@RequestMapping(value = "/get/grade" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getGrade(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		getEducation(accountSession, pRequest, pResponse, model);
+	}
+	
+	@RequestMapping(value = "/get/subject" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getSubject(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Subject subject = new Subject();
+		
+		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
+		subject.setParent_id(id);
+
+		List<Map<String, Object>> list = subjectService.getChild(subject);
+		
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
+		
+	}
+	
+	@RequestMapping(value = "/get/cross/subject" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getCrossSubject(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		getSubject(accountSession, pRequest, pResponse, model);
+	}
+	
+	@RequestMapping(value = "/set/contract" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void setContract(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Contract contract = new Contract();
+		
+		String contract_id = pRequest.getParameter("contract_id") == null ? "" : pRequest.getParameter("contract_id");
+		contract.setContract_id(contract_id);
+
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> map = contractService.getDataByContractId(contract);
+		list.add(map);
+		
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
+		
 	}
 }

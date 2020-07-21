@@ -129,15 +129,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
 				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " WHERE LP.CREATE_BY = ? "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
@@ -335,10 +331,10 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.lesson_plan "
-				   + " WHERE UPLOAD_STATUS = ? "
+				   + " WHERE FILE_STATUS = ? "
 				   + " AND CREATE_BY = ? ";
 		
-		args.add(lessonPlan.getUpload_status());
+		args.add(lessonPlan.getFile_status());
 		args.add(lessonPlan.getCreate_by());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
@@ -355,11 +351,12 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlan);
 		
 		String sql = " INSERT INTO proposition_manage.lesson_plan "
-				   + " (UUID, CONTRACT_ID, NAME, FIELD_ID, EDUCATION_ID, TAG, "
-				   + " AUDITOR, FILE_STATUS, UPLOAD_STATUS, "
+				   + " (UUID, CONTRACT_ID, NAME, EDUCATION_ID, SUBJECT_ID, TAG, "
+				   + " AUDITOR, FILE_STATUS, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, :name, :field_id, :education_id, :tag, "
-				   + " :auditor, :file_status, :upload_status, "
+				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, :name, :education_id, "
+				   + " :subject_id, :tag, "
+				   + " :auditor, :file_status,  "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();

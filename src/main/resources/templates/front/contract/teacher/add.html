@@ -29,27 +29,6 @@
 	                	<input type="hidden" id="csofe_partya" name="csofe_partya" th:value="中華未來教育學會" />
 						<input type="hidden" id="csofe_partyb" th:field="*{csofe_partyb}" />
 		                <div class="container">
-<!-- 		                    <p>合約必須至少上傳一份</p> -->
-<!-- 		                    <div class="page"> -->
-<!-- 		                        <p>授權於<span>臺灣知識庫</span>合約</p> -->
-<!-- 		                        <div> -->
-<!-- 		                            <div>合約編號</div> -->
-<!-- 		                            <div><input type="text" placeholder="請輸入合約編號" id="contractNumA" th:field="*{tkb_contract_num}"></div> -->
-<!-- 		                            <div class="basic-h">合約檔案</div> -->
-<!-- 		                            <div> -->
-<!-- 		                                <label for="fileA"> -->
-<!-- 		                                    <input type="file" class="dis-n btnFile" id="fileA" name="tkbContractFile" accept=".pdf" data-text="contractFileTextA"> -->
-<!-- 		                                    <span class="btn-file">請選擇檔案</span>                                     -->
-<!-- 		                                </label>    -->
-<!-- 		                                <span class="memo">註：僅提供PDF檔</span> -->
-<!-- 		                                <span class="contractFileTextA"></span> -->
-<!-- 		                            </div> -->
-<!-- 		                            <div class="basic-h">甲方</div> -->
-<!-- 		                            <div>臺灣知識庫</div> -->
-<!-- 		                            <div class="basic-h">乙方</div> -->
-<!-- 		                            <div>[[${contract.tkb_partyb}]]</div> -->
-<!-- 		                        </div> -->
-<!-- 		                    </div> -->
 		                    <div class="page">
 		                        <p>授權於<span>中華未來教育學會</span>合約</p>
 		                        <div>
@@ -72,19 +51,20 @@
 		                    </div>
 		                </div>
 		                <div class="create-grid">
-		                    <div><span class="required">*</span>領域</div>
-		                    <div>
-		                        <select id="specialSkill" th:field="*{field_id}">
-		                            <option value="0">請選擇領域</option>
-		                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
-		                        </select>
-		                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
-		                    </div>
 		                    <div><span class="required">*</span>學制</div>
 		                    <div>
 		                        <select id="schoolType" th:field="*{education_id}">
 		                            <option value="0">請選擇學制</option>
 		                            <option th:each="education:${educationList}" th:value="${education.ID}" th:text="${education.NAME}"></option>
+		                        </select>
+		                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
+		                        <input type="hidden" id="subjectName" th:field="*{subject_name}" />
+		                    </div>
+		                    <div><span class="required">*</span>學科</div>
+		                    <div>
+		                    	<select id="specialSkill" th:field="*{subject_id}">
+		                            <option value="0">請選擇學科</option>
+		                            <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
 		                        </select>
 		                        <span class="memo">註：將作為預設值帶入新增的教案或命題</span>
 		                    </div>
@@ -97,8 +77,8 @@
 		                    <div class="basic-h">
 		                        <p>合約授權內容必須至少填寫一欄，合約送出後將自動產生上傳教案與命題欄位</p>
 		                        <div>教案授權數量<input type="text" class="fileNumInput" id="lessonNum" th:field="*{lesson_num}">份</div>
-		                        <div>命題基本題授權數量<input type="text" class="fileNumInput" id="propoBasicNum" th:field="*{basic_num}">份</div>
-		                        <div>命題題組題授權數量<input type="text" class="fileNumInput" id="propoGroupNum" th:field="*{questions_group_num}">份</div>
+		                        <div>命題選擇題授權數量<input type="text" class="fileNumInput" id="propoBasicNum" th:field="*{basic_num}">份</div>
+		                        <div>命題混合題授權數量<input type="text" class="fileNumInput" id="propoGroupNum" th:field="*{questions_group_num}">份</div>
 		                    </div>                   
 		                </div>            
 		                <button class="btn-submit" data-type="contractCreate" type="button">送出</button>
@@ -120,6 +100,10 @@
     <div th:include="front/load/js :: js"></div>
     <script th:src="@{/front/js/lib/jquery-ui.min.js}"></script>
     <script th:src="@{/front/js/datepicker.js}"></script>
-    
+    <script>
+	    $("#schoolType").change(function(){
+	    	$("#subjectName").val($("#schoolType :selected").text());
+		});
+    </script>
 </body>
 </html>

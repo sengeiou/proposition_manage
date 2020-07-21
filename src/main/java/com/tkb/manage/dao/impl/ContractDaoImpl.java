@@ -41,11 +41,11 @@ public class ContractDaoImpl implements ContractDao {
 //				   + " IF(NOW() BETWEEN BEGIN_DATE AND END_DATE, '有效', '過期') AS CONTRACT_DATE, "
 //				   + " LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, "
 //				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE C.CONTRACT_ID = LP.CONTRACT_ID AND FILE_STATUS = 'Y') AS L_COUNT_FILE, "
-//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE C.CONTRACT_ID = LP.CONTRACT_ID AND UPLOAD_STATUS <> 'Y') AS L_COUNT, "
+//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE C.CONTRACT_ID = LP.CONTRACT_ID AND FILE_STATUS <> 'Y') AS L_COUNT, "
 //				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 1 AND FILE_STATUS = 'Y') AS P_COUNT_FILE, "
-//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 1 AND UPLOAD_STATUS <> 'Y') AS P_COUNT_UP, "
+//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 1 AND FILE_STATUS <> 'Y') AS P_COUNT_UP, "
 //				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 2 AND FILE_STATUS = 'Y') AS P_COUNT_FILE2, "
-//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 2 AND UPLOAD_STATUS <> 'Y') AS P_COUNT_UP2 "
+//				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE C.CONTRACT_ID = P.CONTRACT_ID AND QUESTION_TYPE = 2 AND FILE_STATUS <> 'Y') AS P_COUNT_UP2 "
 //				   + " FROM proposition_manage.contract C "
 //				   + " LEFT JOIN proposition_manage.teacher_account TA ON C.TEACHER_ID = TA.ID "
 //				   + " ) A ";
@@ -58,11 +58,11 @@ public class ContractDaoImpl implements ContractDao {
 //				   + " IF(DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(PMC.BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(PMC.END_DATE, '%Y%m%d'), '有效', '過期') AS CONTRACT_LIMIT "
 //				   + " FROM proposition_manage.contract PMC "
 //				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
-//				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.UPLOAD_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.FILE_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
 //				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
-//				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.UPLOAD_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.FILE_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
 //				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
-//				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.UPLOAD_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.FILE_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
 //				   + " LEFT JOIN proposition_manage.teacher_account TA ON PMC.TEACHER_ID = TA.ID ";
 		
 		String sql = " SELECT L1.*, "
@@ -70,11 +70,11 @@ public class ContractDaoImpl implements ContractDao {
 				   +  " FROM ( "
 				   +  " SELECT PMC.*, TA.NAME AS TEACHER_NAME, "
 				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID) AS LP1_COUNT, "
-				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.UPLOAD_STATUS = 'C') AS LP2_SUM, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C') AS LP2_SUM, "
 				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 1) AS PMP1_COUNT, "
-				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 1 AND P.UPLOAD_STATUS = 'C') AS PMP2_SUM, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 1 AND P.FILE_STATUS = 'C') AS PMP2_SUM, "
 				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 2) AS PMP3_COUNT, "
-				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 2 AND P.UPLOAD_STATUS = 'C') AS PMP4_SUM, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 2 AND P.FILE_STATUS = 'C') AS PMP4_SUM, "
 				   +  " IF(DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(PMC.BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(PMC.END_DATE, '%Y%m%d'), '有效', '過期') AS CONTRACT_LIMIT "
 				   +  " FROM proposition_manage.contract PMC "
 				   +  " LEFT JOIN proposition_manage.teacher_account TA ON PMC.TEACHER_ID = TA.ID "
@@ -87,7 +87,8 @@ public class ContractDaoImpl implements ContractDao {
 		
 //		sql += " GROUP BY PMC.CONTRACT_ID "
 //			+  " LIMIT "+((contract.getPage()-1)*contract.getPage_count())+","+contract.getPage_count();
-		sql += " LIMIT "+((contract.getPage()-1)*contract.getPage_count())+","+contract.getPage_count();
+		sql += " ORDER BY CREATE_TIME DESC "
+			+  " LIMIT "+((contract.getPage()-1)*contract.getPage_count())+","+contract.getPage_count();
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -124,15 +125,15 @@ public class ContractDaoImpl implements ContractDao {
 		
 		String sql = " SELECT PMC.ID, PMC.UUID, PMC.TEACHER_ID, PMC.TKB_CONTRACT_NUM, PMC.TKB_CONTRACT_FILE,"
 				   + " PMC.TKB_CONTRACT_NAME, PMC.TKB_PARTYA, PMC.TKB_PARTYB, PMC.CSOFE_CONTRACT_NUM, PMC.CSOFE_CONTRACT_FILE, "
-				   + " PMC.CSOFE_CONTRACT_NAME, PMC.CSOFE_PARTYA, PMC.CSOFE_PARTYB, PMC.FIELD_ID, PMC.EDUCATION_ID, "
+				   + " PMC.CSOFE_CONTRACT_NAME, PMC.CSOFE_PARTYA, PMC.CSOFE_PARTYB, PMC.EDUCATION_ID, PMC.SUBJECT_ID, "
 				   + " DATE_FORMAT(PMC.BEGIN_DATE, '%Y/%m/%d') AS BEGIN_DATE, "
 				   + " DATE_FORMAT(PMC.END_DATE, '%Y/%m/%d') AS END_DATE, "
 				   + " PMC.LESSON_NUM, PMC.BASIC_NUM, PMC.QUESTIONS_GROUP_NUM, "
 				   + " PMC.CREATE_BY, PMC.CREATE_TIME, PMC.UPDATE_BY, PMC.UPDATE_TIME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME "
 				   + " FROM proposition_manage.contract PMC "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMC.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMC.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMC.SUBJECT_ID "
 				   + " WHERE PMC.ID = ? ";
 		
 		args.add(contract.getId());
@@ -153,13 +154,13 @@ public class ContractDaoImpl implements ContractDao {
 		String sql = " INSERT INTO proposition_manage.contract "
 				   + " (UUID, TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
 				   + " TKB_PARTYB, CSOFE_CONTRACT_NUM, CSOFE_CONTRACT_FILE, CSOFE_CONTRACT_NAME, CSOFE_PARTYA, "
-				   + " CSOFE_PARTYB, FIELD_ID, EDUCATION_ID, BEGIN_DATE, END_DATE, "
+				   + " CSOFE_PARTYB, EDUCATION_ID, SUBJECT_ID, BEGIN_DATE, END_DATE, "
 				   + " LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :teacher_id, :tkb_contract_num, "
 				   + " :tkb_contract_file, :tkb_contract_name, :tkb_partya, :tkb_partyb, :csofe_contract_num, "
-				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, :field_id, "
-				   + " :education_id, :begin_date, :end_date, :lesson_num, :basic_num, "
+				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, "
+				   + " :education_id, :subject_id, :begin_date, :end_date, :lesson_num, :basic_num, "
 				   + " :questions_group_num, :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -178,7 +179,7 @@ public class ContractDaoImpl implements ContractDao {
 				   + " SET TKB_CONTRACT_NUM = ?, TKB_CONTRACT_FILE = ?, TKB_CONTRACT_NAME = ?, "
 				   + " TKB_PARTYA = ?, TKB_PARTYB = ?, CSOFE_CONTRACT_NUM = ?, "
 				   + " CSOFE_CONTRACT_FILE = ?, CSOFE_CONTRACT_NAME = ?, CSOFE_PARTYA = ?, CSOFE_PARTYB = ?, "
-				   + " FIELD_ID = ?, EDUCATION_ID = ?, BEGIN_DATE = ?, END_DATE = ?, "
+				   + " EDUCATION_ID = ?, SUBJECT_ID = ?, BEGIN_DATE = ?, END_DATE = ?, "
 				   + " LESSON_NUM = ?, BASIC_NUM = ?, QUESTIONS_GROUP_NUM = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
@@ -193,8 +194,8 @@ public class ContractDaoImpl implements ContractDao {
 		args.add(contract.getCsofe_contract_name());
 		args.add(contract.getCsofe_partya());
 		args.add(contract.getCsofe_partyb());
-		args.add(contract.getField_id());
 		args.add(contract.getEducation_id());
+		args.add(contract.getSubject_id());
 		args.add(contract.getBegin_date());
 		args.add(contract.getEnd_date());
 		args.add(contract.getLesson_num());
@@ -225,9 +226,13 @@ public class ContractDaoImpl implements ContractDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.contract "
-				   + " SET CONTRACT_ID = (SELECT CONCAT(DATE_FORMAT(NOW(), '%y%m%d'), (CASE WHEN LENGTH(?)>=4 THEN SUBSTRING(?,-4) ELSE LPAD(?, 4, 0) END))) "
+				   + " SET CONTRACT_ID = (SELECT CONCAT(?, (CASE WHEN LENGTH(?)>=2 THEN SUBSTRING(?,-2) ELSE LPAD(?, 2, 0) END), DATE_FORMAT(NOW(), '%y%m'), (CASE WHEN LENGTH(?)>=3 THEN SUBSTRING(?,-3) ELSE LPAD(?, 3, 0) END))) "
 				   + " WHERE ID = ? ";
 		
+		args.add(contract.getContract_id());
+		args.add(contract.getSubject_id());
+		args.add(contract.getSubject_id());
+		args.add(contract.getSubject_id());
 		args.add(contract.getId());
 		args.add(contract.getId());
 		args.add(contract.getId());
@@ -265,7 +270,7 @@ public class ContractDaoImpl implements ContractDao {
 		String sql = " SELECT * FROM ( "
 				   + " SELECT PMC.LESSON_NUM, PMC.BASIC_NUM, PMC.QUESTIONS_GROUP_NUM, COUNT(LP.ID) AS C_NUM "
 				   + " FROM proposition_manage.contract PMC "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP ON LP.CONTRACT_ID = PMC.CONTRACT_ID AND LP.UPLOAD_STATUS = 'C' "
+				   + " LEFT JOIN proposition_manage.lesson_plan LP ON LP.CONTRACT_ID = PMC.CONTRACT_ID AND LP.FILE_STATUS = 'C' "
 				   + " WHERE PMC.TEACHER_ID = ? "
 				   + " GROUP BY PMC.CONTRACT_ID "
 				   + " ) L1 "
@@ -286,25 +291,43 @@ public class ContractDaoImpl implements ContractDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM ( "
-				   + " SELECT PMC.*, "
-				   + " COUNT(LP1.ID) AS LP1_COUNT, SUM(IF(LP2.ID IS NULL, 0, 1)) LP2_SUM, "
-				   + " COUNT(PMP1.ID) PMP1_COUNT, SUM(IF(PMP2.ID IS NULL, 0, 1)) PMP2_SUM, "
-				   + " COUNT(PMP3.ID) PMP3_COUNT, SUM(IF(PMP4.ID IS NULL, 0, 1)) PMP4_SUM, "
-				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM, "
-				   + " IF(NOW() BETWEEN PMC.BEGIN_DATE AND PMC.END_DATE, '有效', '過期') AS CONTRACT_LIMIT "
+//		String sql = " SELECT * FROM ( "
+//				   + " SELECT PMC.*, "
+//				   + " COUNT(LP1.ID) AS LP1_COUNT, SUM(IF(LP2.ID IS NULL, 0, 1)) LP2_SUM, "
+//				   + " COUNT(PMP1.ID) PMP1_COUNT, SUM(IF(PMP2.ID IS NULL, 0, 1)) PMP2_SUM, "
+//				   + " COUNT(PMP3.ID) PMP3_COUNT, SUM(IF(PMP4.ID IS NULL, 0, 1)) PMP4_SUM, "
+//				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM, "
+//				   + " IF(NOW() BETWEEN PMC.BEGIN_DATE AND PMC.END_DATE, '有效', '過期') AS CONTRACT_LIMIT "
+//				   + " FROM proposition_manage.contract PMC "
+//				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.FILE_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.FILE_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.FILE_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " WHERE PMC.TEACHER_ID = ? "
+//				   + " GROUP BY PMC.CONTRACT_ID "
+//				   + " ) L1 "
+//				   + " WHERE UNDONE_NUM > 0 "
+////				   + " AND NOW() BETWEEN BEGIN_DATE AND END_DATE "
+//				   + " ORDER BY CONTRACT_ID ";
+		
+		String sql = " SELECT L1.*, "
+				   + " (LESSON_NUM-LP1_COUNT+LESSON_NUM-LP2_SUM+BASIC_NUM-PMP1_COUNT+BASIC_NUM-PMP2_SUM+QUESTIONS_GROUP_NUM-PMP3_COUNT+QUESTIONS_GROUP_NUM-PMP4_SUM) AS UNDONE_NUM "
+				   + " FROM ( "
+				   + " SELECT PMC.*, TA.NAME AS TEACHER_NAME, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID) AS LP1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C') AS LP2_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 1) AS PMP1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 1 AND P.FILE_STATUS = 'C') AS PMP2_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 2) AS PMP3_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.QUESTION_TYPE = 2 AND P.FILE_STATUS = 'C') AS PMP4_SUM, "
+				   + " IF(DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(PMC.BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(PMC.END_DATE, '%Y%m%d'), '有效', '過期') AS CONTRACT_LIMIT "
 				   + " FROM proposition_manage.contract PMC "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.UPLOAD_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.UPLOAD_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.UPLOAD_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON PMC.TEACHER_ID = TA.ID "
 				   + " WHERE PMC.TEACHER_ID = ? "
-				   + " GROUP BY PMC.CONTRACT_ID "
 				   + " ) L1 "
-				   + " WHERE UNDONE_NUM > 0 "
-//				   + " AND NOW() BETWEEN BEGIN_DATE AND END_DATE "
+				   + " WHERE (LESSON_NUM-LP1_COUNT+LESSON_NUM-LP2_SUM+BASIC_NUM-PMP1_COUNT+BASIC_NUM-PMP2_SUM+QUESTIONS_GROUP_NUM-PMP3_COUNT+QUESTIONS_GROUP_NUM-PMP4_SUM) > 0 "
 				   + " ORDER BY CONTRACT_ID ";
 		
 		args.add(contract.getTeacher_id());
@@ -352,11 +375,11 @@ public class ContractDaoImpl implements ContractDao {
 				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM "
 				   + " FROM proposition_manage.contract PMC "
 				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.UPLOAD_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
+				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.FILE_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
 				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.UPLOAD_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
+				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.FILE_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
 				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.UPLOAD_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
+				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.FILE_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
 				   + " GROUP BY PMC.CONTRACT_ID "
 				   + " ) L1 "
 				   + " WHERE UNDONE_NUM > 0 ";
@@ -399,9 +422,9 @@ public class ContractDaoImpl implements ContractDao {
 				   + " PMC.LESSON_NUM, PMC.BASIC_NUM, PMC.QUESTIONS_GROUP_NUM, "
 				   + " PME.NAME AS EDUCATION_NAME, PMF.NAME AS FIELD_NAME, PME.ID AS EDUCATION_ID, PMF.ID AS FIELD_ID, "
 				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID ) AS L_UPLOAD, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND UPLOAD_STATUS = 'C') AS L_COMPLETE, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND FILE_STATUS = 'C') AS L_COMPLETE, "
 				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition PMP WHERE PMC.CONTRACT_ID = PMP.CONTRACT_ID) AS P_UPLOAD, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition PMP WHERE PMC.CONTRACT_ID = PMP.CONTRACT_ID AND UPLOAD_STATUS = 'C') AS P_COMPLETE "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition PMP WHERE PMC.CONTRACT_ID = PMP.CONTRACT_ID AND FILE_STATUS = 'C') AS P_COMPLETE "
 				   + " FROM proposition_manage.contract PMC "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMC.FIELD_ID = PMF.ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PMC.EDUCATION_ID = PME.ID "
@@ -410,8 +433,36 @@ public class ContractDaoImpl implements ContractDao {
 				   + " ) L1 "
 				   + " GROUP BY FIELD_NAME, FIELD_ID, EDUCATION_NAME, EDUCATION_ID ";
 		
-		args.add(contract.getField_id());
+//		args.add(contract.getField_id());
 		args.add(contract.getEducation_id());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Map<String, Object> getDataByContractId(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT PMC.ID, PMC.CONTRACT_ID, PMC.UUID, PMC.TEACHER_ID, PMC.TKB_CONTRACT_NUM, PMC.TKB_CONTRACT_FILE,"
+				   + " PMC.TKB_CONTRACT_NAME, PMC.TKB_PARTYA, PMC.TKB_PARTYB, PMC.CSOFE_CONTRACT_NUM, PMC.CSOFE_CONTRACT_FILE, "
+				   + " PMC.CSOFE_CONTRACT_NAME, PMC.CSOFE_PARTYA, PMC.CSOFE_PARTYB, PMC.EDUCATION_ID, PMC.SUBJECT_ID, "
+				   + " DATE_FORMAT(PMC.BEGIN_DATE, '%Y/%m/%d') AS BEGIN_DATE, "
+				   + " DATE_FORMAT(PMC.END_DATE, '%Y/%m/%d') AS END_DATE, "
+				   + " PMC.LESSON_NUM, PMC.BASIC_NUM, PMC.QUESTIONS_GROUP_NUM, "
+				   + " PMC.CREATE_BY, PMC.CREATE_TIME, PMC.UPDATE_BY, PMC.UPDATE_TIME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME "
+				   + " FROM proposition_manage.contract PMC "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMC.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMC.SUBJECT_ID "
+				   + " WHERE PMC.CONTRACT_ID = ? ";
+		
+		args.add(contract.getContract_id());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

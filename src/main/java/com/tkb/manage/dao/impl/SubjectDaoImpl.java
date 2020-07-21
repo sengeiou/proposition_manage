@@ -85,10 +85,10 @@ public class SubjectDaoImpl implements SubjectDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(subject);
 		
 		String sql = " INSERT INTO proposition_manage.subject "
-				   + " (UUID, NAME, PARENT_ID, EDUCATION_ID, LAYER, SORT, "
+				   + " (UUID, NAME, PARENT_ID, LAYER, SORT, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :name, :parent_id, "
-				   + " :education_id, :layer, :sort, :create_by, NOW(), :update_by, NOW()) ";
+				   + " :layer, :sort, :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
@@ -103,12 +103,11 @@ public class SubjectDaoImpl implements SubjectDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.subject "
-				   + " SET NAME = ?, EDUCATION_ID = ?, "
+				   + " SET NAME = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
 		args.add(subject.getName());
-		args.add(subject.getEducation_id());
 		args.add(subject.getUpdate_by());
 		args.add(subject.getId());
 		

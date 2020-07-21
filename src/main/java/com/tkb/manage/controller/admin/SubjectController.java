@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.tkb.manage.model.Account;
+import com.tkb.manage.model.Education;
 import com.tkb.manage.model.Subject;
+import com.tkb.manage.service.EducationService;
 import com.tkb.manage.service.SubjectService;
 
 @Controller
@@ -29,6 +31,9 @@ public class SubjectController {
 	
 	@Autowired
 	private SubjectService subjectService;
+	
+	@Autowired
+	private EducationService educationService;
 	
 	@Autowired
 	private FunctionController functionController;
@@ -131,7 +136,7 @@ public class SubjectController {
 		}
 		model.addAttribute("parent_name", subject.getParent_name());
 		
-		//取得學習領域資料
+		//取得學科資料
 		subject = subjectService.data(subject);
 		subject.setParent_name(parent_name);
 		model.addAttribute("subject", subject);

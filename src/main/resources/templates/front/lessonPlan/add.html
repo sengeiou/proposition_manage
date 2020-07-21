@@ -34,27 +34,27 @@
                     <div>
                         <input type="text" placeholder="請輸入教案名稱" id="lessonName" th:field="*{name}">
                     </div>
-                    <div><span class="required">*</span>學習領域</div>
+                    <div><span class="required">*</span>學科</div>
                     <div>
-                        <select id="specialSkill" th:field="*{field_id}">
-                            <option value="0">請選擇學習領域</option>
-                            <option th:each="field:${fieldList}" th:value="${field.id}" th:text="${field.name}"></option>
+                        <select id="specialSkill" th:field="*{subject_id}">
+                            <option value="0">請選擇學科</option>
+                            <option th:each="subject:${subjectList}" th:value="${subject.id}" th:text="${subject.name}"></option>
                         </select>
                     </div>
-                    <div class="basic-h"><span class="required">*</span>學科</div>
-                    <div class="basic-h">
+                    <div class="basic-h" id="crossSubjectTitle"><span class="required">*</span>跨科</div>
+                    <div class="basic-h" id="crossSubject">
                         <!-- label的for 與 input的id要一致 -->
                         <label class="les-labelBlock" th:each="subject:${subjectList}" >
                             <div class="checkbox-square"></div>
                             <span>[[${subject.name}]]</span>
-                            <input type="checkbox" class="dis-n" name="subject" th:value="${subject.id}">
+                            <input type="checkbox" class="dis-n" name="crossSubject" th:value="${subject.id}">
                         </label>
                     </div>
                     <div><span class="required">*</span>學制</div>
                     <div>
                         <select id="schoolType" th:field="*{education_id}">
                             <option value="0">請選擇學制</option>
-                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}">國小</option>
+                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}"></option>
                         </select>                        
                     </div>
                     <div class="basic-h" id="gradeTitle"><span class="required">*</span>年級</div>
@@ -91,8 +91,11 @@
 
     <div th:include="front/load/js :: js"></div>  
 	<script>
-// 		$("#gradeTitle").hide();
-// 		$("#grade").hide();
+	
+		$("#contractNum").change(function(){
+			setContract($(this).val());
+		})
+	
 		getGrade($("#schoolType").val());
 		$("#schoolType").change(function(){
 			if($("#schoolType").val() != "0") {
@@ -100,6 +103,16 @@
 			} else {
 				$("#gradeTitle").hide();
 				$("#grade").hide();
+			}
+		});
+		
+		getCrossSubject($("#specialSkill").val());
+		$("#specialSkill").change(function(){
+			if($("#specialSkill").val() != "0") {
+				getCrossSubject($(this).val());
+			} else {
+				$("#crossSubjectTitle").hide();
+				$("#crossSubject").hide();
 			}
 		});
 		
@@ -136,9 +149,42 @@
 			});
 		}
 		
+		function getCrossSubject(id) {
+			$.ajax({
+				url: '/get/cross/subject',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						$("#crossSubjectTitle").show();
+						$("#crossSubject").show();
+						$("#crossSubject").empty();
+						var str = "";
+						for(i=0; i<data.length; i++) {
+							var child = data[i];
+							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+								+  "<div class='checkbox-square'></div>"
+								+  "<span>"+child.NAME+"</span>"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+								+  "</label>"
+						}
+						$("#crossSubject").append(str);
+					}
+				}
+			});
+		}
+		
 		function getGrade(id) {
 			$.ajax({
-				url: '/lesson/get/grade',
+				url: '/get/grade',
 				cache: false,
 				async: false,
 				dataType: 'json',
@@ -164,6 +210,31 @@
 								+  "</label>"
 						}
 						$("#grade").append(str);
+					}
+				}
+			});
+		}
+		
+		function setContract(id) {
+			$.ajax({
+				url: '/set/contract',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					contract_id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						var child = data[0];
+						$("#specialSkill").val(child.SUBJECT_ID);
+						$("#schoolType").val(child.EDUCATION_ID);
+						getGrade(child.EDUCATION_ID);
+						getCrossSubject(child.SUBJECT_ID);
 					}
 				}
 			});
