@@ -327,8 +327,36 @@ public class IndexController {
 		}
 		
 //		account.setPage_count(page_count);
+
+		if(account.getPosition() == null || "".equals(account.getPosition())) {
+			account.setPosition("1");
+			account.setContent_provision("1");
+			account.setContent_audit("1");
+		}else if("2".equals(account.getPosition()) || "3".equals(account.getPosition())) {
+			account.setContent_provision("0");
+			account.setContent_audit("0");
+		}
+		
+		if(account.getContent_provision() == null) {
+			account.setContent_provision("0");
+		}
+		
+		if(account.getContent_audit() == null) {
+			account.setContent_audit("0");
+		}
+
 		List<Map<String, Object>> list = teacherAccountService.list(account);
 		model.addAttribute("list", list);
+		model.addAttribute("account", account);
+		model.addAttribute("accountSession", accountSession);
+		
+		Account verify = new Account();
+		verify.setContent_provision("1");
+		verify.setContent_audit("1");
+		verify.setPosition("1");
+		verify.setStatus("2");
+		List<Map<String, Object>> verifyList = teacherAccountService.verifyList(verify);
+		model.addAttribute("verifyList", verifyList);
 		
 		int count = teacherAccountService.count(account);
 		account.setCount(count);
@@ -338,6 +366,12 @@ public class IndexController {
 		SchoolMaster schoolMaster = new SchoolMaster();
 		List<Map<String, Object>> schoolMasterList = schoolMasterService.getList(schoolMaster);
 		model.addAttribute("schoolMasterList", schoolMasterList);
+		
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -350,13 +384,101 @@ public class IndexController {
 		return "front/teacherAccount/list";
     }
 	
-	@RequestMapping(value = "/teacher/add" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String teacherAdd(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
+	@RequestMapping(value = "/teacher/register" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherRegister(@ModelAttribute Account account, Model model){	
 		
-//		//取得領域清單
-//		Field field = new Field();
-//		List<Map<String, Object>> fieldList = subjectService.getList(field);
-//		model.addAttribute("fieldList", fieldList);
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
+		
+		//取得學制清單
+		Education education = new Education();
+		education.setLayer("1");
+		List<Map<String, Object>> educationList = educationService.getList(education);
+		model.addAttribute("educationList", educationList);
+		
+		//取得身份清單
+		Identity identity = new Identity();
+		identity.setParent_id("0");
+		List<Map<String, Object>> identityList = identityService.list(identity);
+		model.addAttribute("identityList", identityList);
+		
+		//取得學校清單
+		SchoolMaster schoolMaster = new SchoolMaster();
+		List<Map<String, Object>> schoolMasterList = schoolMasterService.getList(schoolMaster);
+		model.addAttribute("schoolMasterList", schoolMasterList);
+		
+		return "front/teacherAccount/register";
+    }
+	
+	@RequestMapping(value = "/teacher/registerSubmit" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String registerSubmit(@ModelAttribute Account account,
+    		HttpServletRequest pRequest,
+    		Model model){
+		
+		String[] educationList = pRequest.getParameterValues("education")!=null ? pRequest.getParameterValues("education") : null;
+		String[] subjectList = pRequest.getParameterValues("subject")!=null ? pRequest.getParameterValues("subject") : null;
+		String content_provision = pRequest.getParameter("content_provision") == null ? "0" : "1";
+		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
+		
+		String level = "4";
+		account.setPosition("1");//註冊僅供一般老師使用
+    	if("1".equals(content_provision)) {
+    		//創作教師
+    		level = "3";
+    	} else {
+    		//內容審核
+    		level = "4";
+    	}
+	
+    	Identity identity = new Identity();
+    	identity.setLevel(level);
+    	Map<String, Object> levelId = identityService.getDataByLevel(identity);
+    	String identity_id = levelId.get("ID").toString();
+    	
+    	account.setBranch(!"".equals(account.getBranch())?account.getBranch():null);
+		account.setAccount(account.getId_no());
+		account.setPassword(account.getId_no().substring(account.getId_no().length()-4,account.getId_no().length()));
+		account.setIdentity_id(identity_id);
+		account.setContent_provision(content_provision);
+		account.setContent_audit(content_audit);
+		account.setStatus("2");
+		account.setCreate_by(account.getId_no());
+		account.setUpdate_by(account.getId_no());
+		int id = teacherAccountService.add(account);
+		
+		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
+		if(educationList != null) {
+			for(int i=0; i<educationList.length; i++) {
+				System.out.println(educationList[i]);
+				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
+				teacherAccountOption.setType("3");
+				teacherAccountOption.setCode(educationList[i]);
+				teacherAccountOption.setCreate_by(account.getId_no());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
+		
+		if(subjectList != null) {
+			teacherAccountOption = new TeacherAccountOption();
+			for(int i=0; i<subjectList.length; i++) {
+//				System.out.println(fieldList[i]);
+				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
+				teacherAccountOption.setType("1");
+				teacherAccountOption.setCode(subjectList[i]);
+				teacherAccountOption.setCreate_by(account.getId_no());
+				teacherAccountOptionService.add(teacherAccountOption);
+			}
+		}
+		
+		model.addAttribute("PATH", "/");
+		return "front/path";
+    }
+	
+	@RequestMapping(value = "/teacher/add" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherAdd(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){	
 		
 		//取得學科清單
 		Subject subject = new Subject();
@@ -395,7 +517,7 @@ public class IndexController {
     		Model model){
 		
 		String[] educationList = pRequest.getParameterValues("education")!=null ? pRequest.getParameterValues("education") : null;
-		String[] fieldList = pRequest.getParameterValues("field")!=null ? pRequest.getParameterValues("field") : null;
+		String[] subjectList = pRequest.getParameterValues("subject")!=null ? pRequest.getParameterValues("subject") : null;
 		String content_provision = pRequest.getParameter("content_provision") == null ? "0" : "1";
 		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
 		
@@ -425,7 +547,7 @@ public class IndexController {
 //    	account.setAddress(!"".equals(account.getAddress())?account.getAddress():null);
     	
 		account.setAccount(account.getId_no());
-//		account.setPassword(account.getPhone());
+		account.setPassword(account.getId_no().substring(account.getId_no().length()-4,account.getId_no().length()));
 		account.setIdentity_id(identity_id);
 		account.setContent_provision(content_provision);
 		account.setContent_audit(content_audit);
@@ -437,7 +559,7 @@ public class IndexController {
 		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
 		if(educationList != null) {
 			for(int i=0; i<educationList.length; i++) {
-//				System.out.println(educationList[i]);
+				System.out.println(educationList[i]);
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("3");
 				teacherAccountOption.setCode(educationList[i]);
@@ -446,13 +568,13 @@ public class IndexController {
 			}
 		}
 		
-		if(fieldList != null) {
+		if(subjectList != null) {
 			teacherAccountOption = new TeacherAccountOption();
-			for(int i=0; i<fieldList.length; i++) {
+			for(int i=0; i<subjectList.length; i++) {
 //				System.out.println(fieldList[i]);
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("1");
-				teacherAccountOption.setCode(fieldList[i]);
+				teacherAccountOption.setCode(subjectList[i]);
 				teacherAccountOption.setCreate_by(accountSession.getAccount());
 				teacherAccountOptionService.add(teacherAccountOption);
 			}
