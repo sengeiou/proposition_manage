@@ -638,7 +638,9 @@ div.basic-h {
     margin: 0;
 }
 
-
+.create-content.teacher {
+    overflow: unset;
+}
 .create-content.teacher>.create-grid div.bank-mobile {
     display: none;
 }
@@ -974,6 +976,9 @@ div.basic-h {
    /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr; */ /* 含有「上傳狀態」欄位 */
    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr ;
 }
+.list-content .lessonList-verify-verifyGrid { /* 教案列表--審議委員的審核列表 */
+    grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
+}
 .list-content .lessonList-grid>div {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1217,6 +1222,9 @@ button.btn-search:hover {
 }
 /* 重置密碼 end */
 /* 地址 start */
+.customselect-block , .customselect-residence-block{
+    width: 100%;
+}
 .address-block {
     display: flex;
     align-content: center;
@@ -1288,19 +1296,32 @@ button.btn-openArea i {
     background-color: var(--red);
     color: #ffffff;
 }
-.verify-lightBox {
+.verify-lightBox , .verifyLesson-lightBox {
     width: 400px;
     height: 300px;
 }
-.verify-lightBox .container>div {
+.verify-lightBox .container>div , .verifyLesson-lightBox .container>div{
     display: grid;
     grid-template-columns: 1fr 3fr;
     grid-row-gap: 10px;    
 }
 /* 老師列表-組長、校長身分的審核區塊 end */
+.attachmentBlock>div>p {
+    width: 100%;
+}
 .attach-select {
     width: fit-content;
     margin: 0 10px;
 }
+.attach-plus {
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 1.6rem;
+}
+.attach-plus:hover {
+    transform: scale(1.1);
+}
+
+
 .dis-n { display: none; }
 .dis-b { display: block; }

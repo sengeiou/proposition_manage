@@ -53,10 +53,26 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT TA.*, PMF.NAME AS FIELD_NAME, SM.NAME AS SCHOOL_MASTER_NAME "
+		String sql = " SELECT TA.*, S.NAME AS SUBJECT_NAME, SM.NAME AS SCHOOL_MASTER_NAME, E.NAME AS EDUCATION_NAME, "
+				   + " CASE TA.STATUS WHEN '0' THEN '未通過' WHEN '1' THEN '通過' WHEN '2' THEN '待審核' END AS STATUS_TEXE "
 				   + " FROM proposition_manage.teacher_account TA "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = TA.SUBJECT_ID "
-				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID ";
+				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
+				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
+				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
+				   + " WHERE TA.POSITION = ? ";
+		
+		args.add(account.getPosition());
+		
+		if("1".equals(account.getContent_provision()) && "1".equals(account.getContent_audit())) {
+			if(account.getContent_provision().equals(account.getContent_audit())) {
+				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
+			}else {
+				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
+			}
+			args.add(account.getContent_provision());
+			args.add(account.getContent_audit());
+		}
+
 		
 		sql += " LIMIT "+((account.getPage()-1)*account.getPage_count())+","+account.getPage_count();
 		
@@ -88,12 +104,15 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT TA.*, PMF.NAME AS FIELD_NAME, SM.NAME AS SCHOOL_MASTER_NAME, "
+		String sql = " SELECT TA.*, S.NAME AS SUBJECT_NAME, SM.NAME AS SCHOOL_MASTER_NAME, "
 				   + " CASE WHEN TA.CONTENT_PROVISION='0' THEN '否' ELSE '是' END CONTENT_PROVISION_NAME, "
-				   + " CASE WHEN TA.CONTENT_AUDIT='0' THEN '否' ELSE '是' END CONTENT_AUDIT_NAME "
+				   + " CASE WHEN TA.CONTENT_AUDIT='0' THEN '否' ELSE '是' END CONTENT_AUDIT_NAME, "
+				   + " E.NAME AS EDUCATION_NAME, "
+				   + " CASE TA.STATUS WHEN '0' THEN '未通過' WHEN '1' THEN '通過' WHEN '2' THEN '待審核' END AS STATUS_TEXE "
 				   + " FROM proposition_manage.teacher_account TA "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = TA.FIELD_ID "
+				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
+				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
 				   + " WHERE TA.ID = ? ";
 		
 		args.add(account.getId());
@@ -114,13 +133,13 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		String sql = " INSERT INTO proposition_manage.teacher_account "
 				   + " (UUID, ACCOUNT, PASSWORD, NAME, TEACHER_STATUS, SCHOOL_MASTER_ID, "
 				   + " ID_NO, MOBILE_PHONE, TELEPHONE, EMAIL, BANK, BRANCH, REMITTANCE_ACCOUNT, "
-				   + " FIELD_ID, IDENTITY_ID, POSITION, CONTENT_PROVISION, CONTENT_AUDIT, STATUS, "
+				   + " EDUCATION_ID, SUBJECT_ID, IDENTITY_ID, POSITION, CONTENT_PROVISION, CONTENT_AUDIT, STATUS, "
 				   + " ADDRESS_ZIP, ADDRESS_CITY, ADDRESS_AREA, ADDRESS_ROAD, "
 				   + " CENSUS_ZIP, CENSUS_CITY, CENSUS_AREA, CENSUS_ROAD, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :account, :password, :name, "
 				   + " :teacher_status, :school_master_id, :id_no, :mobile_phone, :telephone, :email, "
-				   + " :bank, :branch, :remittance_account, :field_id, :identity_id, :position, :content_provision, "
+				   + " :bank, :branch, :remittance_account, :education_id, :subject_id, :identity_id, :position, :content_provision, "
 				   + " :content_audit, :status, :address_zip, :address_city, :address_area, :address_road, "
 				   + " :census_zip, :census_city, :census_area, :census_road, "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
@@ -232,6 +251,40 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
 			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> verifyList(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT TA.*, S.NAME AS SUBJECT_NAME, SM.NAME AS SCHOOL_MASTER_NAME, E.NAME AS EDUCATION_NAME, "
+				   + " CASE TA.STATUS WHEN '0' THEN '未通過' WHEN '1' THEN '通過' WHEN '2' THEN '待審核' END AS STATUS_TEXE "
+				   + " FROM proposition_manage.teacher_account TA "
+				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
+				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
+				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
+				   + " WHERE TA.POSITION = ? AND TA.STATUS = ? ";
+		
+		args.add(account.getPosition());
+		args.add(account.getStatus());
+		
+		if(!"".equals(account.getContent_provision()) && !"".equals(account.getContent_audit())) {
+			if(account.getContent_provision().equals(account.getContent_audit())) {
+				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
+			}else {
+				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
+			}
+			args.add(account.getContent_provision());
+			args.add(account.getContent_audit());
+		}
+
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
 		} else {
 			return null;
 		}
