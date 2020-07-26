@@ -47,13 +47,15 @@ public class Account extends Base {
 	private String census_area;         //戶籍(區)
 	private String census_road;         //戶籍(路)
 	
-	private String level;				//等級
-	private String field_name;			//領域名稱
-	private String school_master_name;	//學校名稱
+	private String level;					//等級
+	private String subject_name;			//學科名稱
+	private String school_master_name;		//學校名稱
+	private String education_name;			//學制名稱
 	private String content_provision_name;	//內容提供名稱
 	private String content_audit_name;		//內容審核名稱
 	private String field_list;				//領域選取清單
 	private String education_list;			//學制選取清單
 	private String subject_list;			//學科選取清單
+	private String status_texe;				//帳號狀態文字(0：關閉，1：開啟,2：待審核)
 	
 }

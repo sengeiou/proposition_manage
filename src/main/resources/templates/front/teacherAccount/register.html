@@ -5,20 +5,17 @@
 	<title>素養教案與命題管理系統 - 建立老師</title>
 	<meta charset="utf-8">
 </head>
-<body class="style-admin">    
-    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+<body class="style-admin">   
+	<form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${account}" enctype="multipart/form-data">
+	<section class="header-content">
+        <div class="fixed-width header">
+            <div class="register-logo">素養教案與命題管理平台</div>
+        </div>
+    </section>
     <section class="main-content">
         <div class="fixed-width">
-            <div class="breadcrumb">
-                <a href="/">首頁</a>
-                <i>/</i>
-                <a href="/teacher">老師管理</a>
-                <i>/</i>
-                <a href="#">建立老師</a>
-            </div>
-            <form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${account}" enctype="multipart/form-data">
             <div class="create-content teacher">
-                <h3>建立老師</h3>
+                <h3>註冊加入團隊</h3>
                 <div class="create-grid">
                     <div><span class="required">*</span>真實姓名</div>
                     <div>
@@ -46,38 +43,20 @@
                     <div><span class="required">*</span>學制</div>
                     <div>
                         <select id="schoolType" th:field="*{education_id}">
-                            <option value="0">請選擇領域</option>
+                            <option value="0">請選擇學科</option>
                             <option th:each="education:${educationList}" th:value="${education.ID}" th:text="${education.NAME}"></option>
                         </select>
                     </div>
                     <div><span class="required">*</span>學科</div>
                     <div>
                         <select id="specialSkill" th:field="*{subject_id}">
-                            <option value="0">請選擇學科</option>
+                            <option value="0">請選擇領域</option>
                             <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
                         </select>
                         <span class="memo">註：將作為內容審核的選擇基準</span>
                     </div>
-                    <div><span class="required">*</span>老師身份</div>
+                    <div><span class="required">*</span>系統身份</div>
                     <div class="basic-h">
-                        <label for="teacher">
-                            <div class="radio-circle"></div>
-                            <span>一般老師</span>
-                            <input type="radio" class="dis-n" id="teacher" name="position" value="1">
-                        </label>
-                        <label for="team-leader">
-                            <div class="radio-circle"></div>
-                            <span>組長</span>
-                            <input type="radio" class="dis-n" id="team-leader" name="position" value="2">
-                        </label>
-                        <label for="principal">
-                            <div class="radio-circle"></div>
-                            <span>校長</span>
-                            <input type="radio" class="dis-n" id="principal" name="position" value="3">
-                        </label>
-                    </div>
-                    <div class="dis-n teacherBlock"><span class="required">*</span>系統身份</div>
-                    <div class="basic-h dis-n teacherBlock">
                         <label for="content-teacher">
                             <div class="checkbox-square"></div>
                             <span>創作教師</span>
@@ -217,17 +196,13 @@
                         	</select>
                         </div>                                               
                     </div>
-                    
-<!--                     <div class="p-left-14px">通訊地址</div> -->
-<!--                     <div> -->
-<!--                         <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}"> -->
-<!--                     </div> -->
                 </div>
-                <button class="btn-submit" data-type="teacherCreate" type="button">送出</button>
-            </div>
-            </form>
+                <button class="btn-submit" type="button" data-type="register">送出</button>
+            </div>                
         </div>
-    </section>    
+    </section>
+
+    
     <!-- 燈箱背景 -->
     <section class="lightBoxBG dis-n"></section>
     <!-- 警告燈箱 -->
@@ -238,6 +213,7 @@
         </div>
         <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
     </section>
+ </form>
 
     <div th:include="front/load/js :: js"></div>
 	<script>
@@ -314,7 +290,6 @@
     			var road = obj.filter(function(item, index, array){
     			  return (item.City.indexOf($("#city").val()) >= 0 && item.Area.indexOf($("#area").val()) >= 0);       
     			});
-//     			console.log(road);
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
@@ -329,19 +304,7 @@
         	alert("請選擇縣市及鄉鎮市區");
         }
     });
-    
-// 	function getjson(){
-// 		var user_city;
-// 		var user_area;
-// 		var user_road;
-// 		$.getJSON('/front/json/7435fd74d0a7eca79b7a65a80e84c30f_export.json', function (obj) {
-// 			var country = obj.filter(function(item, index, array){
-// 			  return (item.City.indexOf('臺北市') >= 0 );       
-// 			});
-// 			console.log(obj);
-// 			console.log(country);
-// 		});
-// 	}
+
 	</script>
 </body>
 </html>

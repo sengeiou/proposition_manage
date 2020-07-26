@@ -56,4 +56,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		return teacherAccountDao.callNum(account);
 	}
 	
+	public List<Map<String, Object>> verifyList(Account account) {
+		return teacherAccountDao.verifyList(account);
+	}
+	
 }

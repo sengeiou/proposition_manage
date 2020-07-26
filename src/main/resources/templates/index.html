@@ -15,6 +15,7 @@
         <div>
             <button class="btn-teacher" id="teacher">老師</button>
             <button class="btn-admin" id="manager">管理者</button>
+            <button class="btn-join" id="join">加入團隊</button>
         </div>
     </section>
 
@@ -27,6 +28,9 @@
 			});
 			$("#manager").click(function(){
 				$(location).attr("href", "/manager/login");
+			});
+			$("#join").click(function(){
+				$(location).attr("href", "/teacher/register");
 			});
 		})
 	</script>

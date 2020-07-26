@@ -234,13 +234,13 @@ public class TeacherAccountController {
 	        	account.setPassword(phone);
 	        	account.setName(name);
 	        	account.setId_no(id_no);
-//	        	account.setPhone(phone);
+//	        	account.setPC(phone);
 	        	account.setEmail(email);
 //	        	account.setAddress(address);
 	        	account.setBank(bank);
 	        	account.setBranch(branch);
 	        	account.setRemittance_account(remittance_account);
-//	        	account.setAddress(address);
+//	        	account.(adsetAddressdress);
 	        	account.setField_id(field_id);
 	        	account.setContent_provision(content_provision);
 	        	account.setContent_audit(content_audit);

@@ -885,10 +885,11 @@ div.basic-h {
 .topWrap button:nth-child(even) { /* 老師列表的「範例下載」、「資料匯入」按鈕 */
     margin-left: 20px;
 }
-.list-content {
-    color: #4b4b4b;    
+.list-content , .report-content {
+    color: #4b4b4b;  
+    margin-bottom: 60px;  
 }
-.list-content>h3 {
+.list-content>h3 , .report-content>h3{
     font-size: 1.4rem;
     margin: 20px 0;
     text-align: center;
@@ -930,8 +931,7 @@ div.basic-h {
     padding: 20px 0;
 }
 .list-content>.page-block {
-    text-align: center;
-    margin-bottom: 60px;
+    text-align: center;    
 }
 .list-content>.page-block a{
     padding: 0 10px;
@@ -1161,28 +1161,6 @@ button.btn-search:hover {
 }
 /* 分類管理 start */
 /* 頁面底部進度條 start */
-@keyframes up {
-    from {
-      height: 0;
-      display: none;    
-    }
-    to {
-      height: 320px;
-      display: block;
-      padding: 25px 0;
-    }
-}
-@keyframes down {
-    from {
-      height: 320px;
-      display: block;
-      padding: 25px 0;   
-    }
-    to {
-      height: 0;
-      display: none;  
-    }
-}
 .progress {
     background-color: var(--primary);
     position: fixed;
@@ -1197,14 +1175,6 @@ button.btn-search:hover {
 .progress span {
     color: #ffffff;
     margin-right: 20px;
-}
-
-  
-.openFileClass {   
-    animation: openFile 1s ease forwards;
-}
-.closeFileClass {   
-    animation: closeFile 1s ease forwards;
 }
 /* 頁面底部進度條 end */
 /* 會員中心 start */
@@ -1413,6 +1383,47 @@ button.btn-openArea i {
     max-height: 400px
 }
 /* 教案詳細資料、修正教案的檔案歷程 end */
+/* 報表匯出 start */
+.report-content a.tab {
+    color: #4b4b4b;
+    padding: 15px 25px;
+    border: 1px solid var(--primary-dark);
+    border-bottom: none;
+    border-right: none;
+}
+.report-content a.tab:first-child {    
+    border-top-left-radius: 5px;
+}
+.report-content a.tab:last-child {
+    border-right: 1px solid var(--primary-dark);
+    border-top-right-radius: 5px;
+}
+.report-content a.tab.active {
+    background-color: var(--primary);    
+    color: #ffffff;
+}
+.report-content a.tab:hover {
+    background-color: var(--primary-dark);
+    color: #ffffff;
+}
+.report-content .tabContent {
+    border: 1px solid var(--primary-dark);
+    padding: 50px 20px 0 20px; 
+}
+.report-content .tabContent>p {
+    margin: 60px 0;
+    text-align: center;
+    line-height: 1.6rem;
+}
+.report-content .tabContent .report-grid {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 1fr 3fr;    
+    margin: 0 auto;
+    grid-row-gap: 10px;
+    line-height: 36px;
+}
+/* 報表匯出 end */
 
 .dis-n { display: none; }
 .dis-b { display: block; }

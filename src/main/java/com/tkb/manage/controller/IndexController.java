@@ -332,6 +332,7 @@ public class IndexController {
 		}
 		
 //		account.setPage_count(page_count);
+
 		if(account.getPosition() == null || "".equals(account.getPosition())) {
 			account.setPosition("1");
 			account.setContent_provision("1");
@@ -348,6 +349,7 @@ public class IndexController {
 		if(account.getContent_audit() == null) {
 			account.setContent_audit("0");
 		}
+
 		List<Map<String, Object>> list = teacherAccountService.list(account);
 		model.addAttribute("list", list);
 		model.addAttribute("account", account);
