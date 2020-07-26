@@ -41,10 +41,6 @@ public class ContractServiceImpl implements ContractService {
 		contractDao.delete(contract);
 	}
 	
-	public void updateTeacherId(Contract contract) {
-		contractDao.updateTeacherId(contract);
-	}
-	
 	public Map<String, Object> uploadNum(Contract contract) {
 		return contractDao.uploadNum(contract);
 	}

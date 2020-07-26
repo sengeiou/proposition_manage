@@ -118,7 +118,15 @@ button.btn-mdSolid {
     display: unset;
     border: none;
 }
-button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover , button.btn-xl:hover {
+button.btn-smSolid {
+    /* border-radius: 5px; */
+    padding: 5px 10px;
+    color: #ffffff;
+    background-color: var(--secondary);
+    display: unset;
+    border: none;
+}
+button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover , button.btn-xl:hover , button.btn-smSolid:hover{
     color: #ffffff;
     background-color: var(--primary-dark);
 }
@@ -166,12 +174,12 @@ span.btn-file {
     line-height: 1.1rem;
 }
 .font-size-08 { font-size: 0.8rem; }
-.p-left-14px { padding-left: 14px; }
-.m-top-20px { margin-top: 20px; }
+.p-left-14px { padding-left: 12px; }
+.m-top-15px { margin-top: 15px; }
 .failTag { background-color: var(--red); }
-.successTag-1 { background-color:var(--lightGreen) }
-.successTag-2 { background-color: var(--green); }
-.successTag-3 { background-color: var(--darkGreen); }
+.successTag-1 { background-color:var(--lightGreen) } /*初審通過、審核通過*/
+.successTag-2 { background-color: var(--green); } /*完稿*/
+.successTag-3 { background-color: var(--darkGreen); } /*後製完稿*/
 .display-spaBetween {
     display: flex;
     justify-content: space-between;
@@ -252,7 +260,7 @@ span.btn-file {
     margin: 0 3px;
 }
 .login-container .login-block input[type='password'] {
-   margin: 20px 0 5px 0;
+   margin: 20px 0 5px 10px;
 } 
 .login-container .login-block div input {
     margin-left: 10px;
@@ -405,7 +413,7 @@ span.btn-file {
     text-align: center;
     line-height: 1.5rem;
 }
-.MemolightBox .container {
+.memo-lightBox .container {
     line-height: 2rem;
     width: 300px;
     text-align: center;
@@ -415,7 +423,6 @@ span.btn-file {
     justify-content: center;
 }
 .lightBoxContent.lessonOutline-lightBox , .lightBoxContent.lessonIntro-lightBox , .lightBoxContent.learningPerformace-lightBox , .lightBoxContent.learningContent-lightBox {
-    /* width: 50%; */
     width: 600px;
     min-height: 200px;    
 }
@@ -430,6 +437,34 @@ span.btn-file {
 .edit-teacherName-lightBox , .edit-teacherID-lightBox , .edit-teacherBank-lightBox {
     width: 400px;
     min-height: 270px;
+}
+.forgetPassword-lightBox {
+    text-align: center;
+    line-height: 1.5rem;
+}
+.lessonFile-lightbox .container {
+    width: 600px;
+    min-height: 50px;   
+    max-height: 300px; 
+    overflow-y: auto;
+    line-height: 1.2rem
+}
+.lessonFile-lightbox .container .file {
+    padding: 10px 0;    
+}
+.lessonFile-lightbox .container a{
+    color: #948574;
+}
+.lessonFile-lightbox .container-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-row-gap: 20px;
+}
+.lessonFile-lightbox .container-grid>div>div {
+    margin-bottom: 10px;
+}
+.lessonFile-lightbox a:hover {
+    color: var(--secondary);    
 }
 /* 燈箱 end */
 
@@ -638,7 +673,9 @@ div.basic-h {
     margin: 0;
 }
 
-
+.create-content.teacher {
+    overflow: unset;
+}
 .create-content.teacher>.create-grid div.bank-mobile {
     display: none;
 }
@@ -814,7 +851,7 @@ div.basic-h {
 .create-content.lessonVerify textarea {
     width: 90%;
     resize: none;
-    height: 240px;
+    height: 180px;
 }
 /* 教案詳細資料 end */
 
@@ -887,8 +924,7 @@ div.basic-h {
 .list-content .verify-block .grid-title {
     background-color: var(--secondary);
     border: none;
-    color: #ffffff;
-    padding-right: 15px;
+    color: #ffffff;    
 }
 .list-content .grid-title>div {
     padding: 20px 0;
@@ -961,18 +997,21 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    grid-template-columns: 0.8fr 1.5fr 6fr 1fr 0.8fr 1fr 97px 1fr 1fr ;
+    grid-template-columns: 0.8fr 1.5fr 6fr 0.8fr 1fr 1fr 97px 1fr 1fr ;
 }
 .list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */
     /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr; */ /* 含有「上傳狀態」欄位 */
-    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 97px 1fr;
+    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 97px 1fr;
 }
 .list-content .lessonList-verify-grid { /* 教案列表--審議委員 */
-    grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr;
+    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 1fr;
 }
 .list-content .lessonList-principal-grid { /* 教案列表-校長 */
    /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr; */ /* 含有「上傳狀態」欄位 */
-   grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr ;
+   grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 1fr 97px 1fr ;
+}
+.list-content .lessonList-verify-verifyGrid { /* 教案列表--審議委員的審核列表 */
+    grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
 }
 .list-content .lessonList-grid>div {
     text-overflow: ellipsis;
@@ -1217,6 +1256,9 @@ button.btn-search:hover {
 }
 /* 重置密碼 end */
 /* 地址 start */
+.customselect-block , .customselect-residence-block{
+    width: 100%;
+}
 .address-block {
     display: flex;
     align-content: center;
@@ -1288,19 +1330,89 @@ button.btn-openArea i {
     background-color: var(--red);
     color: #ffffff;
 }
-.verify-lightBox {
+.verify-lightBox , .verifyLesson-lightBox {
     width: 400px;
     height: 300px;
 }
-.verify-lightBox .container>div {
+.verify-lightBox .container>div , .verifyLesson-lightBox .container>div{
     display: grid;
     grid-template-columns: 1fr 3fr;
     grid-row-gap: 10px;    
 }
 /* 老師列表-組長、校長身分的審核區塊 end */
+/* 新增教案、編輯教案的附件、素材授權申請 start */
+.attachmentBlock>div>p , .contractMatBlock>div>p {
+    width: 100%;
+}
 .attach-select {
     width: fit-content;
     margin: 0 10px;
 }
+.attach-plus , .contractMat-plus{
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 1.6rem;
+}
+.attach-plus:hover , .contractMat-plus:hover{
+    transform: scale(1.1);
+}
+.contractMatNumber {
+    margin-right: 10px;
+}
+/* 新增教案、編輯教案的附件、素材授權申請 end */
+/* 教案詳細資料、修正教案的檔案歷程 start */
+.lessonFile .lessoncontent-file-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    text-align: center;    
+    align-items: center;
+}
+.lessonFile .lessoncontent-file-grid:hover {
+    background-color: var(--primary-light);    
+}
+.lessonFile .lessoncontent-file-grid-title {
+    text-align: center;
+    background-color: var(--primary);  
+    color: #ffffff; 
+    padding: 20px 10px 20px 0;
+    font-size: 1.1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    text-align: center;    
+    align-items: center;
+}
+.lessonFile .stage {    
+    padding: 5px 10px;
+    line-height: 1.2rem;
+    border-radius: 5px;
+    margin: 0 auto;    
+}
+.lessonFile .stage>span {
+    color: unset;
+}
+.lessonFile .stageA { 
+    border: 3px solid var(--secondary); 
+    cursor: pointer;
+}
+.lessonFile .stageFaild { 
+    border: 3px solid var(--red); 
+    cursor: pointer;
+}
+.lessonFile .stagePass {  border: 3px solid var(--green); }
+.lessonFile .stageA:hover {     
+    background-color: var(--secondary);
+    color: #ffffff;
+}
+.lessonFile .stageFaild:hover { 
+    background-color: var(--red); 
+    color: #ffffff;
+}
+.lessonFile .overflowY-scroll {
+    min-height: 220px;
+    overflow-y: scroll;    
+    max-height: 400px
+}
+/* 教案詳細資料、修正教案的檔案歷程 end */
+
 .dis-n { display: none; }
 .dis-b { display: block; }

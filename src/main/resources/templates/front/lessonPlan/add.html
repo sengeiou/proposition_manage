@@ -22,103 +22,328 @@
             <div class="create-content lesson">
                 <h3><i class="fas fa-book-open"></i>新增教案<i class="fas fa-book"></i></h3>
                 <form role="form" id="mainForm" th:object="${lessonPlan}" method="post" enctype="multipart/form-data">
-                <div class="create-grid">
-                    <div><span class="required">*</span>合約序號</div>
-                    <div>
-                        <select id="contractNum" th:field="*{contract_id}">
-                            <option value="0">請選擇合約</option>
-                            <option th:each="contract:${contractList}" th:value="${contract.contract_id}" th:text="${contract.contract_id}"></option>
-                        </select>
-                    </div>
-                    <div><span class="required">*</span>教案名稱</div>
-                    <div>
-                        <input type="text" placeholder="請輸入教案名稱" id="lessonName" th:field="*{name}">
-                    </div>
-                    <div><span class="required">*</span>學科</div>
-                    <div>
-                        <select id="specialSkill" th:field="*{subject_id}">
-                            <option value="0">請選擇學科</option>
-                            <option th:each="subject:${subjectList}" th:value="${subject.id}" th:text="${subject.name}"></option>
-                        </select>
-                    </div>
-                    <div class="basic-h" id="crossSubjectTitle"><span class="required">*</span>跨科</div>
-                    <div class="basic-h" id="crossSubject">
-                        <!-- label的for 與 input的id要一致 -->
-                        <label class="les-labelBlock" th:each="subject:${subjectList}" >
-                            <div class="checkbox-square"></div>
-                            <span>[[${subject.name}]]</span>
-                            <input type="checkbox" class="dis-n" name="crossSubject" th:value="${subject.id}">
-                        </label>
-                    </div>
-                    <div><span class="required">*</span>學制</div>
-                    <div>
-                        <select id="schoolType" th:field="*{education_id}">
-                            <option value="0">請選擇學制</option>
-                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}"></option>
-                        </select>                        
-                    </div>
-                    <div class="basic-h" id="gradeTitle"><span class="required">*</span>年級</div>
-                    <div class="basic-h" id="grade"></div>
-                    <div><span class="required">*</span>初稿檔案</div>
-                    <div>
-                        <label for="lessonFile">
-                            <input type="file" class="dis-n btnFile" id="lessonFile" name="fileName" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="lessonFileText">
-                            <span class="btn-file">選擇檔案</span>
-                        </label>                        
-                        <span class="memo">註：僅接受附檔名為.pdf、.ppt、.doc、.docx、.xls、.xlsx</span>                        
-                        <p class="lessonFileText"></p>
-                    </div>
-<!--                     <div class="p-left-14px">關鍵字</div> -->
-<!--                     <div> -->
-<!--                     	<input type="text" placeholder="請輸入關鍵字" class="keyWord"> -->
-<!--                     	<input type="hidden" value="" class="keyWordInput" name="tag"> -->
-<!--                     </div> -->
-                </div>
-                <button class="btn-submit" data-type="lessonCreate" type="button">送出</button>
+                	<input type="hidden" id="educationId" th:field="*{education_id}" />
+                	<input type="hidden" id="subjectId" th:field="*{subject_id}" />
+	                <div class="create-grid">
+	                    <div><span class="required">*</span>合約序號</div>
+	                    <div>
+	                        <select id="contractNum" th:field="*{contract_id}">
+	                            <option value="0">請選擇合約</option>
+	                            <option th:each="contract:${contractList}" th:value="${contract.contract_id}" th:text="${contract.contract_id}"></option>
+	                        </select>
+	                    </div>
+	                    <div><span class="required">*</span>教案名稱</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入教案名稱" id="lessonName" th:field="*{name}">
+	                    </div>
+	                    <div class="p-left-14px">學制</div>
+	                    <div class="basic-h" id="education">(請選擇合約流水號，學制將由系統自動帶入)</div>
+	                    <div id="gradeTitle"><span class="required">*</span>年級</div>
+	                    <div class="basic-h" id="grade"></div>
+	                    <div class="p-left-14px">學科</div>
+	                    <div class="basic-h" id="subject">(請選擇合約流水號，學科將由系統自動帶入)</div>
+	                    <div id="crossSubjectTitle"><span class="required">*</span>跨科</div>
+	                    <div class="basic-h" id="crossSubject"></div>                                        
+	                    <div class="p-left-14px">核心素養</div>
+	                    <div>
+	                        <div class="lessonOutline">
+	                            <button class="btn-openLightBox" data-lb="lessonOutline" type="button">選擇核心素養總綱</button>
+	                            <input type="hidden" value="" class="lightBoxInput">
+	                            <div class="lightboxItemWrap"></div>
+	                        </div>
+	                        <div class="lessonIntro">
+	                            <button class="btn-openLightBox" data-lb="lessonIntro" type="button">選擇核心素養領綱</button>
+	                            <input type="hidden" value="" class="lightBoxInput">
+	                            <div class="lightboxItemWrap"></div>
+	                        </div>                        
+	                    </div>
+	                    <div class="p-left-14px">學習表現</div>
+	                    <div>
+	                        <button class="btn-openLightBox" data-lb="learningPerformace" type="button">選擇學習表現</button>
+	                        <input type="hidden" value="" class="lightBoxInput">
+	                        <div class="lightboxItemWrap"></div>
+	                    </div>
+	                    <div class="p-left-14px">學習內容</div>
+	                    <div>
+	                        <button class="btn-openLightBox" data-lb="learningContent" type="button">選擇學習內容</button>
+	                        <input type="hidden" value="" class="lightBoxInput">
+	                        <div class="lightboxItemWrap"></div>
+	                    </div>
+	                    <div><span class="required">*</span>初稿檔案</div>
+	                    <div>
+	                        <div>
+	                            <label for="lessonFile">
+	                                <input type="file" class="dis-n btnFile" id="lessonFile" name="word" accept=".doc,.docx" value="" data-text="lessonFileText">
+	                                <span class="btn-file">選擇原始檔</span>
+	                            </label>                        
+	                            <span class="memo">註：僅接受附檔名為.doc、.docx</span>                        
+	                            <p class="lessonFileText"></p>
+	                        </div>
+	                        <div class="m-top-15px">
+	                            <label for="lessonFilePDF">
+	                                <input type="file" class="dis-n btnFile" id="lessonFilePDF" name="pdf" accept=".pdf" value="" data-text="lessonFilePDFText">
+	                                <span class="btn-file">選擇PDF檔</span>
+	                            </label>                        
+	                            <span class="memo">註：僅接受附檔名為.pdf</span>                        
+	                            <p class="lessonFilePDFText"></p>
+	                        </div>                        
+	                    </div>
+	                    <div class="p-left-14px">附件</div>
+	                    <div class="attachmentBlock">
+	                        <div class="v-center flex-wrap display-spaBetween">
+	                            <div class="v-center">
+	                                <span class="attachNumber">附件1</span>
+	                                <select class="attach-select" name="material_type">
+	                                    <option value="0">請選擇類型</option>
+	                                    <option th:each="materialType:${materialTypeList}" th:value="${materialType.id}">[[${materialType.name}]]</option>
+	                                </select>                            
+	                                <label for="attachment" class="attach-label dis-n">
+	                                    <input type="file" class="dis-n btnFile" id="attachment" name="attachment" accept=".ppt,.doc,.docx,.xls,.xlsx" value="" data-text="attachmentText">
+	                                    <span class="btn-file">選擇檔案</span>
+	                                </label>                        
+	                                <span class="memo attach-label dis-n">註：僅接受附檔名為.doc、.docx</span>
+	                                <input type="text" placeholder="請輸入超連結" name="link" class="attach-label dis-n attach-linkInput">
+	                            </div>                            
+	                            <i class="fas fa-plus-circle fa-lg attach-label dis-n attach-plus" data-number="1"></i>
+	                            <p class="attachmentText dis-n"></p>
+	                        </div>
+	                    </div>
+	                    <div class="p-left-14px">素材授權申請</div>
+	                    <div class="contractMatBlock">
+	                        <div>                            
+	                            範例檔案
+	                            <button class="btn-smSolid btnDownFile" data-btntype="exampleContractMat" type="button">下載範例檔</button>                           
+	                        </div>                        
+	                        <div class="v-center flex-wrap display-spaBetween m-top-15px">
+	                            <div class="v-center">
+	                                <span class="contractMatNumber">檔案1</span>                                                          
+	                                <label for="contractMat">
+	                                    <input type="file" class="dis-n btnFile" id="contractMat" name="contractMat" accept=".doc,.docx,.pdf" value="" data-text="contractMatText">
+	                                    <span class="btn-file">選擇檔案</span>
+	                                </label>                        
+	                                <span class="memo">註：僅接受附檔名為.doc、.docx、.pdf</span>                                
+	                            </div>                            
+	                            <i class="fas fa-plus-circle fa-lg dis-n contractMat-plus" data-number="1"></i>
+	                            <p class="contractMatText dis-n"></p>
+	                        </div>
+	                    </div>
+	                    <div class="p-left-14px">關鍵字</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入關鍵字" class="keyWord">
+	                        <input type="hidden" value="" class="keyWordInput" name="tag">
+	                    </div>
+	                </div>
+	                <button class="btn-submit" data-type="lessonCreate" type="button">送出</button>
                 </form>
-            </div>                
+            </div>
         </div>
     </section>
     
+    <!-- 燈箱背景 -->
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 核心素養總綱燈箱 -->
+    <section class="lightBoxContent lessonOutline-lightBox dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <h3 class="title">核心素養總綱</h3>
+        <hr>
+        <div class="container">
+            <!-- label的for 與 input的id要一致 -->
+            <label for="科-J-A1">
+                <div class="checkbox-square"></div>
+                <span>科-J-A1具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A1" id="科-J-A1" class="dis-n">
+            </label>
+            <label for="科-J-A2">
+                <div class="checkbox-square"></div>
+                <span>科-J-A2具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A2" id="科-J-A2" class="dis-n">
+            </label>
+            <label for="科-J-A3">
+                <div class="checkbox-square"></div>
+                <span>科-J-A3具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A3" id="科-J-A3" class="dis-n">
+            </label>
+            <label for="科-J-A4">
+                <div class="checkbox-square"></div>
+                <span>科-J-A4具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A4" id="科-J-A4" class="dis-n">
+            </label>
+            <label for="科-J-A5">
+                <div class="checkbox-square"></div>
+                <span>科-J-A5具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A5" id="科-J-A5" class="dis-n">
+            </label>
+            <label for="科-J-A6">
+                <div class="checkbox-square"></div>
+                <span>科-J-A6具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A6" id="科-J-A6" class="dis-n">
+            </label>
+            <label for="科-J-A7">
+                <div class="checkbox-square"></div>
+                <span>科-J-A7具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A7" id="科-J-A7" class="dis-n">
+            </label>
+            <label for="科-J-A8">
+                <div class="checkbox-square"></div>
+                <span>科-J-A8具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A8" id="科-J-A8" class="dis-n">
+            </label>
+            <label for="科-J-A9">
+                <div class="checkbox-square"></div>
+                <span>科-J-A9具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A9" id="科-J-A9" class="dis-n">
+            </label>            
+            <label for="科-J-A10">
+                <div class="checkbox-square"></div>
+                <span>科-J-A10具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A10" id="科-J-A10" class="dis-n">
+            </label>
+            <label for="科-J-A11">
+                <div class="checkbox-square"></div>
+                <span>科-J-A11具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A11" id="科-J-A11" class="dis-n">
+            </label>
+            <label for="科-J-A12">
+                <div class="checkbox-square"></div>
+                <span>科-J-A12具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A12" id="科-J-A12" class="dis-n">
+            </label>
+            <label for="科-J-A13">
+                <div class="checkbox-square"></div>
+                <span>科-J-A13具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A13" id="科-J-A13" class="dis-n">
+            </label>
+            <label for="科-J-A14">
+                <div class="checkbox-square"></div>
+                <span>科-J-A14具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A14" id="科-J-A14" class="dis-n">
+            </label>
+        </div>
+        <button class="createTagBtn btn-sm" data-tag="lessonOutline" type="button">確定</button>
+    </section>
+    <!-- 核心素養領綱燈箱 -->
+    <section class="lightBoxContent lessonIntro-lightBox dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonIntro"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <h3 class="title">核心素養領剛</h3>
+        <hr>
+        <div class="container">
+            <!-- label的for 與 input的id要一致 -->
+            <label for="科-J-A15">
+                <div class="checkbox-square"></div>
+                <span>科-J-A15具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A15" id="科-J-A15" class="dis-n">
+            </label>
+            <label for="科-J-A16">
+                <div class="checkbox-square"></div>
+                <span>科-J-A16具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A16" id="科-J-A16" class="dis-n">
+            </label>
+            <label for="科-J-A18">
+                <div class="checkbox-square"></div>
+                <span>科-J-A18具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A18" id="科-J-A18" class="dis-n">
+            </label>
+            <label for="科-J-A19">
+                <div class="checkbox-square"></div>
+                <span>科-J-A19具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A19" id="科-J-A19" class="dis-n">
+            </label>
+        </div>
+        <button class="createTagBtn btn-sm" data-tag="lessonIntro" type="button">確定</button>
+    </section>
+    <!-- 學習表現燈箱 -->
+    <section class="lightBoxContent learningPerformace-lightBox dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="learningPerformace"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <h3 class="title">學習表現</h3>
+        <hr>
+        <div class="container">
+            <!-- label的for 與 input的id要一致 -->
+            <label for="科-J-A20">
+                <div class="checkbox-square"></div>
+                <span>科-J-A20具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A20" id="科-J-A20" class="dis-n">
+            </label>
+            <label for="科-J-A21">
+                <div class="checkbox-square"></div>
+                <span>科-J-A21具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A21" id="科-J-A21" class="dis-n">
+            </label>
+            <label for="科-J-A22">
+                <div class="checkbox-square"></div>
+                <span>科-J-A22具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A22" id="科-J-A22" class="dis-n">
+            </label>
+            <label for="科-J-A23">
+                <div class="checkbox-square"></div>
+                <span>科-J-A23具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A23" id="科-J-A23" class="dis-n">
+            </label>
+        </div>
+        <button class="createTagBtn btn-sm" data-tag="learningPerformace" type="button">確定</button>
+    </section>
+    <!-- 學習內容燈箱 -->
+    <section class="lightBoxContent learningContent-lightBox dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="learningContent"><i class="fas fa-times-circle fa-lg"></i></button> -->
+        <h3 class="title">學習內容</h3>
+        <hr>
+        <div class="container">
+            <!-- label的for 與 input的id要一致 -->
+            <label for="科-J-A24">
+                <div class="checkbox-square"></div>
+                <span>科-J-A24具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A24" id="科-J-A24" class="dis-n">
+            </label>
+            <label for="科-J-A25">
+                <div class="checkbox-square"></div>
+                <span>科-J-A25具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A25" id="科-J-A25" class="dis-n">
+            </label>
+            <label for="科-J-A26">
+                <div class="checkbox-square"></div>
+                <span>科-J-A26具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A26" id="科-J-A26" class="dis-n">
+            </label>
+            <label for="科-J-A27">
+                <div class="checkbox-square"></div>
+                <span>科-J-A27具備良好的科技態度，並能應用科技知能，已啟發自我潛能</span>
+                <input type="checkbox" value="科-J-A27" id="科-J-A27" class="dis-n">
+            </label>
+        </div>
+        <button class="createTagBtn btn-sm" data-tag="learningContent" type="button">確定</button>
+    </section>
     <!-- 警告燈箱 -->
     <section class="lightBoxAlert dis-n">        
         <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
         <div class="container">
             <div>尚未填寫</div>
         </div>
-        <button class="btn-closelightBoxAlert btn-sm">確定</button>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
     </section>
 
-    <div th:include="front/load/js :: js"></div>  
+    <div th:include="front/load/js :: js"></div>    
 	<script>
+		
+		$("#gradeTitle").hide();
+		$("#grade").hide();
+		$("#crossSubjectTitle").hide();
+		$("#crossSubject").hide();
 	
 		$("#contractNum").change(function(){
-			setContract($(this).val());
-		})
-	
-		getGrade($("#schoolType").val());
-		$("#schoolType").change(function(){
-			if($("#schoolType").val() != "0") {
-				getGrade($(this).val());
+			if($(this).val() != "0") {
+				setContract($(this).val());
 			} else {
+				$("#education").text("(請選擇合約流水號，學制將由系統自動帶入)");
+				$("#subject").text("(請選擇合約流水號，學科將由系統自動帶入)");
 				$("#gradeTitle").hide();
 				$("#grade").hide();
-			}
-		});
-		
-		getCrossSubject($("#specialSkill").val());
-		$("#specialSkill").change(function(){
-			if($("#specialSkill").val() != "0") {
-				getCrossSubject($(this).val());
-			} else {
 				$("#crossSubjectTitle").hide();
 				$("#crossSubject").hide();
 			}
-		});
-		
-		function getField(id) {
+		})
+
+		function getGrade(id) {
 			$.ajax({
-				url: '/lesson/get/field',
+				url: '/get/grade',
 				cache: false,
 				async: false,
 				dataType: 'json',
@@ -173,43 +398,10 @@
 							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
 								+  "<div class='checkbox-square'></div>"
 								+  "<span>"+child.NAME+"</span>"
-								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='crossSubject' value="+child.ID+">"
 								+  "</label>"
 						}
 						$("#crossSubject").append(str);
-					}
-				}
-			});
-		}
-		
-		function getGrade(id) {
-			$.ajax({
-				url: '/get/grade',
-				cache: false,
-				async: false,
-				dataType: 'json',
-				type: 'POST',
-				data: {
-					id: id
-				},
-				error: function(xhr) {
-					alert("取得資料錯誤");
-				},
-				success: function(data) {
-					if(data != null && data.length > 0) {
-						$("#gradeTitle").show();
-						$("#grade").show();
-						$("#grade").empty();
-						var str = "";
-						for(i=0; i<data.length; i++) {
-							var child = data[i];
-							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
-								+  "<div class='checkbox-square'></div>"
-								+  "<span>"+child.NAME+"</span>"
-								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
-								+  "</label>"
-						}
-						$("#grade").append(str);
 					}
 				}
 			});
@@ -231,8 +423,10 @@
 				success: function(data) {
 					if(data != null && data.length > 0) {
 						var child = data[0];
-						$("#specialSkill").val(child.SUBJECT_ID);
-						$("#schoolType").val(child.EDUCATION_ID);
+						$("#educationId").val(child.EDUCATION_ID);
+						$("#education").text(child.EDUCATION_NAME);
+						$("#subjectId").val(child.SUBJECT_ID);
+						$("#subject").text(child.SUBJECT_NAME);
 						getGrade(child.EDUCATION_ID);
 						getCrossSubject(child.SUBJECT_ID);
 					}

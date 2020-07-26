@@ -118,7 +118,7 @@ public class TeacherAccountController {
 		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
 		
 		account.setAccount(account.getEmail());
-		account.setPassword(account.getPhone());
+//		account.setPassword(account.getPhone());
 		account.setContent_provision(content_provision);
 		account.setContent_audit(content_audit);
 		account.setStatus("1");
@@ -234,13 +234,13 @@ public class TeacherAccountController {
 	        	account.setPassword(phone);
 	        	account.setName(name);
 	        	account.setId_no(id_no);
-	        	account.setPhone(phone);
+//	        	account.setPhone(phone);
 	        	account.setEmail(email);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setBank(bank);
 	        	account.setBranch(branch);
 	        	account.setRemittance_account(remittance_account);
-	        	account.setAddress(address);
+//	        	account.setAddress(address);
 	        	account.setField_id(field_id);
 	        	account.setContent_provision(content_provision);
 	        	account.setContent_audit(content_audit);

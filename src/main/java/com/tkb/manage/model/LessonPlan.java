@@ -12,8 +12,8 @@ public class LessonPlan extends Base {
 	private String id;						//流水號
 	private String uuid;					//UUID
 	private String contract_id;				//合約序號
+	private String lesson_plan_number;		//教案編號
 	private String name;					//名稱
-	private String field_id;				//學習領域流水號
 	private String education_id;			//學制流水號
 	private String subject_id;				//學科流水號
 	private String course_length;			//教學時間
@@ -38,7 +38,6 @@ public class LessonPlan extends Base {
 	private String text;					//範文篇目
 	private String top;						//置頂(0：否，1：是)
 	private String auditor;					//審核人
-	private String file_status;				//檔案狀態(Y：已上傳，N：待修訂，C：完稿)
-	private String upload_status;			//上傳狀態(Y：待審核，N：未通過，C：通過)
+	private String file_status;				//檔案狀態(A：初審中，B：初審待修正，C：初審通過 / 審核中，D：審核待修正，E：審核通過 / 完稿確認，F：完稿)
 	
 }

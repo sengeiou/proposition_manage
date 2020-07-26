@@ -187,8 +187,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
-				   + " WHERE LP.FIELD_ID IN ("+lessonPlan.getField_id()+") "
-				   + " AND LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " WHERE LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " AND LP.SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
@@ -207,8 +207,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan "
-				   + " WHERE FIELD_ID IN ("+lessonPlan.getField_id()+") "
-				   + " AND EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") ";
+				   + " WHERE EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " AND SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") ";
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -239,8 +239,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
-				   + " WHERE LP.FIELD_ID IN ("+lessonPlan.getField_id()+") "
-				   + " AND LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " WHERE LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " AND LP.SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
@@ -259,8 +259,8 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan "
-				   + " WHERE FIELD_ID IN ("+lessonPlan.getField_id()+") "
-				   + " AND EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") ";
+				   + " WHERE EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
+				   + " AND SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") ";
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -372,13 +372,13 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.lesson_plan "
-				   + " SET NAME = ?, FIELD_ID = ?, EDUCATION_ID = ?, TAG = ?, "
+				   + " SET NAME = ?, EDUCATION_ID = ?, SUBJECT_ID = ?, TAG = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
 		args.add(lessonPlan.getName());
-		args.add(lessonPlan.getField_id());
 		args.add(lessonPlan.getEducation_id());
+		args.add(lessonPlan.getSubject_id());
 		args.add(lessonPlan.getTag());
 		args.add(lessonPlan.getUpdate_by());
 		args.add(lessonPlan.getId());
@@ -410,12 +410,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.lesson_plan "
-				   + " SET FILE_STATUS = ?, UPLOAD_STATUS = ?, "
+				   + " SET FILE_STATUS = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
 		args.add(lessonPlan.getFile_status());
-		args.add(lessonPlan.getUpload_status());
 		args.add(lessonPlan.getUpdate_by());
 		args.add(lessonPlan.getId());
 		

@@ -33,6 +33,8 @@ public class Account extends Base {
 	private String branch;				//匯款分行
 	private String remittance_account;	//匯款帳號
 	private String field_id;			//領域流水號
+	private String education_id;		//學制流水號
+	private String subject_id;			//學科流水號
 	private String position;			//老師身份(1：一般老師，2：組長，3：校長)
 	private String content_provision;	//內容提供(0：否，1：是)
 	private String content_audit;		//內容審核(0：否，1：是)
@@ -52,5 +54,6 @@ public class Account extends Base {
 	private String content_audit_name;		//內容審核名稱
 	private String field_list;				//領域選取清單
 	private String education_list;			//學制選取清單
+	private String subject_list;			//學科選取清單
 	
 }
