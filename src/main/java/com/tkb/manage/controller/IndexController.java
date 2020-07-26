@@ -49,6 +49,7 @@ import com.tkb.manage.model.LessonPlan;
 import com.tkb.manage.model.LessonPlanAudit;
 import com.tkb.manage.model.LessonPlanFile;
 import com.tkb.manage.model.LessonPlanOption;
+import com.tkb.manage.model.MaterialType;
 import com.tkb.manage.model.Proposition;
 import com.tkb.manage.model.PropositionAudit;
 import com.tkb.manage.model.PropositionFile;
@@ -67,6 +68,7 @@ import com.tkb.manage.service.LessonPlanAuditService;
 import com.tkb.manage.service.LessonPlanFileService;
 import com.tkb.manage.service.LessonPlanOptionService;
 import com.tkb.manage.service.LessonPlanService;
+import com.tkb.manage.service.MaterialTypeService;
 import com.tkb.manage.service.PropositionAuditService;
 import com.tkb.manage.service.PropositionFileService;
 import com.tkb.manage.service.PropositionOptionService;
@@ -142,6 +144,9 @@ public class IndexController {
 	private SubjectService subjectService;
 	
 	@Autowired
+	private MaterialTypeService materialTypeService;
+	
+	@Autowired
 	private CommonService commonService;
 	
 	@Value("${front.menu.name}") 
@@ -191,15 +196,15 @@ public class IndexController {
 			LessonPlan lessonPlan = new LessonPlan();
 			lessonPlan.setCreate_by(accountSession.getAccount());
 			//教案已上傳數
-			lessonPlan.setUpload_status("Y");
+			lessonPlan.setFile_status("Y");
 			int lessonAddCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("lessonAddCount", lessonAddCount);
 			//教案待修訂數
-			lessonPlan.setUpload_status("N");
+			lessonPlan.setFile_status("N");
 			int lessonEditCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("lessonEditCount", lessonEditCount);
 			//教案已完稿數
-			lessonPlan.setUpload_status("C");
+			lessonPlan.setFile_status("C");
 			int lessonDoneCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("lessonDoneCount", lessonDoneCount);
 			
@@ -743,7 +748,6 @@ public class IndexController {
     @RequestMapping("/teacher/download")
     public String downloadFile(HttpServletRequest request,
                                HttpServletResponse response) throws UnsupportedEncodingException {
-
         // 獲取指定目錄下的第一個檔案
         File scFileDir = new File(teacherDownload);
         File TrxFiles[] = scFileDir.listFiles();
@@ -759,17 +763,14 @@ public class IndexController {
             //設定檔案路徑
             String realPath = teacherDownload+"/";
             File file = new File(realPath, fileName);
-
             // 如果檔名存在，則進行下載
             if (file.exists()) {
-
                 // 配置檔案下載
                 response.setHeader("content-type", "application/octet-stream");
                 response.setContentType("application/octet-stream");
                 // 下載檔案能正常顯示中文
                 response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(teacherFileName, "UTF-8"));
 //                response.setHeader("Content-Disposition:", "attachment;filename*=utf-8''" + URLEncoder.encode(teacherFileName, "UTF-8"));
-
                 // 實現檔案下載
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
@@ -900,7 +901,6 @@ public class IndexController {
 	        	account.setUpdate_by(accountSession.getAccount());
 	        	
 				teacherAccountService.add(account);
-
 	        }
 			
 		
@@ -988,7 +988,17 @@ public class IndexController {
 		
 		try {
 			
+			//設定學制代碼
+			String educationCode = "國小".equals(contract.getSubject_name()) ? "A" : "國中".equals(contract.getSubject_name()) ? "B" : "高中".equals(contract.getSubject_name()) ? "C" : "D";
+			
+			//取得學科代碼
 			String subject_id = contract.getSubject_id();
+			Subject subject = new Subject();
+			subject.setId(subject_id);
+			subject = subjectService.data(subject);
+			
+			//設定合約流水號，規則：老師授權合約代號1碼+學制1碼+學科2碼
+			contract.setContract_id("T"+educationCode+subject.getCode());
 			
 			contract.setTkb_contract_num(null);
 			contract.setTkb_contract_file(null);
@@ -1004,17 +1014,7 @@ public class IndexController {
 			contract.setQuestions_group_num((contract.getQuestions_group_num()==null || "".equals(contract.getQuestions_group_num())) ? "0" : contract.getQuestions_group_num());
 			contract.setCreate_by(accountSession.getAccount());;
 			contract.setUpdate_by(accountSession.getAccount());
-			int id = contractService.add(contract);
-			
-			//設定學制代碼
-			String educationCode = "國小".equals(contract.getSubject_name()) ? "A" : "國中".equals(contract.getSubject_name()) ? "B" : "高中".equals(contract.getSubject_name()) ? "C" : "D";
-			
-			//修改合約序號，規則：年月日+流水號後四碼=共10碼
-			contract = new Contract();
-			contract.setId(String.valueOf(id));
-			contract.setContract_id("T"+educationCode);
-			contract.setSubject_id(subject_id);
-			contractService.updateTeacherId(contract);
+			contractService.add(contract);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -1241,11 +1241,11 @@ public class IndexController {
 			int addCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("addCount", addCount);
 			//待修訂數
-			lessonPlan.setUpload_status("N");
+			lessonPlan.setFile_status("N");
 			int editCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("editCount", editCount);
 			//已完稿數
-			lessonPlan.setUpload_status("C");
+			lessonPlan.setFile_status("C");
 			int doneCount = lessonPlanService.uploadStatusCount(lessonPlan);
 			model.addAttribute("doneCount", doneCount);
 		} else if(level == 4) {
@@ -1253,13 +1253,13 @@ public class IndexController {
 			list = lessonPlanService.auditList(lessonPlan);
 			count = lessonPlanService.auditCount(lessonPlan);
 		} else if(level == 5) {
-			lessonPlan.setField_id(accountSession.getField_list());
 			lessonPlan.setEducation_id(accountSession.getEducation_list());
+			lessonPlan.setSubject_id(accountSession.getSubject_list());
 			list = lessonPlanService.principalList(lessonPlan);
 			count = lessonPlanService.principalCount(lessonPlan);
 		} else if(level == 6) {
-			lessonPlan.setField_id(accountSession.getField_list());
 			lessonPlan.setEducation_id(accountSession.getEducation_list());
+			lessonPlan.setSubject_id(accountSession.getSubject_list());
 			list = lessonPlanService.leaderList(lessonPlan);
 			count = lessonPlanService.leaderCount(lessonPlan);
 		} else if(level == 7) {
@@ -1292,20 +1292,9 @@ public class IndexController {
 		//取得合約清單
 		Contract contract = new Contract();
 		contract.setTeacher_id(accountSession.getId());
+		contract.setLesson_num("0");	//設定0，表示教案數需大於0才顯示
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
-		
-		//設定合約
-		lessonPlan.setContract_id(contractList.get(0).get("CONTRACT_ID").toString());
-		//設定學制
-		lessonPlan.setEducation_id(contractList.get(0).get("EDUCATION_ID").toString());
-		//設定學科
-		lessonPlan.setSubject_id(contractList.get(0).get("SUBJECT_ID").toString());
-		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
 		
 		//取得學制清單
 		Education education = new Education();
@@ -1319,6 +1308,12 @@ public class IndexController {
 		List<Map<String, Object>> subjectList = subjectService.getList(subject);
 		model.addAttribute("subjectList", subjectList);
 		
+		//取得素材分類清單
+		MaterialType materialType = new MaterialType();
+		materialType.setParent_id("0");
+		List<Map<String, Object>> materialTypeList = materialTypeService.list(materialType);
+		model.addAttribute("materialTypeList", materialTypeList);
+		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
@@ -1328,12 +1323,14 @@ public class IndexController {
 	
 	@RequestMapping(value = "/lesson/addSubmit" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String lessonAddSubmit(Model model,
-			@SessionAttribute("accountSession") Account accountSession,
-			@ModelAttribute LessonPlan lessonPlan,
-			@RequestParam("fileName") MultipartFile fileName,
-//			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
-			HttpServletRequest pRequest
-			) {
+		@SessionAttribute("accountSession") Account accountSession,
+		@ModelAttribute LessonPlan lessonPlan,
+		@RequestParam("word") MultipartFile word,
+		@RequestParam("pdf") MultipartFile pdf,
+		@RequestParam(value="attachment", required=false) MultipartFile[] attachment,
+		@RequestParam(value="contractMat", required=false) MultipartFile[] contractMat,
+		HttpServletRequest pRequest
+		) {
 		
 		try {
 			
@@ -1341,61 +1338,90 @@ public class IndexController {
 //			Contract contract = new Contract();
 //			contract.setContract_id(lessonPlan.getContract_id());
 //			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
-			Account account = new Account();
-			account.setId(accountSession.getId());
-			account.setField_id(lessonPlan.getField_id());
-			Map<String, Object> callNum = teacherAccountService.callNum(account);
-			lessonPlan.setAuditor(callNum.get("ACCOUNT").toString());
-			lessonPlan.setFile_status("Y");
-			lessonPlan.setCreate_by(accountSession.getAccount());
-			lessonPlan.setUpdate_by(accountSession.getAccount());
-			int id = lessonPlanService.add(lessonPlan);
+//			Account account = new Account();
+//			account.setId(accountSession.getId());
+//			account.setSubject_id(lessonPlan.getSubject_id());
+//			Map<String, Object> callNum = teacherAccountService.callNum(account);
+//			lessonPlan.setAuditor(callNum.get("ACCOUNT").toString());
+//			lessonPlan.setFile_status("A");
+//			lessonPlan.setCreate_by(accountSession.getAccount());
+//			lessonPlan.setUpdate_by(accountSession.getAccount());
+//			int id = lessonPlanService.add(lessonPlan);
 			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
-			
-			//跨學科
-			String[] subject = pRequest.getParameterValues("crossSubject");
-			for(int i=0; i<subject.length; i++) {
-				lessonPlanOption = new LessonPlanOption();
-				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
-				lessonPlanOption.setType("2");
-				lessonPlanOption.setCode(subject[i]);
-				lessonPlanOption.setCreate_by(accountSession.getAccount());
-				lessonPlanOptionService.add(lessonPlanOption);
-			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
 			for(int i=0; i<grade.length; i++) {
 				lessonPlanOption = new LessonPlanOption();
-				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
+//				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
 				lessonPlanOption.setType("4");
 				lessonPlanOption.setCode(grade[i]);
 				lessonPlanOption.setCreate_by(accountSession.getAccount());
-				lessonPlanOptionService.add(lessonPlanOption);
+//				lessonPlanOptionService.add(lessonPlanOption);
+			}
+			
+			//跨學科
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			for(int i=0; i<subject.length; i++) {
+				lessonPlanOption = new LessonPlanOption();
+//				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
+				lessonPlanOption.setType("2");
+				lessonPlanOption.setCode(subject[i]);
+				lessonPlanOption.setCreate_by(accountSession.getAccount());
+//				lessonPlanOptionService.add(lessonPlanOption);
 			}
 			
 			//教案檔案
 			LessonPlanFile lessonPlanFile = new LessonPlanFile();
-			lessonPlanFile.setLesson_plan_id(String.valueOf(id));
+//			lessonPlanFile.setLesson_plan_id(String.valueOf(id));
 			
-			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
-			lessonPlanFile.setType("1");
-			lessonPlanFile.setUpload_name(uploadName);
-			lessonPlanFile.setFile_name(fileName.getOriginalFilename());
-			lessonPlanFile.setCreate_by(accountSession.getAccount());
-			lessonPlanFile.setUpdate_by(accountSession.getAccount());
-			lessonPlanFileService.add(lessonPlanFile);
+//			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
+//			lessonPlanFile.setType("1");
+//			lessonPlanFile.setUpload_name(uploadName);
+//			lessonPlanFile.setFile_name(fileName.getOriginalFilename());
+//			lessonPlanFile.setCreate_by(accountSession.getAccount());
+//			lessonPlanFile.setUpdate_by(accountSession.getAccount());
+//			lessonPlanFileService.add(lessonPlanFile);
+			
+			//初稿(word)
+			System.out.println("word:"+word.getOriginalFilename());
+			
+			//初稿(pdf)
+			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			//附件
+			String[] link = pRequest.getParameterValues("link");
+			if(link != null) {
+				for(int i=0; i<link.length; i++) {
+					System.out.println(i+":"+link[i]);
+				}
+			}
+			if(!attachment[0].isEmpty()) {
+				for(int i=0; i<attachment.length; i++) {
+					System.out.println("attachment"+i+":"+attachment[i].getOriginalFilename());
+				}
+			}
+			
+			//素材授權
+			if(!contractMat[0].isEmpty()) {
+				for(int i=0; i<contractMat.length; i++) {
+					System.out.println("contractMat"+i+":"+contractMat[i].getOriginalFilename());
+				}
+			}
+			
+			//關鍵字
+			System.out.println("tag:"+lessonPlan.getTag());
 			
 			//新增審核人
-			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
-			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
-			lessonPlanAudit.setAuditor(callNum.get("ACCOUNT").toString());
-			lessonPlanAudit.setFile_status("Y");
-			lessonPlanAudit.setUpload_status("Y");
-			lessonPlanAudit.setCreate_by(accountSession.getAccount());
-			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
-			lessonPlanAuditService.add(lessonPlanAudit);
+//			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
+//			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
+//			lessonPlanAudit.setAuditor(callNum.get("ACCOUNT").toString());
+//			lessonPlanAudit.setFile_status("Y");
+//			lessonPlanAudit.setUpload_status("Y");
+//			lessonPlanAudit.setCreate_by(accountSession.getAccount());
+//			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
+//			lessonPlanAuditService.add(lessonPlanAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -1418,7 +1444,7 @@ public class IndexController {
 		
 		//取得學習領域資料
 		Field field = new Field();
-		field.setId(data.getField_id());
+//		field.setId(data.getField_id());
 		field = fieldService.data(field);
 		model.addAttribute("field_name", field.getName());
 		
@@ -1612,7 +1638,6 @@ public class IndexController {
 			
 			//審核
 			lessonPlan.setFile_status(file_status);
-			lessonPlan.setUpload_status(upload_status);
 			lessonPlanService.audit(lessonPlan);
 			
 			//新增審核紀錄
@@ -1646,7 +1671,7 @@ public class IndexController {
 		
 		//取得學習領域資料
 		Field field = new Field();
-		field.setId(data.getField_id());
+//		field.setId(data.getField_id());
 		field = fieldService.data(field);
 		model.addAttribute("field_name", field.getName());
 		
@@ -1723,7 +1748,6 @@ public class IndexController {
 			
 			//審核
 			lessonPlan.setFile_status(file_status);
-			lessonPlan.setUpload_status(upload_status);
 			lessonPlanService.audit(lessonPlan);
 			
 			//新增審核紀錄

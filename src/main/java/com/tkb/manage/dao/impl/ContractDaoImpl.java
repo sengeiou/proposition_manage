@@ -152,12 +152,16 @@ public class ContractDaoImpl implements ContractDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(contract);
 		
 		String sql = " INSERT INTO proposition_manage.contract "
-				   + " (UUID, TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
+				   + " (UUID, "
+				   + " CONTRACT_ID, "
+				   + " TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
 				   + " TKB_PARTYB, CSOFE_CONTRACT_NUM, CSOFE_CONTRACT_FILE, CSOFE_CONTRACT_NAME, CSOFE_PARTYA, "
 				   + " CSOFE_PARTYB, EDUCATION_ID, SUBJECT_ID, BEGIN_DATE, END_DATE, "
 				   + " LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(REPLACE(UUID(), '-', ''), :teacher_id, :tkb_contract_num, "
+				   + " VALUES(REPLACE(UUID(), '-', ''), "
+				   + " (SELECT CONCAT(:contract_id, DATE_FORMAT(NOW(), '%y%m'), (SELECT LPAD(COUNT, 3, 0) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.contract WHERE SUBSTR(CONTRACT_ID, 1, 8) = CONCAT(:contract_id, DATE_FORMAT(NOW(), '%y%m'))) L1))), "
+				   + " :teacher_id, :tkb_contract_num, "
 				   + " :tkb_contract_file, :tkb_contract_name, :tkb_partya, :tkb_partyb, :csofe_contract_num, "
 				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, "
 				   + " :education_id, :subject_id, :begin_date, :end_date, :lesson_num, :basic_num, "
@@ -215,27 +219,6 @@ public class ContractDaoImpl implements ContractDao {
 		String sql = " DELETE FROM proposition_manage.contract "
 				   + " WHERE ID = ? ";
 		
-		args.add(contract.getId());
-		
-		jdbcTemplate.update(sql, args.toArray());
-		
-	}
-	
-	public void updateTeacherId(Contract contract) {
-		
-		List<Object> args = new ArrayList<Object>();
-		
-		String sql = " UPDATE proposition_manage.contract "
-				   + " SET CONTRACT_ID = (SELECT CONCAT(?, (CASE WHEN LENGTH(?)>=2 THEN SUBSTRING(?,-2) ELSE LPAD(?, 2, 0) END), DATE_FORMAT(NOW(), '%y%m'), (CASE WHEN LENGTH(?)>=3 THEN SUBSTRING(?,-3) ELSE LPAD(?, 3, 0) END))) "
-				   + " WHERE ID = ? ";
-		
-		args.add(contract.getContract_id());
-		args.add(contract.getSubject_id());
-		args.add(contract.getSubject_id());
-		args.add(contract.getSubject_id());
-		args.add(contract.getId());
-		args.add(contract.getId());
-		args.add(contract.getId());
 		args.add(contract.getId());
 		
 		jdbcTemplate.update(sql, args.toArray());
@@ -327,10 +310,23 @@ public class ContractDaoImpl implements ContractDao {
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON PMC.TEACHER_ID = TA.ID "
 				   + " WHERE PMC.TEACHER_ID = ? "
 				   + " ) L1 "
-				   + " WHERE (LESSON_NUM-LP1_COUNT+LESSON_NUM-LP2_SUM+BASIC_NUM-PMP1_COUNT+BASIC_NUM-PMP2_SUM+QUESTIONS_GROUP_NUM-PMP3_COUNT+QUESTIONS_GROUP_NUM-PMP4_SUM) > 0 "
-				   + " ORDER BY CONTRACT_ID ";
+				   + " WHERE (LESSON_NUM-LP1_COUNT+LESSON_NUM-LP2_SUM+BASIC_NUM-PMP1_COUNT+BASIC_NUM-PMP2_SUM+QUESTIONS_GROUP_NUM-PMP3_COUNT+QUESTIONS_GROUP_NUM-PMP4_SUM) > 0 ";
 		
 		args.add(contract.getTeacher_id());
+		
+		if(contract.getLesson_num() != null) {
+			sql += " AND LESSON_NUM > 0 ";
+		}
+		
+		if(contract.getBasic_num() != null) {
+			sql += " AND BASIC_NUM > 0 ";
+		}
+		
+		if(contract.getQuestions_group_num() != null) {
+			sql += " AND QUESTIONS_GROUP_NUM > 0 ";
+		}
+		
+		sql += " ORDER BY CONTRACT_ID ";
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

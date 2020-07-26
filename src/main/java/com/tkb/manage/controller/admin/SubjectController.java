@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.tkb.manage.model.Account;
-import com.tkb.manage.model.Education;
 import com.tkb.manage.model.Subject;
-import com.tkb.manage.service.EducationService;
 import com.tkb.manage.service.SubjectService;
 
 @Controller
@@ -31,9 +29,6 @@ public class SubjectController {
 	
 	@Autowired
 	private SubjectService subjectService;
-	
-	@Autowired
-	private EducationService educationService;
 	
 	@Autowired
 	private FunctionController functionController;
@@ -98,6 +93,9 @@ public class SubjectController {
 	@RequestMapping(value = "/addSubmit" , method = {RequestMethod.POST, RequestMethod.GET})
     public String addSubmit(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Subject subject, Model model){
 		
+		if(!"1".equals(subject.getLayer())) {
+			subject.setCode(null);
+		}
 		int sort = subjectService.maxSort(subject);
 		subject.setSort(String.valueOf(sort));
 		subject.setCreate_by(accountSession.getAccount());

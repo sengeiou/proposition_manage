@@ -55,7 +55,7 @@ public class Account extends Base {
 	private String content_audit_name;		//內容審核名稱
 	private String field_list;				//領域選取清單
 	private String education_list;			//學制選取清單
-	private String subject_list;			//學尻選取清單
+	private String subject_list;			//學科選取清單
 	private String status_texe;				//帳號狀態文字(0：關閉，1：開啟,2：待審核)
 	
 }

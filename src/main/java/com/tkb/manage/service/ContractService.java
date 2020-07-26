@@ -14,7 +14,6 @@ public interface ContractService {
 	public int add(Contract contract);
 	public void update(Contract contract);
 	public void delete(Contract contract);
-	public void updateTeacherId(Contract contract);
 	public Map<String, Object> uploadNum(Contract contract);
 	public Integer undoneCount(Contract contract);
 	public List<Map<String, Object>> getList(Contract contract);
