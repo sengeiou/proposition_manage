@@ -991,13 +991,13 @@ div.basic-h {
     grid-template-columns: 90px 90px 60px 60px 90px 1fr 1fr 2fr 80px 80px;
 }
 .list-content .contractList-grid { /* 合約列表 */
-    grid-template-columns: 2fr 2fr 75px 3fr 3fr 3fr 75px 75px 75px;
+    grid-template-columns: 2fr 2fr 85px 3fr 3fr 3fr 75px 75px 75px;
 }
 .list-content .contractList-grid span {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    grid-template-columns: 0.8fr 1.5fr 6fr 0.8fr 1fr 1fr 97px 1fr 1fr ;
+    grid-template-columns: 0.8fr 1.5fr 6fr 0.7fr 1fr 1.2fr 97px 1fr 1fr ;
 }
 .list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */
     /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr; */ /* 含有「上傳狀態」欄位 */
@@ -1008,7 +1008,7 @@ div.basic-h {
 }
 .list-content .lessonList-principal-grid { /* 教案列表-校長 */
    /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr; */ /* 含有「上傳狀態」欄位 */
-   grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 1fr 97px 1fr ;
+   grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1.2fr 1fr 97px 1fr ;
 }
 .list-content .lessonList-verify-verifyGrid { /* 教案列表--審議委員的審核列表 */
     grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
@@ -1042,6 +1042,12 @@ div.basic-h {
 .failed-list , .failed-list a , .failed-list span {
     color: var(--lightGray);
 }  
+.list-content>.list-block a:hover , .list-content>.verify-block a:hover {
+    color: var(--secondary);
+}
+.list-content .grid-title i {
+    margin-left: 5px;
+}
 /* 列表 end */
 /* 搜尋區塊 start */
 button.btn-search {
@@ -1188,7 +1194,7 @@ button.btn-search:hover {
 /* mail start */
 .mail {
     background-color: var(--primary-light);
-    min-width: 320px;
+    min-width: 500px;
 }
 .mail .logo {
     background-color: var(--primary-dark);
@@ -1251,6 +1257,12 @@ button.btn-search:hover {
 #residenceAddress , #address {
     width: calc(100% - 400px);
     margin-bottom: 10px;
+}
+.address-block .address-text {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 36px;
 }
 /* 地址 end */
 /* 老師列表-組長、校長身分的審核區塊 start */
@@ -1408,12 +1420,20 @@ button.btn-openArea i {
 }
 .report-content .tabContent {
     border: 1px solid var(--primary-dark);
-    padding: 50px 20px 0 20px; 
+    padding: 50px 30px 0 30px; 
 }
-.report-content .tabContent>p {
-    margin: 60px 0;
+.report-content .tabContent .text {
+    margin: 40px 0;
     text-align: center;
     line-height: 1.6rem;
+}
+.report-content .tabContent .text p{
+    margin: 20px 0;    
+}
+.report-content .tabContent .text p span{
+    border-bottom: 1px solid var(--gray);
+    padding: 0 10px;
+    font-size: 1.2rem;
 }
 .report-content .tabContent .report-grid {
     width: 50%;
@@ -1424,6 +1444,11 @@ button.btn-openArea i {
     line-height: 36px;
 }
 /* 報表匯出 end */
-
+.create-content.lessonVerify {
+    overflow: unset;
+}
+.create-content.lessonVerify .custom-select {
+    width: 320px;
+}
 .dis-n { display: none; }
 .dis-b { display: block; }

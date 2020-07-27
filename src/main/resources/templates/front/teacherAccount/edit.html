@@ -40,23 +40,36 @@
 	                    <div>
 	                        <span class="editOldData">[[${account.id_no}]]</span>
 	                        <span class="editNewData"></span>
-	                        <span class="memo">註：將作為使用者的帳號與通知用主要管道，請正確填寫</span>
+	                        <span class="memo">註：將作為使用者的帳號，後四碼為預設密碼，請正確填寫</span>
 	                        <button class="btn-openLightBox" data-lb="edit-teacherID" type="button">更改身份證字號</button>                        
 	                    </div>
 	                    <div><span class="required">*</span>電子信箱</div>
 	                    <div>
 	                        <input type="text" placeholder="請輸入電子信箱" value="" id="teacherEmail" th:field="*{email}">
+	                    	<span class="memo">註：將作為通知用主要管道，請正確填寫</span>
 	                    </div>
 	                    <div><span class="required">*</span>手機</div>
 	                    <div>
-	                        <input type="text" placeholder="請輸入手機號碼" value="" id="teacherPhone" th:field="*{phone}">
-	                        <span class="memo">註：將作為使用者的預設密碼（可以編輯）</span>
+	                        <input type="text" placeholder="請輸入手機號碼" value="" id="teacherPhone" th:field="*{mobile_phone}">
 	                    </div>
-	                    <div><span class="required">*</span>領域</div>
+	                    <div><span class="required">*</span>市話</div>
 	                    <div>
-	                        <select id="specialSkill" th:field="*{field_id}">
-	                            <option value="0">請選擇領域</option>
-	                            <option th:each="field:${fieldList}" th:value="${field.ID}" th:text="${field.NAME}"></option>
+	                        <input type="text" placeholder="請輸入市話號碼" value="" id="teacherTel" th:field="*{telephone}">
+	                        <span class="memo">範例：02-23315551</span>
+	                    </div>
+	                    <div><span class="required">*</span>學制</div>
+	                    <div>
+	                        <select id="schoolType" th:field="*{education_id}">
+	                            <option value="0">請選擇學制</option>
+	                            <option th:each="education:${educationList}" th:value="${education.ID}" th:text="${education.NAME}"></option>
+	                        </select>
+	                        <span class="memo">註：將作為內容審核的選擇基準</span>
+	                    </div>
+	                    <div><span class="required">*</span>學科</div>
+	                    <div>
+	                        <select id="subject" th:field="*{subject_id}">
+	                            <option value="0">請選擇學科</option>
+	                            <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
 	                        </select>
 	                        <span class="memo">註：將作為內容審核的選擇基準</span>
 	                    </div>
@@ -102,11 +115,11 @@
 	                    </div>
 	                    <div class="principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'"></div>
 		                    <div class="basic-h principalBlock" th:classappend="${account.position}=='1' ? 'dis-n'">
-		                    	<input type="hidden" id="fieldOption" th:value="${fieldStr}" />
-		                        <label class="les-labelBlock" th:for="${field.name}" th:each="field:${fieldList}">
-		                            <div class="checkbox-square" th:id="'fieldAct'+${field.id}"></div>
-		                            <span>[[${field.name}]]</span>
-		                            <input type="checkbox" th:id="${field.name}" class="dis-n specialSkill" name="field" th:value="${field.id}">
+		                    	<input type="hidden" id="subjectOption" th:value="${subjectStr}" />
+		                        <label class="les-labelBlock" th:for="${subject.name}" th:each="subject:${subjectList}">
+		                            <div class="checkbox-square" th:id="'subjectAct'+${subject.id}"></div>
+		                            <span>[[${subject.name}]]</span>
+		                            <input type="checkbox" th:id="${subject.name}" class="dis-n subject" name="subject" th:value="${subject.id}">
 		                        </label>
 		                    </div>
 	                    <div><span class="required">*</span>服務學校</div>
@@ -132,9 +145,120 @@
 	                        </div>                         
 	                        <button class="btn-openLightBox" data-lb="edit-teacherBank" type="button">更改匯款資訊</button>
 	                    </div>
-	                    <div class="p-left-14px">通訊地址</div>
-	                    <div>
-	                        <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address}">
+	                    <div><span class="required">*</span>戶籍地址</div>
+	                    <div class="address-block">
+	                        <div class="address-text">
+	                            <p>[[${account.census_zip}]] [[${account.census_city}]][[${account.census_area}]][[${account.census_road}]]</p>
+	                            <label for="editResidenceAddress">
+	                                <div class="checkbox-square"></div>
+	                                <span>修改</span>
+	                                <input type="checkbox" id="editResidenceAddress" class="dis-n">
+	                            </label>
+	                        </div>
+	                        <div class="wrap dis-n">
+	                            <input type="text" placeholder="郵遞區號" id="residencezip" disabled>
+	                            <input type="hidden" id="c_city" th:field="*{census_city}">
+	                            <input type="hidden" id="c_area" th:field="*{census_area}">
+                        		<input type="hidden" id="census_road" th:field="*{census_road}" >
+                        		<input type="hidden" id="census_zip" th:field="*{census_zip}" >
+	                            <select class="address selectCity" id="census_city">
+	                                <option value="">請選擇縣市</option>
+		                            <option value="臺北市">臺北市</option>
+									<option value="基隆市">基隆市</option>
+									<option value="新北市">新北市</option>
+									<option value="連江縣">連江縣</option>
+									<option value="宜蘭縣">宜蘭縣</option>
+									<option value="釣魚臺">釣魚臺</option>
+									<option value="新竹市">新竹市</option>
+									<option value="新竹縣">新竹縣</option>
+									<option value="桃園市">桃園市</option>
+									<option value="苗栗縣">苗栗縣</option>
+									<option value="臺中市">臺中市</option>
+									<option value="彰化縣">彰化縣</option>
+									<option value="南投縣">南投縣</option>
+									<option value="嘉義市">嘉義市</option>
+									<option value="嘉義縣">嘉義縣</option>
+									<option value="雲林縣">雲林縣</option>
+									<option value="臺南市">臺南市</option>
+									<option value="高雄市">高雄市</option>
+									<option value="南海島">南海島</option>
+									<option value="澎湖縣">澎湖縣</option>
+									<option value="金門縣">金門縣</option>
+									<option value="屏東縣">屏東縣</option>
+									<option value="臺東縣">臺東縣</option>
+									<option value="花蓮縣">花蓮縣</option>
+	                            </select>
+	                            <select class="address selectResidenceArea" id="census_area">
+	                                <option value="0">請選擇鄉鎮市區</option>
+	                            </select>
+	                            <input type="text" placeholder="請輸入戶籍地址" id="residenceAddress">
+	                            <div class="customselect-residence-block">
+	                                <select id="residenceSelectZip" class="custom-select">
+	                                    <option value="0">請選擇對應郵遞區號</option>
+	                                </select>
+	                            </div> 
+	                        </div>                                               
+	                    </div>
+	                    <div><span class="required">*</span>通訊地址</div>
+	                    <div class="address-block">
+	                        <div class="address-text">
+	                            <p>[[${account.address_zip}]] [[${account.address_city}]][[${account.address_area}]][[${account.address_road}]]</p>
+	                            <label for="editAddress">
+	                                <div class="checkbox-square"></div>
+	                                <span>修改</span>
+	                                <input type="checkbox" id="editAddress" class="dis-n">
+	                            </label>
+	                        </div>
+	                        <div class="wrap dis-n">
+	                            <div class="sameAbove-block">
+	                                <label for="sameAbove">
+	                                    <div class="checkbox-square"></div>
+	                                    <span>同戶籍地址</span>
+	                                    <input type="checkbox" id="sameAbove" class="dis-n">
+	                                </label> 
+	                            </div>
+	                            <input type="text" placeholder="郵遞區號" id="zip" disabled>
+	                            <input type="hidden" id="address_city" th:field="*{address_city}">
+	                            <input type="hidden" id="address_area" th:field="*{address_area}">
+	                            <input type="hidden" id="address_road" th:field="*{address_road}">
+                       			<input type="hidden" id="address_zip" th:field="*{address_zip}">
+	                            <select class="address selectCity" id="city">
+	                                <option value="">請選擇縣市</option>
+		                            <option value="臺北市">臺北市</option>
+									<option value="基隆市">基隆市</option>
+									<option value="新北市">新北市</option>
+									<option value="連江縣">連江縣</option>
+									<option value="宜蘭縣">宜蘭縣</option>
+									<option value="釣魚臺">釣魚臺</option>
+									<option value="新竹市">新竹市</option>
+									<option value="新竹縣">新竹縣</option>
+									<option value="桃園市">桃園市</option>
+									<option value="苗栗縣">苗栗縣</option>
+									<option value="臺中市">臺中市</option>
+									<option value="彰化縣">彰化縣</option>
+									<option value="南投縣">南投縣</option>
+									<option value="嘉義市">嘉義市</option>
+									<option value="嘉義縣">嘉義縣</option>
+									<option value="雲林縣">雲林縣</option>
+									<option value="臺南市">臺南市</option>
+									<option value="高雄市">高雄市</option>
+									<option value="南海島">南海島</option>
+									<option value="澎湖縣">澎湖縣</option>
+									<option value="金門縣">金門縣</option>
+									<option value="屏東縣">屏東縣</option>
+									<option value="臺東縣">臺東縣</option>
+									<option value="花蓮縣">花蓮縣</option>
+	                            </select>
+	                            <select class="address selectArea" id="area">
+	                                <option value="0">請選擇鄉鎮市區</option>
+	                            </select>
+	                            <input type="text" placeholder="請輸入通訊地址" id="address">   
+	                            <div class="customselect-block">
+	                                <select id="selectZip" class="custom-select">
+	                                    <option value="0">請選擇對應郵遞區號</option>
+	                                </select>   
+	                            </div>  
+	                        </div>                                                                                       
 	                    </div>
 	                </div>
 	                <button class="btn-submit" data-type="teacherEdit" type="button">送出</button>
@@ -210,20 +334,105 @@
 					}
 				});
 			}
-			//領域自動選取
-			if($("#fieldOption").val() != null) {
+			//學科自動選取
+			if($("#subjectOption").val() != null) {
 				var field = new Array();
-				field = $("#fieldOption").val().split(",");
-				$("input[name='field']").each(function(){
+				field = $("#subjectOption").val().split(",");
+				$("input[name='subject']").each(function(){
 					for(var i=0; i<field.length; i++) {
 						if($(this).val() == field[i]) {
 							$(this).attr("checked", true);
-							$("#fieldAct"+$(this).val()).addClass("active");
+							$("#subjectAct"+$(this).val()).addClass("active");
 						}
 					}
 				});
 			}
 		})
+		
+		$("#census_city").on('change',function(){ //點擊戶籍地址City
+			$("#census_area").empty();
+	        if($("#census_city").val() != ""){
+	        	$.getJSON('/front/json/area.json', function (obj) {
+	    			var area = obj.filter(function(item, index, array){
+	    			  return (item.City.indexOf($("#census_city").val()) >= 0 );       
+	    			});
+	    			var str = "<option value=''>請選擇鄉鎮市區</option>";
+	    			if(area.length > 0){
+	    				for(var i =0;i < area.length;i++){
+	    					str += "<option value='"+area[i].Area+"'>"+area[i].Area+"</option>";
+	    				}
+	    			}
+	    			$("#census_area").append(str);
+	    		});
+	        }
+	    });
+
+		$("#census_area").on('change',function(){ //點擊戶籍地址Area
+			$("#residenceSelectZip").empty();
+	        if($("#census_city").val() != "" && $("#census_area").val() != "" ){
+				$(this).siblings(".customselect-residence-block").html(' ');
+	        	
+				$.getJSON('/front/json/allcity.json', function (obj) {
+	    			var road = obj.filter(function(item, index, array){
+	    			  return (item.City.indexOf($("#census_city").val()) >= 0 && item.Area.indexOf($("#census_area").val()) >= 0);       
+	    			});
+	    			console.log(road);
+	    			var str = "<option value='0'>請選擇對應郵遞區號</option>";
+	    			if(road.length > 0){
+	    				for(var i =0;i < road.length;i++){
+	    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+	    				}
+	    			}								
+	    			//$("#residenceSelectZip").append(str);
+	    			$(".customselect-residence-block").html("<select id='residenceSelectZip' class='custom-select'>"+str+"</select>")
+	    			$("#residenceSelectZip").customselect();
+				});        	
+	        }else{
+	        	alert("請選擇縣市及鄉鎮市區");
+	        }
+	    });
+	
+		$("#city").on('change',function(){ //點擊通訊地址City
+			$("#area").empty();
+	        if($("#city").val() != ""){
+	        	$.getJSON('/front/json/area.json', function (obj) {
+	    			var area = obj.filter(function(item, index, array){
+	    			  return (item.City.indexOf($("#city").val()) >= 0 );       
+	    			});
+	    			var str = "<option value=''>請選擇鄉鎮市區</option>";
+	    			if(area.length > 0){
+	    				for(var i =0;i < area.length;i++){
+	    					str += "<option value='"+area[i].Area+"'>"+area[i].Area+"</option>";
+	    				}
+	    			}
+	    			$("#area").append(str);
+	    		});
+	        }
+	    });
+	
+		$("#area").on('change',function(){ //點擊戶籍地址Area
+			$("#selectZip").empty();
+	        if($("#city").val() != "" && $("#area").val() != "" ){
+				$(this).siblings(".customselect-block").html(' ');
+	        	
+				$.getJSON('/front/json/allcity.json', function (obj) {
+	    			var road = obj.filter(function(item, index, array){
+	    			  return (item.City.indexOf($("#city").val()) >= 0 && item.Area.indexOf($("#area").val()) >= 0);       
+	    			});
+	    			var str = "<option value='0'>請選擇對應郵遞區號</option>";
+	    			if(road.length > 0){
+	    				for(var i =0;i < road.length;i++){
+	    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+	    				}
+	    			}								
+	    			$(".customselect-block").html("<select id='selectZip' class='custom-select'>"+str+"</select>")
+	    			$("#selectZip").customselect();
+				});        	
+	
+	        }else{
+	        	alert("請選擇縣市及鄉鎮市區");
+	        }
+	    });
 	</script>
 </body>
 </html>

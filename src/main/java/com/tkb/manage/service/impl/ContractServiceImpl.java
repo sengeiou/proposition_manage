@@ -57,13 +57,13 @@ public class ContractServiceImpl implements ContractService {
 		return contractDao.callNum(contract, account);
 	}
 	
-	public Integer allUndoneNum(Contract contract) {
-		return contractDao.allUndoneNum(contract);
-	}
-	
-	public Integer expired(Contract contract) {
-		return contractDao.expired(contract);
-	}
+//	public Integer allUndoneNum(Contract contract) {
+//		return contractDao.allUndoneNum(contract);
+//	}
+//	
+//	public Integer expired(Contract contract) {
+//		return contractDao.expired(contract);
+//	}
 	
 	public Map<String, Object> getDataByFieldEducation(Contract contract) {
 		return contractDao.getDataByFieldEducation(contract);
@@ -71,6 +71,10 @@ public class ContractServiceImpl implements ContractService {
 	
 	public Map<String, Object> getDataByContractId(Contract contract) {
 		return contractDao.getDataByContractId(contract);
+	}
+	
+	public Map<String, Object> contractNum(Contract contract) {
+		return contractDao.contractNum(contract);
 	}
 	
 }
