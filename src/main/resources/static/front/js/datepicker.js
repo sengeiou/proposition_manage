@@ -8,4 +8,47 @@ $(function() {
         minDate: new Date(),
         "dateFormat": "yy-mm-dd"
     })
+
+    //lesson-list.html 
+    $("#lessonCreateTime").datepicker({
+        dateFormat: "yy-mm-dd",        
+        onSelect: function( selectedDate ) {
+            if(!$(this).data().datepicker.first){
+                $(this).data().datepicker.inline = true
+                $(this).data().datepicker.first = selectedDate;
+            }else{
+                if(selectedDate > $(this).data().datepicker.first){
+                    $(this).val($(this).data().datepicker.first + ' ~ ' + selectedDate);
+                }else{
+                    $(this).val(selectedDate + ' ~ ' + $(this).data().datepicker.first);
+                }
+                $(this).data().datepicker.inline = false;
+            }
+        },
+        onClose:function(){
+            delete $(this).data().datepicker.first;
+            $(this).data().datepicker.inline = false;
+        }
+    })
+    //report.html 
+    $("#contract_contractTime").datepicker({
+        dateFormat: "yy-mm-dd",        
+        onSelect: function( selectedDate ) {
+            if(!$(this).data().datepicker.first){
+                $(this).data().datepicker.inline = true
+                $(this).data().datepicker.first = selectedDate;
+            }else{
+                if(selectedDate > $(this).data().datepicker.first){
+                    $(this).val($(this).data().datepicker.first + ' ~ ' + selectedDate);
+                }else{
+                    $(this).val(selectedDate + ' ~ ' + $(this).data().datepicker.first);
+                }
+                $(this).data().datepicker.inline = false;
+            }
+        },
+        onClose:function(){
+            delete $(this).data().datepicker.first;
+            $(this).data().datepicker.inline = false;
+        }
+    })
 })

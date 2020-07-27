@@ -11,14 +11,27 @@
     <section class="main-content">
         <div class="fixed-width">
             <div class="index-memoBlock">
+               
                 <!-- 一般管理者 -->
-                <div class="memo" th:if="${accountSession.level <= '2'}">  
+                <div class="memo admin-memo" th:if="${accountSession.level <= '2'}">
                     <h3>系統提醒</h3>
-                    <div>
-                        <p>尚有<span th:classappend="${allUndoneNum} > 0 ? 'text-c-red' : ''">[[${allUndoneNum}]]</span>合約未履行完成</p>
-                        <p>有<span th:classappend="${expired} > 0 ? 'text-c-red' : ''">[[${expired}]]</span>份合約時效已過期</p>
-                    </div>                    
-                </div>
+                    <div class="admin-grid">
+                        <div class="title">合約類型</div>
+                        <div class="title">有效</div>
+                        <div class="title">過期</div>
+                        <div class="title">完成</div>
+                        <div class="title">未完成</div>
+                        <div class="title">小計</div>
+                    </div>
+                    <div class="admin-grid">
+                        <div>老師授權合約</div>
+                        <div>[[${contractNum.EFFECTIVE_NUM}]]</div>
+                        <div class="text-c-red">[[${contractNum.EXPIRE_NUM}]]</div>
+                        <div>[[${contractNum.COMPLETE}]]</div>
+                        <div class="text-c-red">[[${contractNum.NO_COMPLETE}]]</div>
+                        <div>[[${contractNum.TOTAL}]]</div>
+                    </div>
+                </div> 
 
                 <!-- 內容老師 -->
                 <div class="memo" th:if="${accountSession.level == '3'}">  

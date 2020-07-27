@@ -359,51 +359,51 @@ public class ContractDaoImpl implements ContractDao {
 		
 	}
 	
-	public Integer allUndoneNum(Contract contract) {
-		
-		List<Object> args = new ArrayList<Object>();
-		
-		String sql = " SELECT COUNT(*) COUNT FROM ( "
-				   + " SELECT PMC.*, "
-				   + " COUNT(LP1.ID) AS LP1_COUNT, SUM(IF(LP2.ID IS NULL, 0, 1)) LP2_SUM, "
-				   + " COUNT(PMP1.ID) PMP1_COUNT, SUM(IF(PMP2.ID IS NULL, 0, 1)) PMP2_SUM, "
-				   + " COUNT(PMP3.ID) PMP3_COUNT, SUM(IF(PMP4.ID IS NULL, 0, 1)) PMP4_SUM, "
-				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM "
-				   + " FROM proposition_manage.contract PMC "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.FILE_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.FILE_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.FILE_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " GROUP BY PMC.CONTRACT_ID "
-				   + " ) L1 "
-				   + " WHERE UNDONE_NUM > 0 ";
-		
-		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
-		if(list!=null && list.size()>0) {
-			return Integer.valueOf(list.get(0).get("COUNT").toString());
-		} else {
-			return null;
-		}
-		
-	}
-	
-	public Integer expired(Contract contract) {
-		
-		List<Object> args = new ArrayList<Object>();
-		
-		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.contract "
-				   + " WHERE NOW() NOT BETWEEN BEGIN_DATE AND END_DATE ";
-		
-		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
-		if(list!=null && list.size()>0) {
-			return Integer.valueOf(list.get(0).get("COUNT").toString());
-		} else {
-			return null;
-		}
-		
-	}
+//	public Integer allUndoneNum(Contract contract) {
+//		
+//		List<Object> args = new ArrayList<Object>();
+//		
+//		String sql = " SELECT COUNT(*) COUNT FROM ( "
+//				   + " SELECT PMC.*, "
+//				   + " COUNT(LP1.ID) AS LP1_COUNT, SUM(IF(LP2.ID IS NULL, 0, 1)) LP2_SUM, "
+//				   + " COUNT(PMP1.ID) PMP1_COUNT, SUM(IF(PMP2.ID IS NULL, 0, 1)) PMP2_SUM, "
+//				   + " COUNT(PMP3.ID) PMP3_COUNT, SUM(IF(PMP4.ID IS NULL, 0, 1)) PMP4_SUM, "
+//				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM "
+//				   + " FROM proposition_manage.contract PMC "
+//				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.FILE_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.FILE_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.FILE_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
+//				   + " GROUP BY PMC.CONTRACT_ID "
+//				   + " ) L1 "
+//				   + " WHERE UNDONE_NUM > 0 ";
+//		
+//		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+//		if(list!=null && list.size()>0) {
+//			return Integer.valueOf(list.get(0).get("COUNT").toString());
+//		} else {
+//			return null;
+//		}
+//		
+//	}
+//	
+//	public Integer expired(Contract contract) {
+//		
+//		List<Object> args = new ArrayList<Object>();
+//		
+//		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.contract "
+//				   + " WHERE NOW() NOT BETWEEN BEGIN_DATE AND END_DATE ";
+//		
+//		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+//		if(list!=null && list.size()>0) {
+//			return Integer.valueOf(list.get(0).get("COUNT").toString());
+//		} else {
+//			return null;
+//		}
+//		
+//	}
 	
 	public Map<String, Object> getDataByFieldEducation(Contract contract) {
 		
@@ -460,6 +460,32 @@ public class ContractDaoImpl implements ContractDao {
 		
 		args.add(contract.getContract_id());
 		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Map<String, Object> contractNum(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+
+		String sql = " SELECT C.*, (C.EFFECTIVE_NUM+C.EXPIRE_NUM-C.COMPLETE) AS NO_COMPLETE, (C.EFFECTIVE_NUM+C.EXPIRE_NUM) AS TOTAL FROM ( "
+				   +  " SELECT "
+				   +  " (SELECT COUNT(*) FROM proposition_manage.contract WHERE DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d')) AS EFFECTIVE_NUM , "
+				   +  " (SELECT COUNT(*) FROM proposition_manage.contract WHERE DATE_FORMAT(NOW(), '%Y%m%d') not BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d')) AS EXPIRE_NUM, "
+				   +  " (SELECT COUNT(*) FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'F') AS COMPLETE "
+				   +  " FROM proposition_manage.contract PMC "
+				   +  " ) C ";
+		
+		if(contract.getTeacher_id() != null) {
+			sql += " WHERE TEACHER_ID = ? ";
+			args.add(contract.getTeacher_id());
+		}
+
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
 			return list.get(0);

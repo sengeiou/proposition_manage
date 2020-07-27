@@ -18,9 +18,10 @@ public interface ContractService {
 	public Integer undoneCount(Contract contract);
 	public List<Map<String, Object>> getList(Contract contract);
 	public Map<String, Object> callNum(Contract contract, Account account);
-	public Integer allUndoneNum(Contract contract);
-	public Integer expired(Contract contract);
+//	public Integer allUndoneNum(Contract contract);
+//	public Integer expired(Contract contract);
 	public Map<String, Object> getDataByFieldEducation(Contract contract);
 	public Map<String, Object> getDataByContractId(Contract contract);
+	public Map<String, Object> contractNum(Contract contract);
 	
 }

@@ -183,14 +183,19 @@ public class IndexController {
 		
 		//管理者(幾份合約未履行、幾份合約到期)
 		if(level <= 2) {
+			//老師授權合約
+			//素材授權合約
 			contract = new Contract();
-			//合約未履行數量
-			int allUndoneNum = contractService.allUndoneNum(contract);
-			model.addAttribute("allUndoneNum", allUndoneNum);
-			//合約已過期數量
-			int expired = contractService.expired(contract);
-			model.addAttribute("expired", expired);
-		//老師(幾份教案、命題基本題、命題題組題未審核及未修訂)
+//			//合約未履行數量
+//			int allUndoneNum = contractService.allUndoneNum(contract);
+//			model.addAttribute("allUndoneNum", allUndoneNum);
+//			//合約已過期數量
+//			int expired = contractService.expired(contract);
+//			model.addAttribute("expired", expired);
+			
+			Map<String, Object> contractNum = contractService.contractNum(contract);
+			model.addAttribute("contractNum", contractNum);
+		//創作教師(幾份教案、命題基本題、命題題組題未審核及未修訂)
 		} else if(level == 3) {
 			contract = new Contract();
 			contract.setTeacher_id(accountSession.getId());
@@ -253,7 +258,7 @@ public class IndexController {
 			int questionsGroupDoneCount = propositionService.uploadStatusCount(proposition);
 			model.addAttribute("questionsGroupDoneCount", questionsGroupDoneCount);
 			
-		//審核人(幾份教案、命題基本題、命題題組題未審核)
+		//審議委員(幾份教案、命題基本題、命題題組題未審核)
 		} else if(level == 4) {
 			LessonPlan lessonPlan = new LessonPlan();
 			lessonPlan.setAuditor(accountSession.getAccount());
@@ -620,10 +625,11 @@ public class IndexController {
 		account.setPage_count(page_count);
 		model.addAttribute("account", account);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//取得學制清單
 		Education education = new Education();
@@ -650,13 +656,13 @@ public class IndexController {
 		String educationStr = educationOption!=null ? educationOption.get("OPTION").toString() : "";
 		model.addAttribute("educationStr", educationStr);
 		
-		//取得領域清單
+		//取得學科清單
 		teacherAccountOption = new TeacherAccountOption();
 		teacherAccountOption.setTeacher_account_id(account.getId());
 		teacherAccountOption.setType("1");
-		Map<String, Object> fieldOption = teacherAccountOptionService.option(teacherAccountOption);
-		String fieldStr = fieldOption!=null ? fieldOption.get("OPTION").toString() : "";
-		model.addAttribute("fieldStr", fieldStr);
+		Map<String, Object> subjectOption = teacherAccountOptionService.option(teacherAccountOption);
+		String subjectStr = subjectOption!=null ? subjectOption.get("OPTION").toString() : "";
+		model.addAttribute("subjectStr", subjectStr);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -672,7 +678,7 @@ public class IndexController {
     		Model model){
 		
 		String[] educationList = pRequest.getParameterValues("education")!=null ? pRequest.getParameterValues("education") : null;
-		String[] fieldList = pRequest.getParameterValues("field")!=null ? pRequest.getParameterValues("field") : null;
+		String[] subjectList = pRequest.getParameterValues("subject")!=null ? pRequest.getParameterValues("subject") : null;
 		String content_provision = pRequest.getParameter("content_provision") == null ? "0" : "1";
 		String content_audit = pRequest.getParameter("content_audit") == null ? "0" : "1";
 		
@@ -706,7 +712,7 @@ public class IndexController {
 		account.setIdentity_id(identity_id);
 		account.setContent_provision(content_provision);
 		account.setContent_audit(content_audit);
-		account.setStatus("1");
+//		account.setStatus("1");
 		account.setUpdate_by(accountSession.getAccount());
 		teacherAccountService.update(account);
 		
@@ -725,16 +731,16 @@ public class IndexController {
 			}
 		}
 		
-		if(fieldList != null) {
+		if(subjectList != null) {
 			teacherAccountOption = new TeacherAccountOption();
 			teacherAccountOption.setTeacher_account_id(account.getId());
 			teacherAccountOption.setType("1");
 			teacherAccountOptionService.delete(teacherAccountOption);
-			for(int i=0; i<fieldList.length; i++) {
+			for(int i=0; i<subjectList.length; i++) {
 //				System.out.println(fieldList[i]);
 				teacherAccountOption.setTeacher_account_id(account.getId());
 				teacherAccountOption.setType("1");
-				teacherAccountOption.setCode(fieldList[i]);
+				teacherAccountOption.setCode(subjectList[i]);
 				teacherAccountOption.setCreate_by(accountSession.getAccount());
 				teacherAccountOptionService.add(teacherAccountOption);
 			}

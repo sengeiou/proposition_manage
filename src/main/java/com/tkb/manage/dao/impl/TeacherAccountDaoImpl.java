@@ -31,7 +31,7 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT TA.*, "
-				   + " (SELECT GROUP_CONCAT(CODE) FROM proposition_manage.teacher_account_option WHERE TYPE = '1' AND TEACHER_ACCOUNT_ID = TA.ID) FIELD_LIST, "
+				   + " (SELECT GROUP_CONCAT(CODE) FROM proposition_manage.teacher_account_option WHERE TYPE = '1' AND TEACHER_ACCOUNT_ID = TA.ID) SUBJECT_LIST, "
 				   + " (SELECT GROUP_CONCAT(CODE) FROM proposition_manage.teacher_account_option WHERE TYPE = '3' AND TEACHER_ACCOUNT_ID = TA.ID) EDUCATION_LIST "
 				   + " FROM proposition_manage.teacher_account TA "
 				   + " WHERE TA.ACCOUNT = ? "
@@ -158,30 +158,38 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		String sql = " UPDATE proposition_manage.teacher_account "
 				   + " SET NAME = ?, TEACHER_STATUS = ?, "
-				   + " SCHOOL_MASTER_ID = ?, ID_NO = ?, PHONE = ?, EMAIL = ?, ADDRESS = ?, "
-				   + " BANK = ?, BRANCH = ?, REMITTANCE_ACCOUNT = ?, FIELD_ID = ?, "
-				   + " IDENTITY_ID = ?, POSITION = ?, CONTENT_PROVISION = ?, CONTENT_AUDIT = ?, STATUS = ?, "
+				   + " SCHOOL_MASTER_ID = ?, ID_NO = ?, MOBILE_PHONE = ?, TELEPHONE =?, EMAIL = ?, "
+				   + " BANK = ?, BRANCH = ?, REMITTANCE_ACCOUNT = ?, EDUCATION_ID = ?, SUBJECT_ID = ?, "
+				   + " IDENTITY_ID = ?, POSITION = ?, CONTENT_PROVISION = ?, CONTENT_AUDIT = ?, "
+				   + " ADDRESS_ZIP = ?, ADDRESS_CITY = ?, ADDRESS_AREA = ?, ADDRESS_ROAD = ?, "
+				   + " CENSUS_ZIP = ?, CENSUS_CITY = ?, CENSUS_AREA = ?, CENSUS_ROAD = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
-		
-//		args.add(account.getAccount());
-//		args.add(account.getPassword());
+
 		args.add(account.getName());
 		args.add(account.getTeacher_status());
 		args.add(account.getSchool_master_id());
 		args.add(account.getId_no());
-//		args.add(account.getPhone());
+		args.add(account.getMobile_phone());
+		args.add(account.getTelephone());
 		args.add(account.getEmail());
-//		args.add(account.getAddress());
 		args.add(account.getBank());
 		args.add(account.getBranch());
 		args.add(account.getRemittance_account());
-		args.add(account.getField_id());
+		args.add(account.getEducation_id());
+		args.add(account.getSubject_id());
 		args.add(account.getIdentity_id());
 		args.add(account.getPosition());
 		args.add(account.getContent_provision());
 		args.add(account.getContent_audit());
-		args.add(account.getStatus());
+		args.add(account.getAddress_zip());
+		args.add(account.getAddress_city());
+		args.add(account.getAddress_area());
+		args.add(account.getAddress_road());
+		args.add(account.getCensus_zip());
+		args.add(account.getCensus_city());
+		args.add(account.getCensus_area());
+		args.add(account.getCensus_road());
 		args.add(account.getUpdate_by());
 		args.add(account.getId());
 		
