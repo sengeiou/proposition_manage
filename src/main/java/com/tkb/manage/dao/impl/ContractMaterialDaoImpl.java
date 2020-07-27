@@ -93,13 +93,13 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		
 		String sql = " SELECT CM.ID, CM.UUID, CM.TEACHER_ID, CM.TKB_CONTRACT_NUM, CM.TKB_CONTRACT_FILE, "
 				   + " CM.TKB_CONTRACT_NAME, CM.TKB_PARTYA, CM.TKB_PARTYB, CM.CSOFE_CONTRACT_NUM, CM.CSOFE_CONTRACT_FILE, "
-				   + " CM.CSOFE_CONTRACT_NAME, CM.CSOFE_PARTYA, CM.CSOFE_PARTYB, CM.FIELD_ID, CM.EDUCATION_ID, "
+				   + " CM.CSOFE_CONTRACT_NAME, CM.CSOFE_PARTYA, CM.CSOFE_PARTYB, CM.EDUCATION_ID, CM.SUBJECT_ID, "
 				   + " DATE_FORMAT(CM.BEGIN_DATE, '%Y/%m/%d') AS BEGIN_DATE, "
 				   + " DATE_FORMAT(CM.END_DATE, '%Y/%m/%d') AS END_DATE, "
 				   + " CM.LESSON_NUM, CM.BASIC_NUM, CM.QUESTIONS_GROUP_NUM, "
 				   + " CM.CREATE_BY, CM.CREATE_TIME, CM.UPDATE_BY, CM.UPDATE_TIME, "
 				   + " TA.NAME AS TEACHER_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " CASE WHEN CM.LP_TYPE = '1' THEN '教案' "
 				   + " WHEN CM.LP_TYPE = '2' THEN '基本題' "
 				   + " WHEN CM.LP_TYPE = '3' THEN '題組題' "
@@ -113,8 +113,8 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 				   + " END)ORDER BY CMO.MATERIAL_TYPE) MATERIAL_TYPE_NAME "
 				   + " FROM proposition_manage.contract_material CM "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ID = CM.TEACHER_ID "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = CM.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = CM.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMF.ID = CM.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.lesson_plan LP ON LP.ID = CM.LP_ID "
 				   + " LEFT JOIN proposition_manage.proposition PMP ON PMP.ID = CM.LP_ID "
 				   + " LEFT JOIN proposition_manage.contract_material_option CMO ON CMO.CONTRACT_MATERIAL_ID = CM.ID "
@@ -139,13 +139,13 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		String sql = " INSERT INTO proposition_manage.contract_material "
 				   + " (UUID, TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
 				   + " TKB_PARTYB, CSOFE_CONTRACT_NUM, CSOFE_CONTRACT_FILE, CSOFE_CONTRACT_NAME, CSOFE_PARTYA, "
-				   + " CSOFE_PARTYB, LP_ID, LP_TYPE, FIELD_ID, EDUCATION_ID, BEGIN_DATE, END_DATE, "
+				   + " CSOFE_PARTYB, LP_ID, LP_TYPE, EDUCATION_ID, SUBJECT_ID, BEGIN_DATE, END_DATE, "
 				   + " LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(REPLACE(UUID(), '-', ''), :teacher_id, :tkb_contract_num, "
 				   + " :tkb_contract_file, :tkb_contract_name, :tkb_partya, :tkb_partyb, :csofe_contract_num, "
-				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, :lp_id, :lp_type, :field_id, "
-				   + " :education_id, :begin_date, :end_date, :lesson_num, :basic_num, "
+				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, :lp_id, :lp_type, "
+				   + " :education_id, :subject_id, :begin_date, :end_date, :lesson_num, :basic_num, "
 				   + " :questions_group_num, :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -164,7 +164,7 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 				   + " SET TKB_CONTRACT_NUM = ?, TKB_CONTRACT_FILE = ?, TKB_CONTRACT_NAME = ?, "
 				   + " TKB_PARTYA = ?, TKB_PARTYB = ?, CSOFE_CONTRACT_NUM = ?, "
 				   + " CSOFE_CONTRACT_FILE = ?, CSOFE_CONTRACT_NAME = ?, CSOFE_PARTYA = ?, CSOFE_PARTYB = ?, "
-				   + " FIELD_ID = ?, EDUCATION_ID = ?, BEGIN_DATE = ?, END_DATE = ?, "
+				   + " EDUCATION_ID = ?, SUBJECT_ID = ?, BEGIN_DATE = ?, END_DATE = ?, "
 				   + " LESSON_NUM = ?, BASIC_NUM = ?, QUESTIONS_GROUP_NUM = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
@@ -179,8 +179,8 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		args.add(contractMaterial.getCsofe_contract_name());
 		args.add(contractMaterial.getCsofe_partya());
 		args.add(contractMaterial.getCsofe_partyb());
-		args.add(contractMaterial.getField_id());
 		args.add(contractMaterial.getEducation_id());
+		args.add(contractMaterial.getSubject_id());
 		args.add(contractMaterial.getBegin_date());
 		args.add(contractMaterial.getEnd_date());
 		args.add(contractMaterial.getLesson_num());

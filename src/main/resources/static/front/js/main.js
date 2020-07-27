@@ -335,6 +335,7 @@ $(function(){
                 openlightBoxAlert('請輸入任一篩選條件')
             }else {
                 console.log('/創作類型：：'+ projectType + '/學制：：'+ schoolType + '/學科：：'+ subject)
+                $(this).parent().siblings('.text').find('.numText').text('教案/命題搜尋成功後，更改數量～～～')
             }
        
         }else if (btntype == 'reportContractData') {    //老師授權合約報表
@@ -347,6 +348,7 @@ $(function(){
                 openlightBoxAlert('請輸入任一篩選條件')
             }else {
                 console.log('合約開始時間：：'+contractTime_start +'合約結束時間：：'+contractTime_end + '/學制：：'+ schoolType + '/學科：：'+ subject + '/合約狀態：：'+ contractType)
+                $(this).parent().siblings('.text').find('.numText').text('老師授權合約搜尋成功後，更改數量～～～')
             }
 
         }else if (btntype == 'reportTeacherData') {    //老師資料報表            
@@ -357,6 +359,7 @@ $(function(){
                 openlightBoxAlert('請輸入任一篩選條件')
             }else {
                 console.log('/系統身份：：' + identityState + '/學制：：'+ schoolType + '/學科：：'+subject)
+                $(this).parent().siblings('.text').find('.numText').text('老師資料搜尋成功後，更改數量～～～')
             }            
         }
     })
@@ -393,7 +396,7 @@ $(function(){
             checkContract(type)
         }else if (type.indexOf('lessonCreate') > -1) {
             checkLessonOrProp(type)
-        }else if (type.indexOf('lessonContentVerify') > -1) {
+        }else if (type == 'lessonContentVerify') {
             contentVerify(type)
         }else if (type.indexOf('lessonEditTeacher') > -1) {
             contentEditTeacher(type)
@@ -405,9 +408,9 @@ $(function(){
             checkLessonOrProp(type)
         }else if (type.indexOf('propoBasicCreate') > -1) {
             checkLessonOrProp(type)
-        }else if (type.indexOf('propoGroupContentVerify') > -1) {
+        }else if (type == 'propoGroupContentVerify') {
             contentVerify(type)
-        }else if (type.indexOf('propoBasicContentVerify') > -1) {
+        }else if (type == 'propoBasicContentVerify') {
             contentVerify(type)
         }else if (type.indexOf('propoGroupEditTeacher') > -1) {
             contentEditTeacher(type)
@@ -421,6 +424,12 @@ $(function(){
             checkContract(type)
         }else if (type.indexOf('register') > -1) {
             checkTeacher(type)
+        }else if (type == 'lessonContentVerify_principal') {
+            contentVerify_principal(type)
+        }else if (type == 'propoGroupContentVerify_principal') {
+            contentVerify_principal(type)
+        }else if (type == 'propoBasicContentVerify_principal') {
+            contentVerify_principal(type)
         }
     })
 
@@ -500,7 +509,8 @@ $(function(){
         }        
     })
 
-    $(".btnOpenMail").on("click",function(){
+    $(".btnOpenMail").on("click",function(e){
+        e.preventDefault()
         window.open ("mail.html", 
         "newwindow", 
         "height=640, width=600, toolbar=no, resizable=no, location=no, status=no")
@@ -622,16 +632,16 @@ $(function(){
         if ($(this).val() == 0) {            
             $(this).siblings('.attach-label').addClass('dis-n')
             $(this).parent().parent().find('.attach-label').addClass('dis-n')
-        }else {
+        }else {            
             if ($(this).val() == '1') {
                 fileType = ".jpg、.jpeg、.png"      
-                fileInputAccept = ".jpg,.jpeg,.png"
+                fileInputAccept = ".jpg,.jpeg,.png"            
             }else if ($(this).val() == '2') {
                 fileType = ".mp3、.wav"
-                fileInputAccept = ".mp3,.wav"
+                fileInputAccept = ".mp3,.wav"            
             }else if ($(this).val() == '3') {
                 fileType = ".avi、.mp4、.mpg"
-                fileInputAccept = ".avi,.mp4,.mpg"
+                fileInputAccept = ".avi,.mp4,.mpg"            
             }else if ($(this).val() == '4') {
                 fileInput = true
             }
@@ -701,21 +711,59 @@ $(function(){
     })
 
     $(".lessonVerify").on("change","input:radio[name='verify']",function(){ //教案/命題詳細資料-審核區塊的「審核結果」按鈕
+        let faild = $(this).parent().parent().parent().find('.verifyFaild')
+        let pass =  $(this).parent().parent().parent().find('.verifyPass')
         if ($(this).val() == 0) {
-            $(this).parent().parent().parent().find('.verifyFaild').removeClass('dis-n')
-            $(this).parent().parent().parent().find('.verifyPass').addClass('dis-n')
+            faild.removeClass('dis-n')
+            pass.addClass('dis-n')
             $(this).parent().parent().find('.memo').text('註：若選擇待修正，請擇一填寫回饋檔案或審核回饋')
             $("input[name='verifyMethod']").prop('checked',false)
             $("input[name='verifyMethod']").siblings('.radio-circle').removeClass('active')
             $("#verifyTeacher").val(0)
+            $("div.custom-select a span").text('請選擇審議委員')
         }else if ($(this).val() == 1) {
-            $(this).parent().parent().parent().find('.verifyFaild').addClass('dis-n')
-            $(this).parent().parent().parent().find('.verifyPass').removeClass('dis-n')
-            $(this).parent().parent().find('.memo').text('註：若選擇通過，請選擇審核方式')
+            faild.addClass('dis-n')
+            if (pass.length > 0) {
+                pass.removeClass('dis-n')
+                $(this).parent().parent().find('.memo').text('註：若選擇通過，請選擇審核方式')
+            }           
             $(this).parent().parent().parent().find('textarea').val('')
             $("#lessonVerifyFile").val('')
             $(".lessonVerifyFileText").text('')
         }                        
+    })
+
+    $("input[name='verifyMethod']").on("change",function(){        
+        if ($(this).val() == 0 && $("#verifyTeacher").children().length == 1) {
+            // alert('找對應的符合此學制/學科的委員')
+            $.ajax({
+                url: 'get/auditor',
+                cache: false,
+                async: false,
+                dataType: 'json',
+                type: 'POST',
+                xhrFilds:{withCredentials:true},
+                data: {
+                    education_id: $("#educationId").val(),
+                    subject_id: $("#subjectId").val()
+                },
+                error: function(xhr) {
+                    alert("取得資料錯誤");                    
+                },
+                success: function(data) {                    
+                    console.log(data)
+                    let html = `<option value="0">請選擇審議委員</option>
+                        <option value="1">陳柔柔</option>
+                        <option value="2">阿琳琳</option>
+                        <option value="3">醜彥彥</option>
+                        <option value="4">阿手手</option>`
+                    $("#verifyTeacher").html(html)
+                    $("#verifyTeacher").addClass('custom-select')
+                    $("#verifyTeacher").customselect()
+                }
+            });  
+            
+        }              
     })
 
     $(".tab").on("click",function(e){    //報表匯出
@@ -723,6 +771,22 @@ $(function(){
         $(this).addClass('active').siblings('.tab').removeClass('active')
         let tab = $(this).data('tab')
         $(".report-content").find(`div.${tab}`).removeClass('dis-n').siblings('.tabContent').addClass('dis-n')
+    })
+
+    $("#editResidenceAddress").on("click",function(){   //老師編輯-修改戶籍地址checkbox
+        if ($(this).is(':checked')) {            
+            $(this).parent().parent().siblings('.wrap').removeClass('dis-n')
+        }else {            
+            $(this).parent().parent().siblings('.wrap').addClass('dis-n')
+        }
+    })
+
+    $("#editAddress").on("click",function(){   //老師編輯-修改通訊地址checkbox
+        if ($(this).is(':checked')) {            
+            $(this).parent().parent().siblings('.wrap').removeClass('dis-n')
+        }else {            
+            $(this).parent().parent().siblings('.wrap').addClass('dis-n')
+        }
     })
 
     function openlightBoxAlert(text) {        
@@ -774,12 +838,10 @@ $(function(){
             text = '請選擇老師身份'
         }else if ($("input[name='position']:checked").attr('id') == 'teacher' && $("input.identityState:checked").length == 0) { //老師身份為「一般老師」時的必填欄位
             status = false
-            text = '請勾選系統身份'
-            console.log('111')
+            text = '請勾選系統身份'            
         }else if (type=='register' && $("input.identityState:checked").length == 0) { //註冊時，需勾選系統身份
             status = false
-            text = '請勾選系統身份'
-            console.log('222')
+            text = '請勾選系統身份'            
         }else if (type!='register' && $("input[name='position']:checked").attr('id') != 'teacher' && $("input.schoolType:checked").length == 0) { //老師身份為「校長」、「組長」時的必填欄位
             status = false
             text = '請勾選監督範圍的學制'
@@ -798,18 +860,30 @@ $(function(){
         }else if (create &&!$("#accountNum").val()) {
             status = false
             text = '請填寫匯款帳號'
-        }else if (!$("#residenceAddress").val()) {
+        }else if (create && !$("#residenceAddress").val()) {         
             status = false
             text = '請填寫完整戶籍地址'
-        }else if ($("#residenceSelectZip").val() == 0) {
+        }else if (create && $("#residenceSelectZip").val() == 0) {
             status = false
             text = '請選擇戶籍地址對應的郵遞區號'
-        }else if (!$("#address").val()) {
+        }else if (create && !$("#address").val()) {
             status = false
             text = '請填寫完整通訊地址'
-        }else if ($("#selectZip").val() == 0) {
+        }else if (create && $("#selectZip").val() == 0) {
             status = false
             text = '請選擇通訊地址對應的郵遞區號'
+        }else if (!create && $("#editResidenceAddress").is(":checked") && !$("#residenceAddress").val()) {  //編輯老師+修改checkbox            
+            status = false
+            text = '請填寫完整戶籍地址'            
+        }else if (!create && $("#editResidenceAddress").is(":checked") && $("#residenceSelectZip").val() == 0) {
+            status = false
+            text = '請選擇戶籍地址對應的郵遞區號'            
+        }else if (!create && $("#editAddress").is(":checked") && !$("#address").val()) {
+            status = false
+            text = '請填寫完整通訊地址'            
+        }else if (!create && $("#editAddress").is(":checked") && $("#selectZip").val() == 0) {
+            status = false
+            text = '請選擇通訊地址對應的郵遞區號'            
         }
         
         $("#c_area").val($("#census_area").val());
@@ -823,15 +897,39 @@ $(function(){
             $("section.lightBoxAlert .container div").text(text)
         }else {
         	if (type == 'teacherCreate') {
+            	$("#c_area").val($("#census_area").val());
+                $("#address_area").val($("#area").val());
+                $("#census_zip").val($("#residenceSelectZip").val());
+                $("#address_zip").val($("#selectZip").val());
+        		
             	$("#mainForm").attr("action", "/teacher/addSubmit");
                 $("#mainForm").submit();
                 console.log('老師帳號新增驗證通過')
             }else if (type == 'teacherEdit') {
+            	if($("#census_city").val() != "" && $("#census_area").val() != "0" && $("#residenceSelectZip").val() != "0" && $("residenceAddress").val() != ""){
+            		$("#c_city").val($("#census_city").val());
+            		$("#c_area").val($("#census_area").val());
+            		$("#census_road").val($("#residenceAddress").val());
+            		$("#census_zip").val($("#residenceSelectZip").val());
+            	}
+            	
+            	if($("#city").val() != "" && $("#area").val() != "0" && $("#selectZip").val() != "0" && $("address").val() != ""){
+            		$("#address_city").val($("#city").val());
+            		$("#address_area").val($("#area").val());
+            		$("#address_road").val($("#address").val());
+            		$("#address_zip").val($("#selectZip").val());
+            	}
+            	
             	$("#mainForm").attr("action", "/teacher/editSubmit");
                 $("#mainForm").submit();
                 console.log('老師帳號修改驗證通過')
             }else if (type == 'register') {
-            	$("#mainForm").attr("action", "/teacher/registerSubmit");
+                $("#c_area").val($("#census_area").val());
+                $("#address_area").val($("#area").val());
+                $("#census_zip").val($("#residenceSelectZip").val());
+                $("#address_zip").val($("#selectZip").val());
+            	
+                $("#mainForm").attr("action", "/teacher/registerSubmit");
             	$("#mainForm").submit();
                 console.log('註冊驗證通過')
             }
@@ -931,10 +1029,10 @@ $(function(){
             text = '請輸入正確的教案數量'
         }else if (!material && $("#propoBasicNum").val() && !numCheck.test($("#propoBasicNum").val())) {
             status = false
-            text = '請輸入正確的命題基本題數量'
+            text = '請輸入正確的命題選擇題數量'
         }else if (!material && $("#propoGroupNum").val() && !numCheck.test($("#propoGroupNum").val())) {
             status = false
-            text = '請輸入正確的命題題組題數量'
+            text = '請輸入正確的命題混合題數量'
         }
 
         if (!status) {
@@ -960,7 +1058,7 @@ $(function(){
 
         if ($("#contractNum").val() == 0) {
             status = false
-            text = '請選擇合約序號'
+            text = '請選擇合約流水號'
         }else if (!$("input#lessonName").val() && type == 'lessonCreate') {
             status = false
             // if (type == 'lessonCreate') {
@@ -1019,11 +1117,49 @@ $(function(){
             }else if (type == 'propoGroupCreate') {
             	$("#mainForm").attr("action", "/proposition/group/addSubmit");
                 $("#mainForm").submit();
-                console.log('命題-題組題驗證通過')
+                console.log('命題-混合題驗證通過')
             }else if (type == 'propoBasicCreate') {
             	$("#mainForm").attr("action", "/proposition/basic/addSubmit");
                 $("#mainForm").submit();
-                console.log('命題-基本題驗證通過')
+                console.log('命題-選擇題驗證通過')
+            }
+        }
+    }
+
+    function contentVerify_principal(type) {        
+        let status = true
+        let text = ''
+        if ($("input[name='verify']:checked").length == 0) {
+            status = false
+            text = '請選擇審核結果'
+        }else if ($("input[name='verify']:checked").val() == 0 && $(".lessonVerifyFileText").text() == '' && !$(".lessonVerify textarea").val()) {
+            status = false
+            text = '請選擇審核回饋檔案或填寫審核回饋'
+        }else if ($("input[name='verify']:checked").val() == 1 && $("input[name='verifyMethod']:checked").length == 0) {
+            status = false
+            text = '請選擇審核方式'
+        }else if ($("input[name='verify']:checked").val() == 1 && $("input[name='verifyMethod']:checked").val() == 0 && $("#verifyTeacher").val() ==0) {
+            status = false
+            text = '請選擇審議委員'
+        }
+
+        if (!status) {
+            $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')
+            $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
+            $("section.lightBoxAlert .container div").text(text)
+        }else {
+        	if (type == 'lessonContentVerify_principal') {
+            	$("#mainForm").attr("action", "/lesson/audit");
+                $("#mainForm").submit();
+                console.log('校長--教案詳細資料審核')
+            }else if (type == 'propoGroupContentVerify_principal') {
+            	$("#mainForm").attr("action", "/proposition/group/audit");
+                $("#mainForm").submit();
+                console.log('校長--命題-混合題：：詳細資料審核')
+            }else if (type == 'propoBasicContentVerify_principal') {
+            	$("#mainForm").attr("action", "/proposition/basic/audit");
+                $("#mainForm").submit();
+                console.log('校長--命題-選擇題：：教案詳細資料審核')
             }
         }
     }
@@ -1047,15 +1183,15 @@ $(function(){
         	if (type == 'lessonContentVerify') {
             	$("#mainForm").attr("action", "/lesson/audit");
                 $("#mainForm").submit();
-                console.log('教案詳細資料審核')
+                console.log('審議委員--教案詳細資料審核')
             }else if (type == 'propoGroupContentVerify') {
             	$("#mainForm").attr("action", "/proposition/group/audit");
                 $("#mainForm").submit();
-                console.log('命題-題組題：：詳細資料審核')
+                console.log('審議委員--命題-混合題：：詳細資料審核')
             }else if (type == 'propoBasicContentVerify') {
             	$("#mainForm").attr("action", "/proposition/basic/audit");
                 $("#mainForm").submit();
-                console.log('命題-基本題：：教案詳細資料審核')
+                console.log('審議委員--命題-選擇題：：教案詳細資料審核')
             }
         }
     }
@@ -1083,11 +1219,11 @@ $(function(){
             }else if (type == 'propoGroupEditTeacher') {
             	$("#mainForm").attr("action", "/proposition/group/editSubmit");
                 $("#mainForm").submit();
-                console.log('命題-題組題：：檔案修正通過')
+                console.log('命題-混合題：：檔案修正通過')
             }else if (type == 'propoBasicEditTeacher') {
             	$("#mainForm").attr("action", "/proposition/basic/editSubmit");
                 $("#mainForm").submit();
-                console.log('命題-基本題：：檔案修正通過')
+                console.log('命題-選擇題：：檔案修正通過')
             }
         }
     }
@@ -1144,11 +1280,11 @@ $(function(){
             }else if (type == 'propoGroupEditAdmin') {
             	$("#mainForm").attr("action", "/proposition/group/updateSubmit");
                 $("#mainForm").submit();
-                console.log('命題-題組題：：編輯驗證通過')
+                console.log('命題-混合題：：編輯驗證通過')
             }else if (type == 'propoBasicEditAdmin') {
             	$("#mainForm").attr("action", "/proposition/basic/updateSubmit");
                 $("#mainForm").submit();
-                console.log('命題-基本題：：編輯驗證通過')
+                console.log('命題-選擇題：：編輯驗證通過')
             }
             
         }
@@ -1308,20 +1444,20 @@ $(function(){
     function searchLessonProp () {
         let contractNumber = $("input#contractNumber").val()
         let lessonName = $("input#lessonName").val()    
-        let subject = $("select.subject").val()        
-        let schoolType = $("input.schoolType:checked").attr('id')
         let lessonCreateTime = $("input#lessonCreateTime").val()
+        let schoolType = $("select#schoolType").val()
+        let subject = $("select#subject").val()
+        let fileType = $("select#fileType").val()
 
         let lessonStart = lessonCreateTime.split(' ~ ')[0]
         let lessonEnd = lessonCreateTime.split(' ~ ')[1]
 
-        console.log('contractNumber::'+contractNumber)
-        console.log('lessonName::'+lessonName)        
-        console.log('subject::'+subject)
-        console.log('schoolType::'+schoolType)
-        console.log('lessonCreateTime::'+lessonCreateTime)
-        console.log('lessonStart::'+lessonStart)
-        console.log('lessonEnd::'+lessonEnd)
-        
+        console.log('合約流水號::'+contractNumber)
+        console.log('教案名稱::'+lessonName)
+        console.log('教案建立開始時間::'+lessonStart)
+        console.log('教案建立結束時間::'+lessonEnd)
+        console.log('學制::'+schoolType)
+        console.log('學科::'+subject)
+        console.log('檔案狀態::'+fileType)
     }
 })

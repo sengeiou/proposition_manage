@@ -1,5 +1,8 @@
 package com.tkb.manage.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,10 @@ public class LessonPlanTagServiceImpl implements LessonPlanTagService {
 	
 	public void delete(LessonPlanTag lessonPlanTag) {
 		lessonPlanTagDao.delete(lessonPlanTag);
+	}
+	
+	public List<Map<String, Object>> tagList(LessonPlanTag lessonPlanTag) {
+		return lessonPlanTagDao.tagList(lessonPlanTag);
 	}
 	
 }

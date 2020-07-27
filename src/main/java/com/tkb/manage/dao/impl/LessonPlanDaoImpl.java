@@ -31,19 +31,18 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN LP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN LP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN LP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN LP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
@@ -76,14 +75,13 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT LP.*, PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+		String sql = " SELECT LP.*, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " WHERE LP.AUDITOR = ? "
-				   + " AND LP.FILE_STATUS = 'Y' "
-				   + " AND LP.UPLOAD_STATUS = 'Y' "
+				   + " AND LP.FILE_STATUS = 'C' "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		args.add(lessonPlan.getAuditor());
@@ -106,8 +104,7 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.lesson_plan "
 				   + " WHERE AUDITOR = ? "
-				   + " AND FILE_STATUS = 'Y' "
-				   + " AND UPLOAD_STATUS = 'Y' ";
+				   + " AND FILE_STATUS = 'C' ";
 		
 		args.add(lessonPlan.getAuditor());
 		
@@ -125,9 +122,12 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN LP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN LP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN LP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN LP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
@@ -174,19 +174,18 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN LP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN LP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN LP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN LP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan LP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " WHERE LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
 				   + " AND LP.SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
@@ -224,20 +223,19 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN LP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN LP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN LP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN LP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA.NAME AS AUDITOR_NAME "
 				   + " FROM proposition_manage.lesson_plan LP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
 				   + " WHERE LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
 				   + " AND LP.SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") "
@@ -276,20 +274,20 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT LP.*, "
-				   + " CASE WHEN LP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN LP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN LP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN LP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN LP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN LP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN LP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN LP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN LP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN LP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN LP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA.NAME AS AUDITOR_NAME "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
@@ -375,13 +373,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.lesson_plan "
-				   + " SET NAME = ?, EDUCATION_ID = ?, SUBJECT_ID = ?, TAG = ?, "
+				   + " SET NAME = ?, TAG = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
 		args.add(lessonPlan.getName());
-		args.add(lessonPlan.getEducation_id());
-		args.add(lessonPlan.getSubject_id());
 		args.add(lessonPlan.getTag());
 		args.add(lessonPlan.getUpdate_by());
 		args.add(lessonPlan.getId());
@@ -394,8 +390,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM proposition_manage.lesson_plan "
-				   + " WHERE ID = ? ";
+		String sql = " SELECT LP.*, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME "
+				   + " FROM proposition_manage.lesson_plan LP "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
+				   + " WHERE LP.ID = ? ";
 		
 		args.add(lessonPlan.getId());
 		

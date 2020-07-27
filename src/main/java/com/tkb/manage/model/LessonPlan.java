@@ -39,5 +39,7 @@ public class LessonPlan extends Base {
 	private String top;						//置頂(0：否，1：是)
 	private String auditor;					//審核人
 	private String file_status;				//檔案狀態(A：初審中，B：初審待修正，C：初審通過 / 審核中，D：審核待修正，E：審核通過 / 完稿確認，F：完稿)
+	private String education_name;			//學制名稱
+	private String subject_name;			//學科名稱
 	
 }

@@ -25,8 +25,8 @@ public class ContractMaterial extends Base {
 	private String csofe_partyb;			//乙方(中華未來教育協會合約)
 	private String lp_id;					//教案命題流水號
 	private String lp_type;					//教案命題類別(1：教案，2：基本題，3：題組題)
-	private String field_id;				//領域流水號
 	private String education_id;			//學制流水號
+	private String subject_id;				//學科流水號
 	private String begin_date;				//合約生效日期
 	private String end_date;				//合約結束日期
 	private String lesson_num;				//教案授權數量

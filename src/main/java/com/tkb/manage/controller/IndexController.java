@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +85,7 @@ import com.tkb.manage.service.TeacherAccountService;
 import jxl.Sheet;
 import jxl.Workbook;
 
+@CrossOrigin
 @Controller
 @SessionAttributes("accountSession")
 @RequestMapping("/")
@@ -1120,10 +1123,10 @@ public class IndexController {
 		contractMaterial.setTeacher_id(getDataByAccount!=null ? getDataByAccount.get("ID").toString() : "");
 		
 		//取得領域資料
-		Field field = new Field();
-		field.setId(contractMaterial.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("fieldName", field.getName());
+//		Field field = new Field();
+//		field.setId(contractMaterial.getField_id());
+//		field = fieldService.data(field);
+//		model.addAttribute("fieldName", field.getName());
 		
 		//取得學制清單
 		Education education = new Education();
@@ -1390,6 +1393,7 @@ public class IndexController {
 			lessonPlanFile.setData_type("1");
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setVersion("A");
+			lessonPlanFile.setFile_status("A");
 			lessonPlanFile.setUpload_name(uploadName);
 			lessonPlanFile.setFile_name(word.getOriginalFilename());
 			lessonPlanFile.setDisplay("1");
@@ -1408,6 +1412,7 @@ public class IndexController {
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setMaterial_link(null);
 			lessonPlanFile.setVersion("A");
+			lessonPlanFile.setFile_status("A");
 			lessonPlanFile.setUpload_name(uploadName);
 			lessonPlanFile.setFile_name(pdf.getOriginalFilename());
 			lessonPlanFile.setDisplay("1");
@@ -1439,6 +1444,7 @@ public class IndexController {
 						lessonPlanFile.setUpload_name(null);
 						lessonPlanFile.setFile_name(null);
 					}
+					lessonPlanFile.setFile_status("A");
 					lessonPlanFile.setDisplay("1");
 					lessonPlanFile.setCreate_by(accountSession.getAccount());
 					lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -1457,6 +1463,7 @@ public class IndexController {
 					lessonPlanFile.setMaterial_type_id(null);
 					lessonPlanFile.setMaterial_link(null);
 					lessonPlanFile.setVersion(null);
+					lessonPlanFile.setFile_status("A");
 					lessonPlanFile.setUpload_name(uploadName);
 					lessonPlanFile.setFile_name(contractMat[i].getOriginalFilename());
 					lessonPlanFile.setDisplay("1");
@@ -1466,8 +1473,16 @@ public class IndexController {
 				}
 			}
 			
+			//設定初審(校長)
+			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
+			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
+			lessonPlanAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+			lessonPlanAudit.setFile_status("A");
+			lessonPlanAudit.setCreate_by(accountSession.getAccount());
+			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
+			lessonPlanAuditService.add(lessonPlanAudit);
+			
 			//關鍵字
-//			System.out.println("tag:"+lessonPlan.getTag());
 			LessonPlanTag lessonPlanTag = new LessonPlanTag();
 			lessonPlanTag.setLesson_plan_id(String.valueOf(id));
 			
@@ -1480,15 +1495,6 @@ public class IndexController {
 					lessonPlanTagService.add(lessonPlanTag);
 				}
 			}
-			
-			//設定初審(校長)
-			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
-			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
-			lessonPlanAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
-			lessonPlanAudit.setFile_status("A");
-			lessonPlanAudit.setCreate_by(accountSession.getAccount());
-			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
-			lessonPlanAuditService.add(lessonPlanAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -1509,20 +1515,6 @@ public class IndexController {
 		LessonPlan data = lessonPlanService.data(lessonPlan);
 		model.addAttribute("data", data);
 		
-		//取得學習領域資料
-		Field field = new Field();
-//		field.setId(data.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("field_name", field.getName());
-		
-		//取得學科清單
-		LessonPlanOption lessonPlanOption = new LessonPlanOption();
-		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanOption.setType("2");
-		Map<String, Object> subjectOption = lessonPlanOptionService.subjectOption(lessonPlanOption);
-		String subject = subjectOption.get("OPTION").toString();
-		model.addAttribute("subject", subject);
-		
 		//取得學制資料
 		Education education = new Education();
 		education.setId(data.getEducation_id());
@@ -1530,12 +1522,26 @@ public class IndexController {
 		model.addAttribute("education_name", education.getName());
 		
 		//取得年級清單
-		lessonPlanOption = new LessonPlanOption();
+		LessonPlanOption lessonPlanOption = new LessonPlanOption();
 		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
 		lessonPlanOption.setType("4");
 		Map<String, Object> gradeOption = lessonPlanOptionService.gradeOption(lessonPlanOption);
-		String grade = gradeOption.get("OPTION").toString();
-		model.addAttribute("grade", grade);
+		String go = gradeOption.get("OPTION").toString();
+		model.addAttribute("gradeOption", go);
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(data.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subject_name", subject.getName());
+		
+		//取得跨科清單
+		lessonPlanOption = new LessonPlanOption();
+		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+		lessonPlanOption.setType("2");
+		Map<String, Object> subjectOption = lessonPlanOptionService.subjectOption(lessonPlanOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
@@ -1544,6 +1550,12 @@ public class IndexController {
 		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
 		model.addAttribute("contentList", contentList);
 		
+		//取得標籤
+		LessonPlanTag lessonPlanTag = new LessonPlanTag();
+		lessonPlanTag.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> tagList = lessonPlanTagService.tagList(lessonPlanTag);
+		model.addAttribute("tagList", tagList);
+		
 		//取得審核回饋歷程
 //		lessonPlanFile = new LessonPlanFile();
 //		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
@@ -1551,8 +1563,19 @@ public class IndexController {
 //		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
 //		model.addAttribute("auditList", auditList);
 		
-		//取得最新檔案
-		model.addAttribute("nowFile", contentList.get(0));
+		//取得檔案清單
+		lessonPlanFile = new LessonPlanFile();
+		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> getFile = lessonPlanFileService.getFile(lessonPlanFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = lessonPlanFileService.getAnnex(lessonPlanFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = lessonPlanFileService.getMaterial(lessonPlanFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -1568,49 +1591,72 @@ public class IndexController {
 		LessonPlan data = lessonPlanService.data(lessonPlan);
 		model.addAttribute("data", data);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
 		//取得學制清單
-		Education education = new Education();
-		education.setLayer("1");
-		List<Map<String, Object>> educationList = educationService.getList(education);
-		model.addAttribute("educationList", educationList);
-		
-		LessonPlanOption lessonPlanOption = new LessonPlanOption();
-		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanOption.setType("2");
-		Map<String, Object> subjectOption = lessonPlanOptionService.option(lessonPlanOption);
-		String so = subjectOption.get("OPTION").toString();
-		model.addAttribute("subjectOption", so);
+//		Education education = new Education();
+//		education.setLayer("1");
+//		List<Map<String, Object>> educationList = educationService.getList(education);
+//		model.addAttribute("educationList", educationList);
 		
 		//取得學科清單
-		Subject subject = new Subject();
-		subject.setLayer("1");
-		List<Map<String, Object>> subjectList = subjectService.getList(subject);
-		model.addAttribute("subjectList", subjectList);
+//		Subject subject = new Subject();
+//		subject.setLayer("1");
+//		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+//		model.addAttribute("subjectList", subjectList);
 		
 		//取得年級清單
-		education = new Education();
+		Education education = new Education();
 		education.setParent_id(data.getEducation_id());
 		List<Map<String, Object>> gradeList = educationService.getChild(education);
 		model.addAttribute("gradeList", gradeList);
 		
-		lessonPlanOption = new LessonPlanOption();
+		//串接年級資料
+		LessonPlanOption lessonPlanOption = new LessonPlanOption();
 		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
 		lessonPlanOption.setType("4");
 		Map<String, Object> gradeOption = lessonPlanOptionService.option(lessonPlanOption);
 		String go = gradeOption.get("OPTION").toString();
 		model.addAttribute("gradeOption", go);
 		
+		//取得跨科清單
+		Subject subject = new Subject();
+		subject.setParent_id(data.getSubject_id());
+		List<Map<String, Object>> crossSubjectList = subjectService.getChild(subject);
+		model.addAttribute("crossSubjectList", crossSubjectList);
+		
+		//串接跨科資料
+		lessonPlanOption = new LessonPlanOption();
+		lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+		lessonPlanOption.setType("2");
+		Map<String, Object> subjectOption = lessonPlanOptionService.option(lessonPlanOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
+		
 		//取得內容上傳歷程
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
 		lessonPlanFile.setData_type("1");
 		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
-		model.addAttribute("nowFile", contentList.get(0));
+		model.addAttribute("contentList", contentList);
+		
+		//取得標籤
+		LessonPlanTag lessonPlanTag = new LessonPlanTag();
+		lessonPlanTag.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> tagList = lessonPlanTagService.tagList(lessonPlanTag);
+		model.addAttribute("tagList", tagList);
+		
+		//取得檔案清單
+		lessonPlanFile = new LessonPlanFile();
+		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> getFile = lessonPlanFileService.getFile(lessonPlanFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = lessonPlanFileService.getAnnex(lessonPlanFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = lessonPlanFileService.getMaterial(lessonPlanFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -1633,30 +1679,58 @@ public class IndexController {
 			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
 			lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
-			lessonPlanOptionService.delete(lessonPlanOption);
 			
 			//學科
-			String[] subject = pRequest.getParameterValues("subject");
-			for(int i=0; i<subject.length; i++) {
-				lessonPlanOption = new LessonPlanOption();
-				lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+			String[] subjectOption = pRequest.getParameter("subjectOption").split(",");
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			if(!Arrays.equals(subjectOption, subject)) {
 				lessonPlanOption.setType("2");
-				lessonPlanOption.setCode(subject[i]);
-				lessonPlanOption.setCreate_by(accountSession.getAccount());
-				lessonPlanOptionService.add(lessonPlanOption);
+				lessonPlanOptionService.delete(lessonPlanOption);
+				for(int i=0; i<subject.length; i++) {
+					lessonPlanOption = new LessonPlanOption();
+					lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+					lessonPlanOption.setType("2");
+					lessonPlanOption.setCode(subject[i]);
+					lessonPlanOption.setCreate_by(accountSession.getAccount());
+					lessonPlanOptionService.add(lessonPlanOption);
+				}
 			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
-			for(int i=0; i<grade.length; i++) {
-				lessonPlanOption = new LessonPlanOption();
-				lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+			String[] gradeOption = pRequest.getParameter("gradeOption").split(",");
+			if(!Arrays.equals(gradeOption, grade)) {
 				lessonPlanOption.setType("4");
-				lessonPlanOption.setCode(grade[i]);
-				lessonPlanOption.setCreate_by(accountSession.getAccount());
-				lessonPlanOptionService.add(lessonPlanOption);
+				lessonPlanOptionService.delete(lessonPlanOption);
+				for(int i=0; i<grade.length; i++) {
+					lessonPlanOption = new LessonPlanOption();
+					lessonPlanOption.setLesson_plan_id(lessonPlan.getId());
+					lessonPlanOption.setType("4");
+					lessonPlanOption.setCode(grade[i]);
+					lessonPlanOption.setCreate_by(accountSession.getAccount());
+					lessonPlanOptionService.add(lessonPlanOption);
+				}
 			}
 			
+			String tagOld = pRequest.getParameter("tagOld").replace(" ", "");
+			lessonPlan.setTag(lessonPlan.getTag().replace(" ", "").replace("\t", "").replace("\r", "").replace("\n", ""));
+			
+			if(!tagOld.equals(lessonPlan.getTag())) {
+				//關鍵字
+				LessonPlanTag lessonPlanTag = new LessonPlanTag();
+				lessonPlanTag.setLesson_plan_id(lessonPlan.getId());
+				lessonPlanTagService.delete(lessonPlanTag);
+				
+				String[] tag = lessonPlan.getTag() != null ? lessonPlan.getTag().split(",") : null;
+				if(tag != null && tag.length > 0) {
+					for(int i=0; i<tag.length; i++) {
+						lessonPlanTag.setName(tag[i]);
+						lessonPlanTag.setCreate_by(accountSession.getAccount());
+						lessonPlanTag.setUpdate_by(accountSession.getAccount());
+						lessonPlanTagService.add(lessonPlanTag);
+					}
+				}
+			}
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -3087,6 +3161,27 @@ public class IndexController {
 		Map<String, Object> map = contractService.getDataByContractId(contract);
 		list.add(map);
 		
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
+		
+	}
+	
+	@RequestMapping(value = "/get/auditor" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void getAuditor(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Account account = new Account();
+		
+		String education_id = pRequest.getParameter("education_id") == null ? "" : pRequest.getParameter("education_id");
+		String subject_id = pRequest.getParameter("subject_id") == null ? "" : pRequest.getParameter("subject_id");
+		
+		account.setEducation_id(education_id);
+		account.setSubject_id(subject_id);
+		
+		List<Map<String, Object>> list = teacherAccountService.getAuditorByEduSub(account);
+
 		JSONArray tJSONArray = new JSONArray(list);
 		
 		pResponse.setCharacterEncoding("utf-8");
