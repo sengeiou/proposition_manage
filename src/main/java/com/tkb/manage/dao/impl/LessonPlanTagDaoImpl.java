@@ -28,7 +28,7 @@ public class LessonPlanTagDaoImpl implements LessonPlanTagDao {
 		
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlanTag);
 		
-		String sql = " INSERT INTO proposition_manage.lesson_plan "
+		String sql = " INSERT INTO proposition_manage.lesson_plan_tag "
 				   + " (LESSON_PLAN_ID, NAME, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
 				   + " VALUES(:lesson_plan_id, :name, "
@@ -46,7 +46,7 @@ public class LessonPlanTagDaoImpl implements LessonPlanTagDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " DELETE FROM proposition_manage.lesson_plan_option "
+		String sql = " DELETE FROM proposition_manage.lesson_plan_tag "
 				   + " WHERE LESSON_PLAN_ID = ? ";
 		
 		args.add(lessonPlanTag.getLesson_plan_id());

@@ -56,6 +56,10 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		return teacherAccountDao.callNum(account);
 	}
 	
+	public Map<String, Object> getAuditor(Account account) {
+		return teacherAccountDao.getAuditor(account);
+	}
+	
 	public List<Map<String, Object>> verifyList(Account account) {
 		return teacherAccountDao.verifyList(account);
 	}

@@ -17,16 +17,42 @@
             <form role="form" id="mainForm" th:object="${account}" method="post">
 	            <div><span>帳號</span><i class="fas fa-user-circle fa-lg"></i><input type="text" name="account" value="TKB0003001" placeholder="請輸入帳號"></div>
 	            <div><span>密碼</span><i class="fas fa-lock fa-lg"></i><input type="password" name="password" value="123456" placeholder="請輸入密碼"></div>
+	            <div class="forget"><a href="#" class="btnForgetPassword">忘記密碼<i class="fas fa-exclamation"></i></a></div>
 	            <div>
-	                <button type="button" id="change">更改身分</button>
-	                <button type="button" id="login">登入</button>
+	                <button type="button" class="btn-xl" id="change">更改身分</button>
+	                <button type="button" class="btn-xl" id="login">登入</button>
 	            </div>
             </form>
         </div>
     </section>
+    <section class="lightBoxBG dis-n"></section>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
+    </section>
+    <!-- 忘記密碼燈箱 -->
+    <section class="lightBoxContent forgetPassword-lightBox dis-n">        
+        <button class="btn-closeLightBox" data-lb="forgetPassword" type="button"><i class="fas fa-times-circle fa-lg"></i></button>
+        <h3 class="title">忘記密碼</h3>
+        <hr>
+        <div class="container">
+            <div>
+                請輸入您的帳號，並在驗證成功後
+                <br>
+                寄通知信到您註冊信箱
+            </div>
+            <input type="text" placeholder="請輸入帳號" id="account">            
+        </div>
+        <button class="editNewDataBtn btn-sm" data-newdata="forgetPassword" type="button">確定</button>
+    </section>
 
     <script th:src="@{/front/js/lib/jquery-v3.4.1.min.js}"></script>
     <script th:src="@{/front/js/lib/fontawesome.min.js}"></script>
+    <script th:src="@{/front/js/lib/jquery-customselect.js}"></script>
+    <script th:src="@{/front/js/main.js}"></script> 
 	<script>
 		$(function(){
 			$("#change").click(function(){

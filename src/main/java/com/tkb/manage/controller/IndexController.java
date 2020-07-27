@@ -49,6 +49,7 @@ import com.tkb.manage.model.LessonPlan;
 import com.tkb.manage.model.LessonPlanAudit;
 import com.tkb.manage.model.LessonPlanFile;
 import com.tkb.manage.model.LessonPlanOption;
+import com.tkb.manage.model.LessonPlanTag;
 import com.tkb.manage.model.MaterialType;
 import com.tkb.manage.model.Proposition;
 import com.tkb.manage.model.PropositionAudit;
@@ -68,6 +69,7 @@ import com.tkb.manage.service.LessonPlanAuditService;
 import com.tkb.manage.service.LessonPlanFileService;
 import com.tkb.manage.service.LessonPlanOptionService;
 import com.tkb.manage.service.LessonPlanService;
+import com.tkb.manage.service.LessonPlanTagService;
 import com.tkb.manage.service.MaterialTypeService;
 import com.tkb.manage.service.PropositionAuditService;
 import com.tkb.manage.service.PropositionFileService;
@@ -127,6 +129,9 @@ public class IndexController {
 	
 	@Autowired
 	private LessonPlanAuditService lessonPlanAuditService;
+	
+	@Autowired
+	private LessonPlanTagService lessonPlanTagService;
 	
 	@Autowired
 	private PropositionService propositionService;
@@ -1334,19 +1339,21 @@ public class IndexController {
 		
 		try {
 			
-			//取得相關領域審核人
-//			Contract contract = new Contract();
-//			contract.setContract_id(lessonPlan.getContract_id());
-//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
-//			Account account = new Account();
-//			account.setId(accountSession.getId());
-//			account.setSubject_id(lessonPlan.getSubject_id());
-//			Map<String, Object> callNum = teacherAccountService.callNum(account);
-//			lessonPlan.setAuditor(callNum.get("ACCOUNT").toString());
-//			lessonPlan.setFile_status("A");
-//			lessonPlan.setCreate_by(accountSession.getAccount());
-//			lessonPlan.setUpdate_by(accountSession.getAccount());
-//			int id = lessonPlanService.add(lessonPlan);
+			//取得相關領域審核人(校長)
+			Account account = new Account();
+			account.setId(accountSession.getId());
+			account.setPosition("3");
+			account.setEducation_id(lessonPlan.getEducation_id());
+			account.setSubject_id(lessonPlan.getSubject_id());
+			Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
+			
+			//新增
+			lessonPlan.setLesson_plan_number(lessonPlan.getContract_id()+"A");
+			lessonPlan.setAuditor(getAuditor.get("ACCOUNT").toString());
+			lessonPlan.setFile_status("A");
+			lessonPlan.setCreate_by(accountSession.getAccount());
+			lessonPlan.setUpdate_by(accountSession.getAccount());
+			int id = lessonPlanService.add(lessonPlan);
 			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
 			
@@ -1354,74 +1361,134 @@ public class IndexController {
 			String[] grade = pRequest.getParameterValues("grade");
 			for(int i=0; i<grade.length; i++) {
 				lessonPlanOption = new LessonPlanOption();
-//				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
+				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
 				lessonPlanOption.setType("4");
 				lessonPlanOption.setCode(grade[i]);
 				lessonPlanOption.setCreate_by(accountSession.getAccount());
-//				lessonPlanOptionService.add(lessonPlanOption);
+				lessonPlanOptionService.add(lessonPlanOption);
 			}
 			
 			//跨學科
 			String[] subject = pRequest.getParameterValues("crossSubject");
 			for(int i=0; i<subject.length; i++) {
 				lessonPlanOption = new LessonPlanOption();
-//				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
+				lessonPlanOption.setLesson_plan_id(String.valueOf(id));
 				lessonPlanOption.setType("2");
 				lessonPlanOption.setCode(subject[i]);
 				lessonPlanOption.setCreate_by(accountSession.getAccount());
-//				lessonPlanOptionService.add(lessonPlanOption);
+				lessonPlanOptionService.add(lessonPlanOption);
 			}
+			
+			//初稿(word)
+//			System.out.println("word:"+word.getOriginalFilename());
 			
 			//教案檔案
 			LessonPlanFile lessonPlanFile = new LessonPlanFile();
-//			lessonPlanFile.setLesson_plan_id(String.valueOf(id));
+			lessonPlanFile.setLesson_plan_id(String.valueOf(id));
 			
-//			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
-//			lessonPlanFile.setType("1");
-//			lessonPlanFile.setUpload_name(uploadName);
-//			lessonPlanFile.setFile_name(fileName.getOriginalFilename());
-//			lessonPlanFile.setCreate_by(accountSession.getAccount());
-//			lessonPlanFile.setUpdate_by(accountSession.getAccount());
-//			lessonPlanFileService.add(lessonPlanFile);
-			
-			//初稿(word)
-			System.out.println("word:"+word.getOriginalFilename());
+			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/lessonPlan/");
+			lessonPlanFile.setData_type("1");
+			lessonPlanFile.setMaterial_type_id(null);
+			lessonPlanFile.setVersion("A");
+			lessonPlanFile.setUpload_name(uploadName);
+			lessonPlanFile.setFile_name(word.getOriginalFilename());
+			lessonPlanFile.setDisplay("1");
+			lessonPlanFile.setCreate_by(accountSession.getAccount());
+			lessonPlanFile.setUpdate_by(accountSession.getAccount());
+			lessonPlanFileService.add(lessonPlanFile);
 			
 			//初稿(pdf)
-			System.out.println("pdf:"+pdf.getOriginalFilename());
+//			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			lessonPlanFile = new LessonPlanFile();
+			lessonPlanFile.setLesson_plan_id(String.valueOf(id));
+			
+			uploadName = commonService.uploadFileSaveDateName(pdf, uploadedFolder+"file/lessonPlan/");
+			lessonPlanFile.setData_type("2");
+			lessonPlanFile.setMaterial_type_id(null);
+			lessonPlanFile.setMaterial_link(null);
+			lessonPlanFile.setVersion("A");
+			lessonPlanFile.setUpload_name(uploadName);
+			lessonPlanFile.setFile_name(pdf.getOriginalFilename());
+			lessonPlanFile.setDisplay("1");
+			lessonPlanFile.setCreate_by(accountSession.getAccount());
+			lessonPlanFile.setUpdate_by(accountSession.getAccount());
+			lessonPlanFileService.add(lessonPlanFile);
 			
 			//附件
+			String[] materialType = pRequest.getParameterValues("material_type");
 			String[] link = pRequest.getParameterValues("link");
-			if(link != null) {
-				for(int i=0; i<link.length; i++) {
-					System.out.println(i+":"+link[i]);
-				}
-			}
-			if(!attachment[0].isEmpty()) {
+			if((materialType!=null && link!=null && !attachment[0].isEmpty()) && (materialType.length==attachment.length && link.length==attachment.length)) {
+				lessonPlanFile = new LessonPlanFile();
+				lessonPlanFile.setLesson_plan_id(String.valueOf(id));
 				for(int i=0; i<attachment.length; i++) {
-					System.out.println("attachment"+i+":"+attachment[i].getOriginalFilename());
+					if(!"4".equals(materialType[i])) {
+//						System.out.println("attachment"+i+":"+attachment[i].getOriginalFilename());
+						uploadName = commonService.uploadFileSaveDateName(attachment[i], uploadedFolder+"file/lessonPlan/");
+						lessonPlanFile.setData_type("3");
+						lessonPlanFile.setMaterial_type_id(materialType[i]);
+						lessonPlanFile.setMaterial_link(null);
+						lessonPlanFile.setVersion(null);
+						lessonPlanFile.setUpload_name(uploadName);
+						lessonPlanFile.setFile_name(attachment[i].getOriginalFilename());
+					} else {
+						lessonPlanFile.setData_type("3");
+						lessonPlanFile.setMaterial_type_id(materialType[i]);
+						lessonPlanFile.setMaterial_link(!"".equals(link[i]) ? link[i] : null);
+						lessonPlanFile.setVersion(null);
+						lessonPlanFile.setUpload_name(null);
+						lessonPlanFile.setFile_name(null);
+					}
+					lessonPlanFile.setDisplay("1");
+					lessonPlanFile.setCreate_by(accountSession.getAccount());
+					lessonPlanFile.setUpdate_by(accountSession.getAccount());
+					lessonPlanFileService.add(lessonPlanFile);
 				}
 			}
 			
 			//素材授權
 			if(!contractMat[0].isEmpty()) {
+				lessonPlanFile = new LessonPlanFile();
+				lessonPlanFile.setLesson_plan_id(String.valueOf(id));
 				for(int i=0; i<contractMat.length; i++) {
-					System.out.println("contractMat"+i+":"+contractMat[i].getOriginalFilename());
+//					System.out.println("contractMat"+i+":"+contractMat[i].getOriginalFilename());
+					uploadName = commonService.uploadFileSaveDateName(contractMat[i], uploadedFolder+"file/lessonPlan/");
+					lessonPlanFile.setData_type("4");
+					lessonPlanFile.setMaterial_type_id(null);
+					lessonPlanFile.setMaterial_link(null);
+					lessonPlanFile.setVersion(null);
+					lessonPlanFile.setUpload_name(uploadName);
+					lessonPlanFile.setFile_name(contractMat[i].getOriginalFilename());
+					lessonPlanFile.setDisplay("1");
+					lessonPlanFile.setCreate_by(accountSession.getAccount());
+					lessonPlanFile.setUpdate_by(accountSession.getAccount());
+					lessonPlanFileService.add(lessonPlanFile);
 				}
 			}
 			
 			//關鍵字
-			System.out.println("tag:"+lessonPlan.getTag());
+//			System.out.println("tag:"+lessonPlan.getTag());
+			LessonPlanTag lessonPlanTag = new LessonPlanTag();
+			lessonPlanTag.setLesson_plan_id(String.valueOf(id));
 			
-			//新增審核人
-//			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
-//			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
-//			lessonPlanAudit.setAuditor(callNum.get("ACCOUNT").toString());
-//			lessonPlanAudit.setFile_status("Y");
-//			lessonPlanAudit.setUpload_status("Y");
-//			lessonPlanAudit.setCreate_by(accountSession.getAccount());
-//			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
-//			lessonPlanAuditService.add(lessonPlanAudit);
+			String[] tag = lessonPlan.getTag() != null ? lessonPlan.getTag().split(",") : null;
+			if(tag != null && tag.length > 0) {
+				for(int i=0; i<tag.length; i++) {
+					lessonPlanTag.setName(tag[i]);
+					lessonPlanTag.setCreate_by(accountSession.getAccount());
+					lessonPlanTag.setUpdate_by(accountSession.getAccount());
+					lessonPlanTagService.add(lessonPlanTag);
+				}
+			}
+			
+			//設定初審(校長)
+			LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
+			lessonPlanAudit.setLesson_plan_id(String.valueOf(id));
+			lessonPlanAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+			lessonPlanAudit.setFile_status("A");
+			lessonPlanAudit.setCreate_by(accountSession.getAccount());
+			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
+			lessonPlanAuditService.add(lessonPlanAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -1541,7 +1608,7 @@ public class IndexController {
 		//取得內容上傳歷程
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setType("1");
+		lessonPlanFile.setData_type("1");
 		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
 		model.addAttribute("nowFile", contentList.get(0));
 		
@@ -1625,7 +1692,7 @@ public class IndexController {
 				lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
 				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
-				lessonPlanFile.setType("2");
+				lessonPlanFile.setData_type("2");
 				lessonPlanFile.setUpload_name(uploadName);
 				lessonPlanFile.setFile_name(fileName.getOriginalFilename());
 				lessonPlanFile.setCreate_by(accountSession.getAccount());
@@ -1645,7 +1712,6 @@ public class IndexController {
 			lessonPlanAudit.setLesson_plan_id(lessonPlan.getId());
 			lessonPlanAudit.setAuditor(accountSession.getAccount());
 			lessonPlanAudit.setFile_status(file_status);
-			lessonPlanAudit.setUpload_status(upload_status);
 			lessonPlanAudit.setCreate_by(accountSession.getAccount());
 			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
 			lessonPlanAuditService.add(lessonPlanAudit);
@@ -1700,14 +1766,14 @@ public class IndexController {
 		//取得內容上傳歷程
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setType("1");
+		lessonPlanFile.setData_type("1");
 		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
 		model.addAttribute("contentList", contentList);
 		
 		//取得審核回饋歷程
 		lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setType("2");
+		lessonPlanFile.setData_type("2");
 		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
 		model.addAttribute("auditList", auditList);
 		
@@ -1739,7 +1805,7 @@ public class IndexController {
 			lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
 			
 			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
-			lessonPlanFile.setType("1");
+			lessonPlanFile.setData_type("1");
 			lessonPlanFile.setUpload_name(uploadName);
 			lessonPlanFile.setFile_name(fileName.getOriginalFilename());
 			lessonPlanFile.setCreate_by(accountSession.getAccount());
@@ -1755,7 +1821,6 @@ public class IndexController {
 			lessonPlanAudit.setLesson_plan_id(lessonPlan.getId());
 			lessonPlanAudit.setAuditor(accountSession.getAccount());
 			lessonPlanAudit.setFile_status(file_status);
-			lessonPlanAudit.setUpload_status(upload_status);
 			lessonPlanAudit.setCreate_by(accountSession.getAccount());
 			lessonPlanAudit.setUpdate_by(accountSession.getAccount());
 			lessonPlanAuditService.add(lessonPlanAudit);
