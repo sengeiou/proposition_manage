@@ -17,6 +17,7 @@ public interface TeacherAccountService {
 	public void updateIdentity(Account account);
 	public Map<String, Object> getDataByAccount(Account account);
 	public Map<String, Object> callNum(Account account);
+	public Map<String, Object> getAuditor(Account account);
 	public List<Map<String, Object>> verifyList(Account account);
 	
 }

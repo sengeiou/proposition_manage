@@ -351,11 +351,14 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlan);
 		
 		String sql = " INSERT INTO proposition_manage.lesson_plan "
-				   + " (UUID, CONTRACT_ID, NAME, EDUCATION_ID, SUBJECT_ID, TAG, "
+				   + " (UUID, CONTRACT_ID, LESSON_PLAN_NUMBER, NAME, EDUCATION_ID, SUBJECT_ID, "
+				   + " DISPLAY, TAG, "
 				   + " AUDITOR, FILE_STATUS, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, :name, :education_id, "
-				   + " :subject_id, :tag, "
+				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, "
+				   + " (SELECT CONCAT(:lesson_plan_number, LPAD(COUNT, 3, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.lesson_plan WHERE CONTRACT_ID = :contract_id AND INSTR(LESSON_PLAN_NUMBER, :lesson_plan_number) > 0) L1), "
+				   + " :name, :education_id, "
+				   + " :subject_id, :display, :tag, "
 				   + " :auditor, :file_status,  "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		

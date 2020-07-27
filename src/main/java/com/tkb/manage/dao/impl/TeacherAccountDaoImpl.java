@@ -257,6 +257,44 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public Map<String, Object> getAuditor(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.teacher_account "
+				   + " WHERE ID <> ? ";
+		
+		args.add(account.getId());
+		
+		if("3".equals(account.getPosition())) {
+			sql += " AND POSITION = ? "
+				+  " AND EDUCATION_ID = ? "
+				+  " AND SUBJECT_ID = ? ";
+			args.add(account.getPosition());
+			args.add(account.getEducation_id());
+			args.add(account.getSubject_id());
+		}
+		
+		if("1".equals(account.getPosition())) {
+			sql += " AND POSITION = ? "
+				+  " AND EDUCATION_ID = ? "
+				+  " AND SUBJECT_ID = ? "
+				+  " AND CONTENT_AUDIT = ? ";
+			args.add(account.getPosition());
+			args.add(account.getEducation_id());
+			args.add(account.getSubject_id());
+			args.add(account.getContent_audit());
+		}
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 	public List<Map<String, Object>> verifyList(Account account) {
 		
 		List<Object> args = new ArrayList<Object>();

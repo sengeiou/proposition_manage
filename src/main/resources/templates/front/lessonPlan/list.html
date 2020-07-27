@@ -75,8 +75,8 @@
                     <div class="grid lessonList-content-grid grid-title">
                         <div>合約序號</div>
                         <div>教案名稱</div>
-                        <div>學習領域</div>
                         <div>學制</div>
+                        <div>學科</div>
                         <div>檔案狀態</div>
 <!--                         <div>上傳狀態</div> -->
                         <div>建立時間</div>
@@ -85,8 +85,8 @@
                     <div class="grid lessonList-content-grid" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.name}"></div>
-                        <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
+                        <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
 <!--                         <div th:text="${list.upload_status_name}"></div> -->
                         <div th:text="${list.create_date}"></div>
