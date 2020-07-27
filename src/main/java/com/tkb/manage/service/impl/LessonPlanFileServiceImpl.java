@@ -24,4 +24,16 @@ public class LessonPlanFileServiceImpl implements LessonPlanFileService {
 		return lessonPlanFileDao.historyList(lessonPlanFile);
 	}
 	
+	public List<Map<String, Object>> getFile(LessonPlanFile lessonPlanFile) {
+		return lessonPlanFileDao.getFile(lessonPlanFile);
+	}
+	
+	public List<Map<String, Object>> getAnnex(LessonPlanFile lessonPlanFile) {
+		return lessonPlanFileDao.getAnnex(lessonPlanFile);
+	}
+	
+	public List<Map<String, Object>> getMaterial(LessonPlanFile lessonPlanFile) {
+		return lessonPlanFileDao.getMaterial(lessonPlanFile);
+	}
+	
 }

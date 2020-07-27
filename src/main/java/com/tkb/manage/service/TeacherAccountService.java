@@ -19,5 +19,6 @@ public interface TeacherAccountService {
 	public Map<String, Object> callNum(Account account);
 	public Map<String, Object> getAuditor(Account account);
 	public List<Map<String, Object>> verifyList(Account account);
+	public List<Map<String, Object>> getAuditorByEduSub(Account account);
 	
 }

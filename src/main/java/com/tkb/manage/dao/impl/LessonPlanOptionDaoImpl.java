@@ -39,9 +39,11 @@ public class LessonPlanOptionDaoImpl implements LessonPlanOptionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " DELETE FROM proposition_manage.lesson_plan_option "
-				   + " WHERE LESSON_PLAN_ID = ? ";
+				   + " WHERE LESSON_PLAN_ID = ? "
+				   + " AND TYPE = ? ";
 		
 		args.add(lessonPlanOption.getLesson_plan_id());
+		args.add(lessonPlanOption.getType());
 		
 		jdbcTemplate.update(sql, args.toArray());
 		
@@ -75,7 +77,7 @@ public class LessonPlanOptionDaoImpl implements LessonPlanOptionDao {
 		
 		String sql = " SELECT GROUP_CONCAT(PMS.NAME SEPARATOR '、') AS OPTION "
 				   + " FROM proposition_manage.lesson_plan_option LPO "
-				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = CODE "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LPO.CODE "
 				   + " WHERE LPO.LESSON_PLAN_ID = ? "
 				   + " AND LPO.TYPE = ? ";
 		
@@ -98,7 +100,7 @@ public class LessonPlanOptionDaoImpl implements LessonPlanOptionDao {
 		
 		String sql = " SELECT GROUP_CONCAT(PME.NAME SEPARATOR '、') AS OPTION "
 				   + " FROM proposition_manage.lesson_plan_option LPO "
-				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = CODE "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LPO.CODE "
 				   + " WHERE LPO.LESSON_PLAN_ID = ? "
 				   + " AND LPO.TYPE = ? ";
 		

@@ -29,55 +29,56 @@
             <div class="create-content lesson">
                 <h3><i class="fas fa-book-open"></i>編輯教案<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
-                    <div><span class="required">*</span>合約序號</div>
+                    <div><span class="required">*</span>合約流水號</div>
                     <div class="basic-h">[[${data.contract_id}]]</div>
                     <div><span class="required">*</span>教案名稱</div>
                     <div><input type="text" placeholder="請輸入教案名稱" id="lessonName" th:field="${data.name}"></div>
-                    <div><span class="required">*</span>學習領域</div>
-                    <div>
-                        <select id="specialSkill" th:field="${data.field_id}">
-                            <option value="0">請選擇學習領域</option>
-                            <option th:each="field:${fieldList}" th:value="${field.id}" th:text="${field.name}"></option>
-                        </select>
-                    </div>
-                    <div><span class="required">*</span>學科</div>
-                    <div class="basic-h" id="subject">
-                        <!-- label的for 與 input的id要一致 -->
-                        <input type="hidden" id="subjectOption" th:value="${subjectOption}" />
-                        <label class="les-labelBlock" th:each="subject:${subjectList}" >
-                            <div class="checkbox-square" th:id="'subAct'+${subject.id}"></div>
-                            <span>[[${subject.name}]]</span>
-                            <input type="checkbox" class="dis-n" name="subject" th:value="${subject.id}">
-                        </label>
-                    </div>
-                    <div><span class="required">*</span>學制</div>
-                    <div>
-                        <select id="schoolType" th:field="${data.education_id}">
-                            <option value="0">請選擇學制</option>
-                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}">國小</option>
-                        </select>                      
-                    </div>
+                    <div class="p-left-14px">學制</div>
+                    <div class="basic-h">[[${data.education_name}]]</div>
                     <div id="gradeTitle"><span class="required">*</span>年級</div>
                     <div class="basic-h" id="grade">
                         <!-- label的for 與 input的id要一致 -->
-                        <input type="hidden" id="gradeOption" th:value="${gradeOption}" />
+                        <input type="hidden" id="gradeOption" name="gradeOption" th:value="${gradeOption}" />
                         <label class="les-labelBlock" th:each="grade:${gradeList}" >
                             <div class="checkbox-square" th:id="'graAct'+${grade.id}"></div>
                             <span>[[${grade.name}]]</span>
                             <input type="checkbox" class="dis-n" name="grade" th:value="${grade.id}">
                         </label> 
                     </div>
+                    <div class="p-left-14px">學科</div>
+                    <div class="basic-h">[[${data.subject_name}]]</div>
+                    <div><span class="required">*</span>跨科</div>
+                    <div class="basic-h" id="subject">
+                        <!-- label的for 與 input的id要一致 -->
+                        <input type="hidden" id="subjectOption" name="subjectOption" th:value="${subjectOption}" />
+                        <label class="les-labelBlock" th:each="subject:${crossSubjectList}" >
+                            <div class="checkbox-square" th:id="'subAct'+${subject.id}"></div>
+                            <span>[[${subject.name}]]</span>
+                            <input type="checkbox" class="dis-n" name="crossSubject" th:value="${subject.id}">
+                        </label>
+                    </div>
                     <div class="p-left-14px">教案檔案</div>
-                    <div class="basic-h"><a th:href="'/upload/file/lessonPlan/'+${nowFile.upload_name}" target="_blank">[[${nowFile.file_name}]]</a></div>
-<!--                     <div class="p-left-14px">關鍵字</div> -->
-<!--                     <div> -->
-<!--                     	<input type="text" placeholder="請輸入關鍵字" class="keyWord"> -->
-<!--                     	<input type="hidden" class="keyWordInput" name="tag" th:value="${data.tag}"> -->
-<!--                     	<div class="lightboxItem" th:each="tag : ${#strings.arraySplit(data.tag, ',')}"> -->
-<!--                     		<span>[[${tag}]]</span> -->
-<!--                     		<button class="deleteTag"><i class="fas fa-times"></i></button> -->
-<!--                     	</div> -->
-<!--                     </div> -->
+                    <div class="basic-h">
+                    	<p th:each="list:${getFile}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    </div>
+                    <div class="p-left-14px">附件</div>
+                    <div class="basic-h">
+                        <p th:each="list:${getAnnex}"><a th:href="${list.material_type_id != 4 ? '/upload/file/lessonPlan/'+list.upload_name : list.material_link}" target="_blank">[[${list.material_type_id != 4 ? list.file_name : list.material_link}]]</a></p> 
+                    </div>
+                    <div class="p-left-14px">素材授權申請</div>
+                    <div class="basic-h">
+                    	<p th:each="list:${getMaterial}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    </div>
+                    <div class="p-left-14px">關鍵字</div>
+                    <div>
+                    	<input type="text" placeholder="請輸入關鍵字" class="keyWord">
+                    	<input type="hidden" name="tagOld" th:value="${data.tag}">
+                    	<input type="hidden" class="keyWordInput" name="tag" th:value="${data.tag}">
+                    	<div class="lightboxItem" th:each="tag:${tagList}">
+                    		<span>[[${tag.name}]]</span>
+                    		<button class="deleteTag" type="button"><i class="fas fa-times"></i></button>
+                    	</div>
+                    </div>
                 </div>
                 <button class="btn-submit" data-type="lessonEditAdmin" type="button">送出</button>
             </div>
@@ -154,7 +155,7 @@
 			if($("#subjectOption").val() != null) {
 				var subject = new Array();
 				subject = $("#subjectOption").val().split(",");
-				$("input[name='subject']").each(function(){
+				$("input[name='crossSubject']").each(function(){
 					for(var i=0; i<subject.length; i++) {
 						if($(this).val() == subject[i]) {
 							$(this).attr("checked", true);
