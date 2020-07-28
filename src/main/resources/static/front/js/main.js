@@ -737,7 +737,7 @@ $(function(){
         if ($(this).val() == 0 && $("#verifyTeacher").children().length == 1) {
             // alert('找對應的符合此學制/學科的委員')
             $.ajax({
-                url: 'get/auditor',
+                url: '/get/auditor',
                 cache: false,
                 async: false,
                 dataType: 'json',
@@ -752,11 +752,13 @@ $(function(){
                 },
                 success: function(data) {                    
                     console.log(data)
-                    let html = `<option value="0">請選擇審議委員</option>
-                        <option value="1">陳柔柔</option>
-                        <option value="2">阿琳琳</option>
-                        <option value="3">醜彥彥</option>
-                        <option value="4">阿手手</option>`
+                    let html;
+                    if(data != null && data.length > 0) {
+                    	for(i=0; i<data.length; i++) {
+	                    	let child = data[i];
+	                    	html += `<option value="${child.ACCOUNT}">${child.NAME}</option>`
+                    	}
+                    }
                     $("#verifyTeacher").html(html)
                     $("#verifyTeacher").addClass('custom-select')
                     $("#verifyTeacher").customselect()

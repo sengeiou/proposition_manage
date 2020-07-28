@@ -342,10 +342,12 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT * FROM proposition_manage.teacher_account "
-				   + " WHERE EDUCATION_ID = ? "
+				   + " WHERE CONTENT_AUDIT = ? "
+				   + " AND EDUCATION_ID = ? "
 				   + " AND SUBJECT_ID = ? "
 				   + " ORDER BY CREATE_TIME ";
 		
+		args.add(account.getContent_audit());
 		args.add(account.getEducation_id());
 		args.add(account.getSubject_id());
 		

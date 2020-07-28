@@ -3183,6 +3183,7 @@ public class IndexController {
 		String education_id = pRequest.getParameter("education_id") == null ? "" : pRequest.getParameter("education_id");
 		String subject_id = pRequest.getParameter("subject_id") == null ? "" : pRequest.getParameter("subject_id");
 		
+		account.setContent_audit("1");
 		account.setEducation_id(education_id);
 		account.setSubject_id(subject_id);
 		
