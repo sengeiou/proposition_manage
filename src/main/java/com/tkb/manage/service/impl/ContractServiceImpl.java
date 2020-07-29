@@ -93,8 +93,8 @@ public class ContractServiceImpl implements ContractService {
 		return contractDao.getPropositionNum(teacher, education, subject, questionType);
 	}
 	
-	public Map<String, Object> getLessonPlanProposition(Contract contract) {
-		return contractDao.getLessonPlanProposition(contract);
+	public Map<String, Object> getLessonPlanProposition(Contract contract, String teacher) {
+		return contractDao.getLessonPlanProposition(contract, teacher);
 	}
 	
 }

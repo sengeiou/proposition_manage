@@ -84,4 +84,8 @@ public class PropositionServiceImpl implements PropositionService {
 		propositionDao.audit(proposition);
 	}
 	
+	public Map<String, Object> auditNum(Proposition proposition) {
+		return propositionDao.auditNum(proposition);
+	}
+	
 }

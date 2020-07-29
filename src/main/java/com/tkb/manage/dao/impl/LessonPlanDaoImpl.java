@@ -437,4 +437,30 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 	}
 	
+	public Map<String, Object> auditNum(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT  "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'A' THEN 1 ELSE 0 END) A_SUM, "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'B' THEN 1 ELSE 0 END) B_SUM, "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'C' THEN 1 ELSE 0 END) C_SUM, "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'D' THEN 1 ELSE 0 END) D_SUM, "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'E' THEN 1 ELSE 0 END) E_SUM, "
+				   + " SUM(CASE WHEN LP.FILE_STATUS = 'F' THEN 1 ELSE 0 END) F_SUM "
+				   + " FROM proposition_manage.lesson_plan LP "
+				   + " WHERE LP.AUDITOR2 = ? "
+				   + "  ";
+		
+		args.add(lessonPlan.getAuditor2());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

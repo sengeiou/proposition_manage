@@ -24,5 +24,6 @@ public interface LessonPlanDao {
 	public void update(LessonPlan lessonPlan);
 	public LessonPlan data(LessonPlan lessonPlan);
 	public void audit(LessonPlan lessonPlan);
+	public Map<String, Object> auditNum(LessonPlan lessonPlan);
 	
 }

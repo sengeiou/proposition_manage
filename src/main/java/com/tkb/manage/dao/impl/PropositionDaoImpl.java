@@ -466,4 +466,31 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 	}
 	
+	public Map<String, Object> auditNum(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT  "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'A' THEN 1 ELSE 0 END) A_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'B' THEN 1 ELSE 0 END) B_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'C' THEN 1 ELSE 0 END) C_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'D' THEN 1 ELSE 0 END) D_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'E' THEN 1 ELSE 0 END) E_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'F' THEN 1 ELSE 0 END) F_SUM "
+				   + " FROM proposition_manage.proposition P "
+				   + " WHERE P.AUDITOR = ? "
+				   + " AND P.QUESTION_TYPE = ? ";
+		
+		args.add(proposition.getAuditor());
+		args.add(proposition.getQuestion_type());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }
