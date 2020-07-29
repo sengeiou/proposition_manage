@@ -622,40 +622,44 @@ public class ContractDaoImpl implements ContractDao {
 		
 	}
 	
-	public Map<String, Object> getLessonPlanProposition(Contract contract) {
+	public Map<String, Object> getLessonPlanProposition(Contract contract, String teacher) {
 		
 		List<Object> args = new ArrayList<Object>();
 
-		String sql = " SELECT SUM(P1_COUNT) P1_COUNT, SUM(A_SUM) A_SUM , SUM(B_SUM) B_SUM, "
-				   + " SUM(C_SUM) C_SUM, SUM(D_SUM) D_SUM, SUM(E_SUM) E_SUM, SUM(F_SUM) F_SUM "
+		String sql = " SELECT SUM(A_SUM+B_SUM+C_SUM+D_SUM+E_SUM+F_SUM) P1_COUNT,  "
+				   + " SUM(A_SUM) A_SUM , SUM(B_SUM) B_SUM,SUM(C_SUM) C_SUM, SUM(D_SUM) D_SUM, SUM(E_SUM) E_SUM, SUM(F_SUM) F_SUM "
 				   + " FROM( "
-				   + " SELECT  "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID ) AS P1_COUNT, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'A' ) AS A_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'B' ) AS B_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'C' ) AS C_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'D' ) AS D_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'E' ) AS E_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'F' ) AS F_SUM "
-				   + " FROM proposition_manage.contract PMC "
+				   + " SELECT "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'A' THEN 1 ELSE 0 END) A_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'B' THEN 1 ELSE 0 END) B_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'C' THEN 1 ELSE 0 END) C_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'D' THEN 1 ELSE 0 END) D_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'E' THEN 1 ELSE 0 END) E_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'F' THEN 1 ELSE 0 END) F_SUM "
+				   + " FROM proposition_manage.proposition P "
+				   + " LEFT JOIN proposition_manage.contract PMC ON PMC.CONTRACT_ID = P.CONTRACT_ID "
 				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
+				   + " AND P.AUDITOR = ? "
 				   + " UNION "
 				   + " SELECT "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID) AS P1_COUNT, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'A') AS A_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'B') AS B_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C') AS C_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'D') AS D_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'E') AS E_SUM, "
-				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F') AS F_SUM "
-				   + " FROM proposition_manage.contract PMC "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'A' THEN 1 ELSE 0 END) A_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'B' THEN 1 ELSE 0 END) B_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'C' THEN 1 ELSE 0 END) C_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'D' THEN 1 ELSE 0 END) D_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'E' THEN 1 ELSE 0 END) E_SUM, "
+				   + " SUM(CASE WHEN P.FILE_STATUS = 'F' THEN 1 ELSE 0 END) F_SUM "
+				   + " FROM proposition_manage.lesson_plan P "
+				   + " LEFT JOIN proposition_manage.contract PMC ON PMC.CONTRACT_ID = P.CONTRACT_ID "
 				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
-				   + " ) A ";
+				   + " AND P.AUDITOR2 = ? "
+				   + " )A ";
 
 		args.add(contract.getEducation_id());
 		args.add(contract.getSubject_id());
+		args.add(teacher);
 		args.add(contract.getEducation_id());
 		args.add(contract.getSubject_id());
+		args.add(teacher);
 
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

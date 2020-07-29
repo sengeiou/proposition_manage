@@ -77,9 +77,9 @@
                         <div class="title">須審核總數</div>
                     </div>
                     <div class="verify-grid" th:each="list:${list}">
-                        <div th:if="${list.question_type == '0'}">教案</div>
-                        <div th:if="${list.question_type == '1'}">命題-選擇題</div>
-                        <div th:if="${list.question_type == '2'}">命題-混核題</div>
+                        <div th:if="${list.QUESTION_TYPE.toString() == '0'}">教案</div>
+                        <div th:if="${list.QUESTION_TYPE.toString() == '1'}">命題-選擇題</div>
+                        <div th:if="${list.QUESTION_TYPE.toString() == '2'}">命題-混核題</div>
                         <div>[[${list.C_SUM}]]</div>
                         <div>[[${list.D_SUM}]]</div>
                         <div>[[${list.E_SUM}]]</div>

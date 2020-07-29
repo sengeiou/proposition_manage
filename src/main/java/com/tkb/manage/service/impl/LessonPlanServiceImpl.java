@@ -84,4 +84,8 @@ public class LessonPlanServiceImpl implements LessonPlanService {
 		lessonPlanDao.audit(lessonPlan);
 	}
 	
+	public Map<String, Object> auditNum(LessonPlan lessonPlan) {
+		return lessonPlanDao.auditNum(lessonPlan);
+	}
+	
 }

@@ -24,5 +24,6 @@ public interface PropositionService {
 	public void update(Proposition proposition);
 	public Proposition data(Proposition proposition);
 	public void audit(Proposition proposition);
+	public Map<String, Object> auditNum(Proposition proposition);
 	
 }

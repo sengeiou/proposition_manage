@@ -260,25 +260,32 @@ public class IndexController {
 			teacher.setId(accountSession.getId());
 			teacher = teacherAccountService.data(teacher);
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			Map<String, Object> lessonPlan = contractService.getLessonPlanNum("", teacher.getEducation_id(), teacher.getSubject_id());
-			Map<String, Object> basic = contractService.getPropositionNum("", teacher.getEducation_id(), teacher.getSubject_id(), "1");
-			Map<String, Object> group = contractService.getPropositionNum("", teacher.getEducation_id(), teacher.getSubject_id(), "2");
 
-			if(lessonPlan == null) {
+			LessonPlan lessonPlanData = new LessonPlan();
+			lessonPlanData.setAuditor2(teacher.getAccount());
+			Proposition propositionData = new Proposition();
+			propositionData.setAuditor(teacher.getAccount());
+			Map<String, Object> lessonPlan = lessonPlanService.auditNum(lessonPlanData);
+			propositionData.setQuestion_type("1");
+			Map<String, Object> basic = propositionService.auditNum(propositionData);
+			propositionData.setQuestion_type("2");
+			Map<String, Object> group = propositionService.auditNum(propositionData);
+
+			if(lessonPlan.get("A_SUM") == null) {
 				lessonPlan = new HashMap<String, Object>();
 				lessonPlan.put("C_SUM", "0");
 				lessonPlan.put("D_SUM", "0");
 				lessonPlan.put("E_SUM", "0");
 				lessonPlan.put("AUDIT", "0");
 			}
-			if(basic == null) {
+			if(basic.get("A_SUM") == null) {
 				basic = new HashMap<String, Object>();
 				basic.put("C_SUM", "0");
 				basic.put("D_SUM", "0");
 				basic.put("E_SUM", "0");
 				basic.put("AUDIT", "0");
 			}
-			if(group == null) {
+			if(group.get("A_SUM") == null) {
 				group = new HashMap<String, Object>();
 				group.put("C_SUM", "0");
 				group.put("D_SUM", "0");
@@ -320,8 +327,8 @@ public class IndexController {
 						education.setId(educationArr[j]);
 						education = educationService.data(education);
 						educationSubjectList = contractService.getSubjectEducation(contract);
-						Map<String, Object> getSubjectEducation = contractService.getLessonPlanProposition(contract);
 
+						Map<String, Object> getSubjectEducation = contractService.getLessonPlanProposition(contract, accountSession.getAccount());
 						if(getSubjectEducation.get("A_SUM") != null && educationSubjectList.get("LESSON_NUM") != null) {
 							getSubjectEducation.put("SUBJECT_NAME", subjectList.get(i).get("NAME").toString());
 							getSubjectEducation.put("SUBJECT_ID", subjectList.get(i).get("ID").toString());
