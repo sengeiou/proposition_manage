@@ -1599,13 +1599,6 @@ public class IndexController {
 		List<Map<String, Object>> tagList = lessonPlanTagService.tagList(lessonPlanTag);
 		model.addAttribute("tagList", tagList);
 		
-		//取得審核回饋歷程
-//		lessonPlanFile = new LessonPlanFile();
-//		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-//		lessonPlanFile.setType("2");
-//		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
-//		model.addAttribute("auditList", auditList);
-		
 		//取得檔案清單
 		lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
@@ -1633,18 +1626,6 @@ public class IndexController {
 		//取得教案資料
 		LessonPlan data = lessonPlanService.data(lessonPlan);
 		model.addAttribute("data", data);
-		
-		//取得學制清單
-//		Education education = new Education();
-//		education.setLayer("1");
-//		List<Map<String, Object>> educationList = educationService.getList(education);
-//		model.addAttribute("educationList", educationList);
-		
-		//取得學科清單
-//		Subject subject = new Subject();
-//		subject.setLayer("1");
-//		List<Map<String, Object>> subjectList = subjectService.getList(subject);
-//		model.addAttribute("subjectList", subjectList);
 		
 		//取得年級清單
 		Education education = new Education();
@@ -1675,11 +1656,15 @@ public class IndexController {
 		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
+		LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
+		lessonPlanAudit.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> auditList = lessonPlanAuditService.historyList(lessonPlanAudit);
+		model.addAttribute("auditList", auditList);
+		
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-		lessonPlanFile.setData_type("1");
-		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
-		model.addAttribute("contentList", contentList);
+		List<Map<String, Object>> fileList = lessonPlanFileService.historyList(lessonPlanFile);
+		model.addAttribute("fileList", fileList);
 		
 		//取得標籤
 		LessonPlanTag lessonPlanTag = new LessonPlanTag();
@@ -1942,25 +1927,22 @@ public class IndexController {
 		model.addAttribute("subjectOption", so);
 				
 		//取得內容上傳歷程
+		LessonPlanAudit lessonPlanAudit = new LessonPlanAudit();
+		lessonPlanAudit.setLesson_plan_id(lessonPlan.getId());
+		List<Map<String, Object>> auditList = lessonPlanAuditService.historyList(lessonPlanAudit);
+		model.addAttribute("auditList", auditList);
+		
 		LessonPlanFile lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-//		lessonPlanFile.setType("1");
-		List<Map<String, Object>> contentList = lessonPlanFileService.historyList(lessonPlanFile);
-		model.addAttribute("contentList", contentList);
+		List<Map<String, Object>> fileList = lessonPlanFileService.historyList(lessonPlanFile);
+		model.addAttribute("fileList", fileList);
 				
 		//取得標籤
 		LessonPlanTag lessonPlanTag = new LessonPlanTag();
 		lessonPlanTag.setLesson_plan_id(lessonPlan.getId());
 		List<Map<String, Object>> tagList = lessonPlanTagService.tagList(lessonPlanTag);
 		model.addAttribute("tagList", tagList);
-				
-//		//取得審核回饋歷程
-//		lessonPlanFile = new LessonPlanFile();
-//		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
-//		lessonPlanFile.setType("2");
-//		List<Map<String, Object>> auditList = lessonPlanFileService.historyList(lessonPlanFile);
-//		model.addAttribute("auditList", auditList);
-				
+		
 		//取得檔案清單
 		lessonPlanFile = new LessonPlanFile();
 		lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
