@@ -9,8 +9,8 @@ $(function() {
         "dateFormat": "yy-mm-dd"
     })
 
-    //lesson-list.html 
-    $("#lessonCreateTime").datepicker({
+    //lesson-list.html 、propoBasic-list.html 、propoGroup-list.html
+    $("#createTime").datepicker({
         dateFormat: "yy-mm-dd",        
         onSelect: function( selectedDate ) {
             if(!$(this).data().datepicker.first){

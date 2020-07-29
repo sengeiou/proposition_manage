@@ -32,7 +32,7 @@
             <div class="list-content">
                 <h3>教案列表</h3>
                 <div class="lessonList-memo" th:if="${accountSession.level=='3'}"><!-- 內容老師，顯示提示文字 -->
-                    您尚有<span>[[${lessonNum-addCount-editCount-doneCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
+                    您尚有<span>[[${lessonNum-addCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
                     <a href="/lesson/add" th:if="${lessonNum-addCount-editCount-doneCount > 0}"><button class="btn-sm">新增教案</button></a>
                 </div>
                 <div class="lessonList-memo" th:if="${accountSession.level=='4'}">您尚有<span>[[${lessonPlan.count}]]</span>份教案未審核</div><!-- 審核老師，顯示提示文字 -->                
@@ -61,6 +61,7 @@
                         <div>學制</div>
                         <div>學科</div>
                         <div>檔案狀態</div>
+                        <div>審議委員<i class="fas fa-paper-plane"></i></div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                         <div>新增合約</div>
@@ -77,6 +78,7 @@
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
+                        <div th:text="${list.auditor2_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                         <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${list.education_id}]],[[${list.subject_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
@@ -127,7 +129,7 @@
                         <div>學制</div>
                         <div>學科</div>
                         <div>檔案狀態</div>
-                        <div>審議委員</div>
+                        <div>審議委員<i class="fas fa-paper-plane"></i></div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
@@ -137,7 +139,7 @@
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
-                        <div th:text="${list.auditor_name}"></div>
+                        <div th:text="${list.auditor2_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>
@@ -148,6 +150,8 @@
     </section>    
 
     <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/datepicker.js}"></script>
+    <script th:src="@{/front/js/lessonProp.js}"></script>
 	<script>
 		
 		$(function(){

@@ -30,17 +30,18 @@ public class LessonPlanFileDaoImpl implements LessonPlanFileDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlanFile);
 		
 		String sql = " INSERT INTO proposition_manage.lesson_plan_file"
-				   + " (LESSON_PLAN_ID, DATA_TYPE, MATERIAL_TYPE_ID, MATERIAL_LINK, VERSION, FILE_STATUS, UPLOAD_NAME, FILE_NAME, "
+				   + " (LESSON_PLAN_ID, LESSON_PLAN_AUDIT_ID, DATA_TYPE, MATERIAL_TYPE_ID, MATERIAL_LINK, "
+				   + " UPLOAD_NAME, FILE_NAME, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(:lesson_plan_id, :data_type, :material_type_id, :material_link, ";
+				   + " VALUES(:lesson_plan_id, :lesson_plan_audit_id, :data_type, :material_type_id, :material_link, ";
 				   
-		if(lessonPlanFile.getVersion() != null)	{
-			sql += " (SELECT CONCAT(:version, LPAD(COUNT, 2, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.lesson_plan_file WHERE LESSON_PLAN_ID = :lesson_plan_id AND DATA_TYPE = :data_type AND INSTR(VERSION, :version) > 0) L1), ";
-		} else {
-			sql += " :version, ";
-		}
+//		if(lessonPlanFile.getVersion() != null)	{
+//			sql += " (SELECT CONCAT(:version, LPAD(COUNT, 2, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.lesson_plan_file WHERE LESSON_PLAN_ID = :lesson_plan_id AND DATA_TYPE = :data_type AND INSTR(VERSION, :version) > 0) L1), ";
+//		} else {
+//			sql += " :version, ";
+//		}
 		
-		sql += " :file_status, :upload_name, :file_name, "
+		sql += " :upload_name, :file_name, "
 		    +  " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -55,20 +56,11 @@ public class LessonPlanFileDaoImpl implements LessonPlanFileDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-//		String sql = " SELECT *, DATE_FORMAT(CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
-//				   + " FROM proposition_manage.lesson_plan_file "
-//				   + " WHERE LESSON_PLAN_ID = ? "
-////				   + " AND TYPE = ? "
-//				   + " ORDER BY CREATE_TIME DESC ";
-		
 		String sql = " SELECT *, DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') AS CREATE_DATE "
 				   + " FROM proposition_manage.lesson_plan_file "
-				   + " WHERE LESSON_PLAN_ID = ? "
-				   + " AND VERSION IS NOT NULL "
-				   + " GROUP BY FILE_STATUS ";
+				   + " WHERE LESSON_PLAN_ID = ? ";
 		
 		args.add(lessonPlanFile.getLesson_plan_id());
-//		args.add(lessonPlanFile.getType());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

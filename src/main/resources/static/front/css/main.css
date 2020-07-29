@@ -997,7 +997,7 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    grid-template-columns: 0.8fr 1.5fr 6fr 0.7fr 1fr 1.2fr 97px 1fr 1fr ;
+    grid-template-columns: 62px 1.5fr 6fr 50px 80px 97px 97px 97px 70px 70px ;
 }
 .list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */
     /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr; */ /* 含有「上傳狀態」欄位 */

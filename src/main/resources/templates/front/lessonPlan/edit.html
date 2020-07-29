@@ -13,6 +13,9 @@
 		<input type="hidden" id="page" th:field="*{page}" />
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
 		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+		<input type="hidden" id="fileStatus" name="file_status" th:value="${data.file_status}" />
+		<input type="hidden" id="auditor" name="auditor" th:value="${data.auditor}" />
+		<input type="hidden" id="auditor2" name="auditor2" th:value="${data.auditor2}" />
     <section class="main-content">
         <div class="fixed-width">
             <div class="breadcrumb">
@@ -24,77 +27,64 @@
                 <i>/</i>
                 <a href="#" id="content">詳細資料</a>
                 <i>/</i>
-                <a href="#">檔案修訂</a>
+                <a href="#">檔案修正</a>
             </div>
             <div class="create-content lessonVerify">
-                <h3><i class="fas fa-book-open"></i>檔案修訂<i class="fas fa-book"></i></h3>
+                <h3><i class="fas fa-book-open"></i>檔案修正<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
-                    <div><span class="required">*</span>修訂檔案</div>
+                    <div><span class="required">*</span>修正檔案</div>
                     <div>
-                        <label for="lessonVerifyFile">
-                            <input type="file" class="dis-n btnFile" id="lessonVerifyFile" name="fileName" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="lessonVerifyFileText">
-                            <span class="btn-file">選擇檔案</span>
-                        </label>
-                        <span class="memo">註：僅接受附檔名為.pdf、.ppt、.pptx、.doc、.docx、.xls、.xlsx</span>
-                        <p class="lessonVerifyFileText"></p>
+                        <div>
+                            <label for="lessonVerifyFile">
+                                <input type="file" class="dis-n btnFile" id="lessonVerifyFile" name="word" accept=".ppt,.doc,.docx,.xls,.xlsx" value="" data-text="lessonVerifyFileText">
+                                <span class="btn-file">選擇原始檔</span>
+                            </label>                        
+                            <span class="memo">註：僅接受附檔名為.ppt、.doc、.docx、.xls、.xlsx</span>                        
+                            <p class="lessonVerifyFileText"></p>
+                        </div>
+                        <div class="m-top-15px">
+                            <label for="lessonVerifyPDFFile">
+                                <input type="file" class="dis-n btnFile" id="lessonVerifyPDFFile" name="pdf" accept=".pdf" value="" data-text="lessonVerifyPDFFileText">
+                                <span class="btn-file">選擇PDF檔</span>
+                            </label>                        
+                            <span class="memo">註：僅接受附檔名為.pdf</span>                        
+                            <p class="lessonVerifyPDFFileText"></p>
+                        </div>   
                     </div>                    
                 </div>
                 <button class="btn-submit" data-type="lessonEditTeacher" type="button">送出</button>
-            </div>  
+            </div>
             <div class="create-content lessonContent contentPage">                
                 <h3><i class="fas fa-book-open"></i>詳細資料<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
-                    <div>合約序號</div>
+                    <div>合約流水號</div>
                     <div>[[${data.contract_id}]]</div>
                     <div>教案名稱</div>
                     <div>[[${data.name}]]</div>
-                    <div>學習領域</div>
-                    <div>[[${field_name}]]</div>
-                    <div>學科</div>
-                    <div>[[${subject}]]</div>
                     <div>學制</div>
                     <div>[[${education_name}]]</div>
                     <div>年級</div>
-                    <div>[[${grade}]]</div>
-<!--                     <div>核心素養</div> -->
-<!--                     <div class="lesson-item"> -->
-<!--                         <div class="item-block"> -->
-<!--                             <div><span>總綱</span></div> -->
-<!--                             <div> -->
-<!--                                 <p>運t-IV-3能設計資訊作品已解決生活問題</p> -->
-<!--                                 <p>運t-IV-3能設計資訊作品已解決生活問題</p> -->
-<!--                                 <p>運t-IV-3能設計資訊作品已解決生活問題</p> -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                         <div class="item-block"> -->
-<!--                             <div><span>領綱</span></div> -->
-<!--                             <div> -->
-<!--                                 <p>運t-IV-3能設計資訊作品已解決生活問題</p>                                 -->
-<!--                             </div> -->
-<!--                         </div> -->
-<!--                     </div> -->
-<!--                     <div>學習表現</div> -->
-<!--                     <div class="lesson-item"> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題能設計資訊作品已解決生活問題</div> -->
-<!--                     </div> -->
-<!--                     <div>學習內容</div> -->
-<!--                     <div class="lesson-item"> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                         <div>運t-IV-3能設計資訊作品已解決生活問題</div> -->
-<!--                     </div> -->
+                    <div>[[${gradeOption}]]</div>
+                    <div>學科</div>
+                    <div>[[${subject_name}]]</div>
+                    <div>跨科</div>
+                    <div>[[${subjectOption}]]</div>
                     <div>教案檔案</div>
-                    <div><a th:href="'/upload/file/lessonPlan/'+${nowFile.upload_name}">[[${nowFile.file_name}]]</a></div>
-<!--                     <div>關鍵字</div> -->
-<!--                     <div class="lesson-item">                         -->
-<!--                         <span>#效率</span> -->
-<!--                         <span>#尊重他人</span> -->
-<!--                         <span>#科技趨勢</span> -->
-<!--                     </div> -->
+                    <div>
+                    	<p th:each="list:${getFile}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    </div>
+                    <div>附件</div>
+                    <div>
+                        <p th:each="list:${getAnnex}"><a th:href="${list.material_type_id != 4 ? '/upload/file/lessonPlan/'+list.upload_name : list.material_link}" target="_blank">[[${list.material_type_id != 4 ? list.file_name : list.material_link}]]</a></p> 
+                    </div>
+                    <div>素材授權申請</div>
+                    <div>
+                    	<p th:each="list:${getMaterial}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    </div>
+                    <div>關鍵字</div>
+                    <div class="lesson-item">                        
+                        <span th:each="list:${tagList}">#[[${list.name}]]</span>
+                    </div>
                 </div>                
             </div>    
 <!--             <div class="create-content lessonFile"> -->
@@ -125,6 +115,7 @@
     </section>
 
     <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/lessonProp.js}"></script>
     <script>
 	    $("#content").click(function(){
 			$("#mainForm").attr("action", "/lesson/content");

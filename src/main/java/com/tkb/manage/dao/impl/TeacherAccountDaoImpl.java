@@ -249,11 +249,13 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		String sql = " SELECT * FROM proposition_manage.teacher_account "
 				   + " WHERE CONTENT_AUDIT = '1' "
-				   + " AND FIELD_ID = ? "
+				   + " AND EDUCATION_ID = ? "
+				   + " AND SUBJECT_ID = ? "
 				   + " AND ID <> ? "
 				   + " ORDER BY RAND() ";
 		
-		args.add(account.getField_id());
+		args.add(account.getEducation_id());
+		args.add(account.getSubject_id());
 		args.add(account.getId());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
@@ -270,9 +272,9 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT * FROM proposition_manage.teacher_account "
-				   + " WHERE ID <> ? ";
+				   + " WHERE ACCOUNT <> ? ";
 		
-		args.add(account.getId());
+		args.add(account.getAccount());
 		
 		if("3".equals(account.getPosition())) {
 			sql += " AND POSITION = ? "
@@ -293,6 +295,8 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 			args.add(account.getSubject_id());
 			args.add(account.getContent_audit());
 		}
+		
+		sql += " ORDER BY RAND() ";
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
