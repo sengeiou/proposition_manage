@@ -198,7 +198,7 @@
                         <div th:text="${list.school_master_name}"></div>
                         <div th:text="${list.status_texe}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
-                        <div><a href="./contract-create.html"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a  th:onclick="toContractAdd([[${list.id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>                                         
                 </div>
                 

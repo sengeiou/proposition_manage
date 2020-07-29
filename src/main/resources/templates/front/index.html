@@ -34,48 +34,88 @@
                 </div> 
 
                 <!-- 內容老師 -->
-                <div class="memo" th:if="${accountSession.level == '3'}">  
-                    <h3>未上傳</h3>
-                    <div>
-                        <p>尚有<span th:classappend="${lessonNum-lessonAddCount-lessonEditCount-lessonDoneCount > 0} ? 'text-c-red' : ''">[[${lessonNum-lessonAddCount-lessonEditCount-lessonDoneCount}]]</span>份教案未上傳</p>
-                        <p>尚有<span th:classappend="${basicNum-basicAddCount-basicEditCount-basicDoneCount > 0} ? 'text-c-red' : ''">[[${basicNum-basicAddCount-basicEditCount-basicDoneCount}]]</span>份命題基本題未上傳</p>
-                        <p>尚有<span th:classappend="${questionsGroupNum-questionsGroupAddCount-questionsGroupEditCount-questionsGroupDoneCount > 0} ? 'text-c-red' : ''">[[${questionsGroupNum-questionsGroupAddCount-questionsGroupEditCount-questionsGroupDoneCount}]]</span>份命題題組題未上傳</p>
-                    </div>                    
-                </div>
-                <div class="memo" th:if="${accountSession.level == '3'}"> 
-                    <h3>待修正</h3>
-                    <div>
-                        <p>尚有<span th:classappend="${lessonEditCount > 0} ? 'text-c-red' : ''">[[${lessonEditCount}]]</span>份教案待修正</p>
-                        <p>尚有<span th:classappend="${basicEditCount > 0} ? 'text-c-red' : ''">[[${basicEditCount}]]</span>份命題基本題待修正</p>
-                        <p>尚有<span th:classappend="${questionsGroupEditCount > 0} ? 'text-c-red' : ''">[[${questionsGroupEditCount}]]</span>份命題題組題待修正</p>
-                    </div>                    
-                </div>
+                <div class="memo principal-memo" th:if="${accountSession.level == '3'}" th:each="educationSubject:${educationSubjectList}">
+                    <h3>[[${educationSubject.SUBJECT_NAME}]]-[[${educationSubject.EDUCATION_NAME}]]</h3>
+                    <div class="principal-grid">
+                        <div class="title">創作類型</div>
+                        <div class="title">已上傳</div>
+                        <div class="title">初審中/待修正</div>
+                        <div class="title">審核中/待修正</div>
+                        <div class="title">完稿確認</div>
+                        <div class="title">後製完稿</div>
+                        <div class="title">須上傳總數</div>
+                    </div>
+                    <div class="principal-grid" th:each="list:${list}" th:if="${list.education_id.toString() == educationSubject.education_id.toString() && list.subject_id.toString() == educationSubject.subject_id.toString()}">
+                        <div th:if="${list.question_type == '0'}">教案</div>
+                        <div th:if="${list.question_type == '1'}">命題-選擇題</div>
+                        <div th:if="${list.question_type == '2'}">命題-混核題</div>
+                        <div>[[${list.LP1_COUNT}]]</div>
+                        <div>
+                            <span>[[${list.A_SUM}]]</span>
+                            /
+                            <span class="text-c-red">[[${list.B_SUM}]]</span>
+                        </div>
+                        <div>
+                            <span>[[${list.C_SUM}]]</span>
+                            /
+                            <span class="text-c-red">[[${list.D_SUM}]]</span>
+                        </div>
+                        <div>[[${list.E_SUM}]]</div>
+                        <div>[[${list.F_SUM}]]</div>
+                        <div>[[${list.CONTRACT_SUM}]]</div>
+                    </div>
+                </div> 
                 
                 <!-- 審核老師 -->                
-                <div class="memo" th:if="${accountSession.level == '4'}">  
-                    <h3>未審核</h3>
-                    <div>
-                        <p>尚有<span th:classappend="${unLessonAuditCount > 0} ? 'text-c-red' : ''">[[${unLessonAuditCount}]]</span>份教案未審核</p>
-                        <p>尚有<span th:classappend="${unBasicAuditCount > 0} ? 'text-c-red' : ''">[[${unBasicAuditCount}]]</span>份命題基本題未審核</p>
-                        <p>尚有<span th:classappend="${unGroupAuditCount > 0} ? 'text-c-red' : ''">[[${unGroupAuditCount}]]</span>份命題題組題未審核</p>
-                    </div>                    
-                </div>
-                <!-- 校長、組長 -->
-                <div class="principal-memo" th:if="${accountSession.level == '5' || accountSession.level == '6' || accountSession.level == '7'}" th:each="fieldList:${fieldList}">
-                    <h3>[[${fieldList.name}]]</h3>
+                <div class="memo verify-memo" th:if="${accountSession.level == '4'}">
+                    <h3>[[${subject_name}]]-[[${education_name}]]</h3>
+                    <div class="verify-grid">
+                        <div class="title">創作類型</div>
+                        <div class="title">待審核</div>
+                        <div class="title">待修正</div>
+                        <div class="title">審核通過</div>
+                        <div class="title">須審核總數</div>
+                    </div>
+                    <div class="verify-grid" th:each="list:${list}">
+                        <div th:if="${list.question_type == '0'}">教案</div>
+                        <div th:if="${list.question_type == '1'}">命題-選擇題</div>
+                        <div th:if="${list.question_type == '2'}">命題-混核題</div>
+                        <div>[[${list.C_SUM}]]</div>
+                        <div>[[${list.D_SUM}]]</div>
+                        <div>[[${list.E_SUM}]]</div>
+                        <div>[[${list.AUDIT}]]</div>
+                    </div>
+                </div> 
+                <!-- 校長、組長 -->               
+                <div class="memo principal-memo" th:if="${accountSession.level == '5' || accountSession.level == '6' || accountSession.level == '7'}" th:each="subjectList:${subjectList}">
+                    <h3>[[${subjectList.name}]]</h3>
                     <div class="principal-grid">
                         <div class="title">學制</div>
                         <div class="title">已上傳</div>
-                        <div class="title">完稿</div>
-                        <div class="title">須上傳</div>
+                        <div class="title">初審中/待修正</div>
+                        <div class="title">審核中/待修正</div>
+                        <div class="title">完稿確認</div>
+                        <div class="title">後製完稿</div>
+                        <div class="title">須上傳總數</div>
                     </div>
-                    <div class="principal-grid" th:each="education:${educationList}" th:if="${education.FIELD_ID.toString() == fieldList.id.toString()}">
-                        <div>[[${education.EDUCATION_NAME}]]</div>
-                        <div>[[${education.UPLOAD_NUM}]]</div>
-                        <div>[[${education.COMPLETE_NUM}]]</div>
-                        <div>[[${education.TOTAL_NUM}]]</div>
+                    <div class="principal-grid" th:each="educationList:${educationList}" th:if="${educationList.SUBJECT_ID.toString() == subjectList.ID.toString()}">
+                        <div>[[${educationList.EDUCATION_NAME}]]</div>
+                        <div>[[${educationList.P1_COUNT}]]</div>
+                        <div>
+                            <span>[[${educationList.A_SUM}]]</span>
+                            /
+                            <span class="text-c-red">[[${educationList.B_SUM}]]</span>
+                        </div>
+                        <div>
+                            <span>[[${educationList.C_SUM}]]</span>
+                            /
+                            <span class="text-c-red">[[${educationList.D_SUM}]]</span>
+                        </div>
+                        <div>[[${educationList.E_SUM}]]</div>
+                        <div>[[${educationList.F_SUM}]]</div>
+                        <div>[[${educationList.CONTRACT_SUM}]]</div>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
     </section>

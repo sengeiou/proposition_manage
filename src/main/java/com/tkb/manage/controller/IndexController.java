@@ -186,128 +186,163 @@ public class IndexController {
 		
 		//管理者(幾份合約未履行、幾份合約到期)
 		if(level <= 2) {
-			//老師授權合約
-			//素材授權合約
-			contract = new Contract();
-//			//合約未履行數量
-//			int allUndoneNum = contractService.allUndoneNum(contract);
-//			model.addAttribute("allUndoneNum", allUndoneNum);
-//			//合約已過期數量
-//			int expired = contractService.expired(contract);
-//			model.addAttribute("expired", expired);
-			
+
+			contract = new Contract();	
 			Map<String, Object> contractNum = contractService.contractNum(contract);
 			model.addAttribute("contractNum", contractNum);
 		//創作教師(幾份教案、命題基本題、命題題組題未審核及未修訂)
 		} else if(level == 3) {
 			contract = new Contract();
 			contract.setTeacher_id(accountSession.getId());
-			//總需上傳數-已上傳=未上傳數
-			Map<String, Object> uploadNum = contractService.uploadNum(contract);
-			int lessonNum = Integer.valueOf(uploadNum.get("LESSON_NUM").toString());
-			model.addAttribute("lessonNum", lessonNum);
-			LessonPlan lessonPlan = new LessonPlan();
-			lessonPlan.setCreate_by(accountSession.getAccount());
-			//教案已上傳數
-			lessonPlan.setFile_status("Y");
-			int lessonAddCount = lessonPlanService.uploadStatusCount(lessonPlan);
-			model.addAttribute("lessonAddCount", lessonAddCount);
-			//教案待修訂數
-			lessonPlan.setFile_status("N");
-			int lessonEditCount = lessonPlanService.uploadStatusCount(lessonPlan);
-			model.addAttribute("lessonEditCount", lessonEditCount);
-			//教案已完稿數
-			lessonPlan.setFile_status("C");
-			int lessonDoneCount = lessonPlanService.uploadStatusCount(lessonPlan);
-			model.addAttribute("lessonDoneCount", lessonDoneCount);
-			
-			Proposition proposition = new Proposition();
-			proposition.setQuestion_type("1");
-			proposition.setCreate_by(accountSession.getAccount());
-			
-			//命題基本題總需上傳數
-			int basicNum = Integer.valueOf(uploadNum.get("BASIC_NUM").toString());
-			model.addAttribute("basicNum", basicNum);
-			//命題基本題已上傳數
-			proposition.setUpload_status("Y");
-			int basicAddCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("basicAddCount", basicAddCount);
-			//命題基本題待修訂數
-			proposition.setUpload_status("N");
-			int basicEditCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("basicEditCount", basicEditCount);
-			//命題基本題已完稿數
-			proposition.setUpload_status("C");
-			int basicDoneCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("basicDoneCount", basicDoneCount);
-			
-			proposition = new Proposition();
-			proposition.setQuestion_type("2");
-			proposition.setCreate_by(accountSession.getAccount());
-			
-			//命題題組題總需上傳數
-			int questionsGroupNum = Integer.valueOf(uploadNum.get("QUESTIONS_GROUP_NUM").toString());
-			model.addAttribute("questionsGroupNum", questionsGroupNum);
-			//命題題組題已上傳數
-			proposition.setUpload_status("Y");
-			int questionsGroupAddCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("questionsGroupAddCount", questionsGroupAddCount);
-			//命題題組題待修訂數
-			proposition.setUpload_status("N");
-			int questionsGroupEditCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("questionsGroupEditCount", questionsGroupEditCount);
-			//命題題組題已完稿數
-			proposition.setUpload_status("C");
-			int questionsGroupDoneCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("questionsGroupDoneCount", questionsGroupDoneCount);
-			
+
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			List<Map<String, Object>> educationSubjectList = new ArrayList<Map<String, Object>>();
+			educationSubjectList = contractService.getSubjectEducationByTeacher(contract);
+
+			for(int i = 0; i < educationSubjectList.size();i++) {
+				Map<String, Object> lessonPlan = contractService.getLessonPlanNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString());
+				Map<String, Object> basic = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "1");
+				Map<String, Object> group = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "2");
+				
+				if(lessonPlan == null) {
+					lessonPlan = new HashMap<String, Object>();
+					lessonPlan.put("LP1_COUNT", "0");
+					lessonPlan.put("A_SUM", "0");
+					lessonPlan.put("B_SUM", "0");
+					lessonPlan.put("C_SUM", "0");
+					lessonPlan.put("D_SUM", "0");
+					lessonPlan.put("E_SUM", "0");
+					lessonPlan.put("F_SUM", "0");
+				}
+				if(basic == null) {
+					basic = new HashMap<String, Object>();
+					basic.put("LP1_COUNT", "0");
+					basic.put("A_SUM", "0");
+					basic.put("B_SUM", "0");
+					basic.put("C_SUM", "0");
+					basic.put("D_SUM", "0");
+					basic.put("E_SUM", "0");
+					basic.put("F_SUM", "0");
+				}
+				if(group == null) {
+					group = new HashMap<String, Object>();
+					group.put("LP1_COUNT", "0");
+					group.put("A_SUM", "0");
+					group.put("B_SUM", "0");
+					group.put("C_SUM", "0");
+					group.put("D_SUM", "0");
+					group.put("E_SUM", "0");
+					group.put("F_SUM", "0");
+				}
+				lessonPlan.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+				lessonPlan.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+				lessonPlan.put("CONTRACT_SUM", educationSubjectList.get(i).get("LESSON_NUM").toString());
+				lessonPlan.put("QUESTION_TYPE", "0");
+				basic.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+				basic.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+				basic.put("CONTRACT_SUM", educationSubjectList.get(i).get("BASIC_NUM").toString());
+				basic.put("QUESTION_TYPE", "1");
+				group.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+				group.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+				group.put("CONTRACT_SUM", educationSubjectList.get(i).get("QUESTIONS_GROUP_NUM").toString());
+				group.put("QUESTION_TYPE", "2");
+				list.add(lessonPlan);
+				list.add(basic);
+				list.add(group);			
+			}
+
+			model.addAttribute("list", list);
+			model.addAttribute("educationSubjectList", educationSubjectList);
+		
 		//審議委員(幾份教案、命題基本題、命題題組題未審核)
 		} else if(level == 4) {
-			LessonPlan lessonPlan = new LessonPlan();
-			lessonPlan.setAuditor(accountSession.getAccount());
-			int unLessonAuditCount = lessonPlanService.auditCount(lessonPlan);
-			model.addAttribute("unLessonAuditCount", unLessonAuditCount);
+			Account teacher = new Account();
+			teacher.setId(accountSession.getId());
+			teacher = teacherAccountService.data(teacher);
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			Map<String, Object> lessonPlan = contractService.getLessonPlanNum("", teacher.getEducation_id(), teacher.getSubject_id());
+			Map<String, Object> basic = contractService.getPropositionNum("", teacher.getEducation_id(), teacher.getSubject_id(), "1");
+			Map<String, Object> group = contractService.getPropositionNum("", teacher.getEducation_id(), teacher.getSubject_id(), "2");
+
+			if(lessonPlan == null) {
+				lessonPlan = new HashMap<String, Object>();
+				lessonPlan.put("C_SUM", "0");
+				lessonPlan.put("D_SUM", "0");
+				lessonPlan.put("E_SUM", "0");
+				lessonPlan.put("AUDIT", "0");
+			}
+			if(basic == null) {
+				basic = new HashMap<String, Object>();
+				basic.put("C_SUM", "0");
+				basic.put("D_SUM", "0");
+				basic.put("E_SUM", "0");
+				basic.put("AUDIT", "0");
+			}
+			if(group == null) {
+				group = new HashMap<String, Object>();
+				group.put("C_SUM", "0");
+				group.put("D_SUM", "0");
+				group.put("E_SUM", "0");
+				group.put("AUDIT", "0");
+			}
+
+			lessonPlan.put("QUESTION_TYPE", "0");
+			lessonPlan.put("AUDIT", Integer.valueOf(lessonPlan.get("C_SUM").toString())+Integer.valueOf(lessonPlan.get("D_SUM").toString())+Integer.valueOf(lessonPlan.get("E_SUM").toString()));
+			basic.put("QUESTION_TYPE", "1");
+			basic.put("AUDIT", Integer.valueOf(basic.get("C_SUM").toString())+Integer.valueOf(basic.get("D_SUM").toString())+Integer.valueOf(basic.get("E_SUM").toString()));
+			group.put("QUESTION_TYPE", "2");
+			group.put("AUDIT", Integer.valueOf(group.get("C_SUM").toString())+Integer.valueOf(group.get("D_SUM").toString())+Integer.valueOf(group.get("E_SUM").toString()));
+			list.add(lessonPlan);
+			list.add(basic);
+			list.add(group);	
 			
-			Proposition proposition = new Proposition();
-			proposition.setQuestion_type("1");
-			proposition.setAuditor(accountSession.getAccount());
-			int unBasicAuditCount = propositionService.auditCount(proposition);
-			model.addAttribute("unBasicAuditCount", unBasicAuditCount);
+			model.addAttribute("list", list);
+			model.addAttribute("education_name", teacher.getEducation_name());
+			model.addAttribute("subject_name", teacher.getSubject_name());
 			
-			proposition = new Proposition();
-			proposition.setQuestion_type("2");
-			proposition.setAuditor(accountSession.getAccount());
-			int unGroupAuditCount = propositionService.auditCount(proposition);
-			model.addAttribute("unGroupAuditCount", unGroupAuditCount);
 		} else if(level == 5 || level == 6 || level == 7) {
-			Field field = new Field();
-			field.setId(accountSession.getField_list());
-			List<Map<String, Object>> fieldList = fieldService.getListInId(field);
-			model.addAttribute("fieldList", fieldList);
-			if(fieldList != null) {
+			Map<String, Object> educationSubjectList = new HashMap<String, Object>();
+			Subject subject = new Subject();
+			Education education = new Education();
+			subject.setId(accountSession.getSubject_list());
+			List<Map<String, Object>> subjectList = subjectService.getListInId(subject);
+			model.addAttribute("subjectList", subjectList);
+			if(subjectList != null) {
 				String[] educationArr = accountSession.getEducation_list().split(",");
 				List<Map<String, Object>> educationList = new ArrayList<Map<String, Object>>();
-				for(int i=0; i<fieldList.size(); i++) {
+				for(int i=0; i<subjectList.size(); i++) {
 					for(int j=0; j<educationArr.length; j++) {
 						contract = new Contract();
-//						contract.setField_id(fieldList.get(i).get("ID").toString());
 						contract.setEducation_id(educationArr[j]);
-						Map<String, Object> getListByFieldEducation = contractService.getDataByFieldEducation(contract);
-						if(getListByFieldEducation != null) {
-							educationList.add(getListByFieldEducation);
+						contract.setSubject_id(subjectList.get(i).get("ID").toString());
+						
+						education = new Education();
+						education.setId(educationArr[j]);
+						education = educationService.data(education);
+						educationSubjectList = contractService.getSubjectEducation(contract);
+						Map<String, Object> getSubjectEducation = contractService.getLessonPlanProposition(contract);
+
+						if(getSubjectEducation.get("A_SUM") != null && educationSubjectList.get("LESSON_NUM") != null) {
+							getSubjectEducation.put("SUBJECT_NAME", subjectList.get(i).get("NAME").toString());
+							getSubjectEducation.put("SUBJECT_ID", subjectList.get(i).get("ID").toString());
+							getSubjectEducation.put("EDUCATION_NAME", education.getName());
+							getSubjectEducation.put("EDUCATION_ID", education.getId());
+							getSubjectEducation.put("CONTRACT_SUM", Integer.valueOf(educationSubjectList.get("LESSON_NUM").toString())+Integer.valueOf(educationSubjectList.get("BASIC_NUM").toString())+Integer.valueOf(educationSubjectList.get("QUESTIONS_GROUP_NUM").toString()));
+							educationList.add(getSubjectEducation);
 						} else {
-							Education education = new Education();
-							education.setId(educationArr[j]);
-							education = educationService.data(education);
-							
 							Map<String, Object> map = new HashMap<String, Object>();
-							map.put("FIELD_NAME", fieldList.get(i).get("NAME").toString());
-							map.put("FIELD_ID", fieldList.get(i).get("ID").toString());
+							map.put("SUBJECT_NAME", subjectList.get(i).get("NAME").toString());
+							map.put("SUBJECT_ID", subjectList.get(i).get("ID").toString());
 							map.put("EDUCATION_NAME", education.getName());
 							map.put("EDUCATION_ID", education.getId());
-							map.put("UPLOAD_NUM", "0");
-							map.put("COMPLETE_NUM", "0");
-							map.put("TOTAL_NUM", "0");
+							map.put("P1_COUNT", "0");
+							map.put("A_SUM", "0");
+							map.put("B_SUM", "0");
+							map.put("C_SUM", "0");
+							map.put("D_SUM", "0");
+							map.put("E_SUM", "0");
+							map.put("F_SUM", "0");
+							map.put("CONTRACT_SUM", "0");
 							educationList.add(map);
 						}
 					}

@@ -495,4 +495,175 @@ public class ContractDaoImpl implements ContractDao {
 		
 	}
 	
+	public Map<String, Object> getSubjectEducation(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+
+		String sql = " SELECT PMC.EDUCATION_ID, PMC.SUBJECT_ID, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
+				   + " SUM(LESSON_NUM) LESSON_NUM, SUM(BASIC_NUM) BASIC_NUM, SUM(QUESTIONS_GROUP_NUM) QUESTIONS_GROUP_NUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMC.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMC.SUBJECT_ID "
+				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
+				   + "  ";
+		
+		args.add(contract.getEducation_id());
+		args.add(contract.getSubject_id());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public List<Map<String, Object>> getSubjectEducationByTeacher(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+
+		String sql = " SELECT PMC.EDUCATION_ID, PMC.SUBJECT_ID, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, PMC.TEACHER_ID, "
+				   + " SUM(LESSON_NUM) LESSON_NUM, SUM(BASIC_NUM) BASIC_NUM, SUM(QUESTIONS_GROUP_NUM) QUESTIONS_GROUP_NUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMC.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMC.SUBJECT_ID "
+				   + " WHERE PMC.TEACHER_ID = ? "
+				   + " GROUP BY PMC.EDUCATION_ID, PMC.SUBJECT_ID, PMC.TEACHER_ID ";
+		
+		args.add(contract.getTeacher_id());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Map<String, Object> getLessonPlanNum(String teacher, String education, String subject) {
+		
+		List<Object> args = new ArrayList<Object>();
+
+		String sql = " SELECT SUM(LP1_COUNT) LP1_COUNT, SUM(A_SUM) A_SUM, SUM(B_SUM) B_SUM, "
+				   + " SUM(C_SUM) C_SUM, SUM(D_SUM) D_SUM, SUM(E_SUM) E_SUM, SUM(F_SUM) F_SUM "
+				   + " FROM ( "
+				   + " SELECT "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID) AS LP1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'A') AS A_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'B') AS B_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C') AS C_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'D') AS D_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'E') AS E_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F') AS F_SUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? ";
+		if(!"".equals(teacher)) {
+			sql+= " AND PMC.TEACHER_ID = ? ";
+		}
+		sql+= " ) L1  ";
+		
+		args.add(education);
+		args.add(subject);
+		if(!"".equals(teacher)) {
+			args.add(teacher);
+		}
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+
+	public Map<String, Object> getPropositionNum(String teacher, String education, String subject, String questionType) {
+		
+		List<Object> args = new ArrayList<Object>();
+	
+		String sql = " SELECT SUM(LP1_COUNT) LP1_COUNT, SUM(A_SUM) A_SUM, SUM(B_SUM) B_SUM, "
+				   + " SUM(C_SUM) C_SUM, SUM(D_SUM) D_SUM, SUM(E_SUM) E_SUM, SUM(F_SUM) F_SUM "
+				   + " FROM ( "
+				   + " SELECT "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.QUESTION_TYPE = ?) AS LP1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'A' AND LP.QUESTION_TYPE = ?) AS A_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'B' AND LP.QUESTION_TYPE = ?) AS B_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C' AND LP.QUESTION_TYPE = ?) AS C_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'D' AND LP.QUESTION_TYPE = ?) AS D_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'E' AND LP.QUESTION_TYPE = ?) AS E_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F' AND LP.QUESTION_TYPE = ?) AS F_SUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? ";
+		if(!"".equals(teacher)) {
+			sql+= " AND PMC.TEACHER_ID = ? ";
+		}
+		sql+= " ) L2  ";
+		
+		args.add(questionType);
+		args.add(questionType);
+		args.add(questionType);
+		args.add(questionType);
+		args.add(questionType);
+		args.add(questionType);
+		args.add(questionType);
+		args.add(education);
+		args.add(subject);
+		if(!"".equals(teacher)) {
+			args.add(teacher);
+		}
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Map<String, Object> getLessonPlanProposition(Contract contract) {
+		
+		List<Object> args = new ArrayList<Object>();
+
+		String sql = " SELECT SUM(P1_COUNT) P1_COUNT, SUM(A_SUM) A_SUM , SUM(B_SUM) B_SUM, "
+				   + " SUM(C_SUM) C_SUM, SUM(D_SUM) D_SUM, SUM(E_SUM) E_SUM, SUM(F_SUM) F_SUM "
+				   + " FROM( "
+				   + " SELECT  "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID ) AS P1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'A' ) AS A_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'B' ) AS B_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'C' ) AS C_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'D' ) AS D_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'E' ) AS E_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'F' ) AS F_SUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
+				   + " UNION "
+				   + " SELECT "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID) AS P1_COUNT, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'A') AS A_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'B') AS B_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'C') AS C_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'D') AS D_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'E') AS E_SUM, "
+				   + " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F') AS F_SUM "
+				   + " FROM proposition_manage.contract PMC "
+				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
+				   + " ) A ";
+
+		args.add(contract.getEducation_id());
+		args.add(contract.getSubject_id());
+		args.add(contract.getEducation_id());
+		args.add(contract.getSubject_id());
+
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

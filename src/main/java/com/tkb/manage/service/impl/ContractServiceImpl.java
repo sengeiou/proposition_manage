@@ -77,4 +77,24 @@ public class ContractServiceImpl implements ContractService {
 		return contractDao.contractNum(contract);
 	}
 	
+	public Map<String, Object> getSubjectEducation(Contract contract) {
+		return contractDao.getSubjectEducation(contract);
+	}
+	
+	public List<Map<String, Object>> getSubjectEducationByTeacher(Contract contract) {
+		return contractDao.getSubjectEducationByTeacher(contract);
+	}
+	
+	public Map<String, Object> getLessonPlanNum(String teacher, String education, String subject) {
+		return contractDao.getLessonPlanNum(teacher, education, subject);
+	}
+	
+	public Map<String, Object> getPropositionNum(String teacher, String education, String subject, String questionType) {
+		return contractDao.getPropositionNum(teacher, education, subject, questionType);
+	}
+	
+	public Map<String, Object> getLessonPlanProposition(Contract contract) {
+		return contractDao.getLessonPlanProposition(contract);
+	}
+	
 }

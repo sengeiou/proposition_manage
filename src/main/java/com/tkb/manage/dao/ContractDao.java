@@ -23,5 +23,10 @@ public interface ContractDao {
 	public Map<String, Object> getDataByFieldEducation(Contract contract);
 	public Map<String, Object> getDataByContractId(Contract contract);
 	public Map<String, Object> contractNum(Contract contract);
+	public Map<String, Object> getSubjectEducation(Contract contract);
+	public List<Map<String, Object>> getSubjectEducationByTeacher(Contract contract);
+	public Map<String, Object> getLessonPlanNum(String teacher, String education, String subject);
+	public Map<String, Object> getPropositionNum(String teacher, String education, String subject, String questionType);
+	public Map<String, Object> getLessonPlanProposition(Contract contract);
 	
 }
