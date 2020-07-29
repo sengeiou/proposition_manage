@@ -64,4 +64,8 @@ public class SubjectServiceImpl implements SubjectService {
 		return subjectDao.searchName(subject);
 	}
 	
+	public List<Map<String, Object>> getListInId(Subject subject) {
+		return subjectDao.getListInId(subject);
+	}
+	
 }

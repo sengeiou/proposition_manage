@@ -249,4 +249,20 @@ public class SubjectDaoImpl implements SubjectDao {
 		
 	}
 	
+	public List<Map<String, Object>> getListInId(Subject subject) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.field "
+				   + " WHERE ID IN ("+subject.getId()+") ";
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
 }
