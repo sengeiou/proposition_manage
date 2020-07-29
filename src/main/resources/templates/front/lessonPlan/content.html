@@ -180,24 +180,15 @@
                 </div>
             </div>    
 
-            <!-- 僅內容老師、審核老師有此區塊 -->
-<!--             <div class="create-content lessonFile"> -->
-<!--                 <h3><i class="fas fa-book"></i>檔案歷程<i class="fas fa-book"></i></h3> -->
-<!--                 <div class="container"> -->
-<!--                     <div>內容上傳</div> -->
-<!--                     <div>審核回饋</div> -->
-<!--                     <div th:each="list:${contentList}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank"></a><span></span></div> -->
-<!--                 </div> -->
-<!--             </div> -->
             <div class="create-content lessonFile">
                 <h3><i class="fas fa-book-open"></i>檔案歷程<i class="fas fa-book"></i></h3>                
                 <div class="lessoncontent-file-grid-title">
                     <div></div>
-                    <div>教案上傳</div>
-                    <div>初審</div>
-                    <div>審核</div>
-                    <div>完稿確認</div>
-                    <div>後製編輯</div>
+                    <div>A  教案上傳</div>
+                    <div>B  初審</div>
+                    <div>C  審核</div>
+                    <div>D  完稿確認</div>
+                    <div>E  後製編輯</div>
                 </div>
                 <div class="overflowY-scroll">
                 	<div class="lessoncontent-file-grid" th:each="list:${auditList}">

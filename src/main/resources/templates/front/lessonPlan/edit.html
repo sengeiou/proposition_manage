@@ -86,20 +86,48 @@
                         <span th:each="list:${tagList}">#[[${list.name}]]</span>
                     </div>
                 </div>                
-            </div>    
-<!--             <div class="create-content lessonFile"> -->
-<!--                 <h3><i class="fas fa-book-open"></i>檔案歷程<i class="fas fa-book"></i></h3> -->
-<!--                 <div class="container"> -->
-<!--                     <div>內容上傳</div> -->
-<!--                     <div>審核回饋</div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
-<!--                 </div> -->
-<!--             </div>             -->
+            </div>
+            <div class="create-content lessonFile">
+                <h3><i class="fas fa-book-open"></i>檔案歷程<i class="fas fa-book"></i></h3>                
+                <div class="lessoncontent-file-grid-title">
+                    <div></div>
+                    <div>A  教案上傳</div>
+                    <div>B  初審</div>
+                    <div>C  審核</div>
+                    <div>D  完稿確認</div>
+                    <div>E  後製編輯</div>
+                </div>
+                <div class="overflowY-scroll">
+                	<div class="lessoncontent-file-grid" th:each="list:${auditList}">
+                        <div>[[${list.create_date}]]</div>
+                        <div>
+                            <div class="stage stageA openLightBox" th:if="${#strings.substring(list.version,0,1) == 'A'}" th:data-lb="${list.version}"> <!-- 創作老師class新增stageA， data-lb="放檔案編號"，利用data-lb=""打開燈箱-->
+                                <span th:text="${list.version=='A01' ? '初稿' : '修正'}"></span>
+                                <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='C' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'B'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='C' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='E' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'C'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='E' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='F' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'D'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='F' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+				</div>
+            </div>
         </div>
     </section>
     </form>
@@ -113,7 +141,25 @@
         </div>
         <button class="btn-closelightBoxAlert btn-sm">確定</button>
     </section>
-
+	<!-- 初稿燈箱 -->
+    <section class="lightBoxContent dis-n lessonFile-lightbox" th:classappend="${audit.version+'-lightBox'}" th:each="audit:${auditList}" th:if="${#strings.substring(audit.version,0,1)=='A' || audit.file_status!='C'}">
+        <button class="btn-closeLightBox" th:data-lb="${audit.version}"><i class="fas fa-times-circle fa-lg"></i></button>
+        <h3 class="title" th:text="${#strings.substring(audit.version,0,1)=='A' ? (audit.version=='A01' ? '初稿檔案' : '修正檔案') : '審核回饋'}"></h3>
+        <hr>
+        <div class="container">            
+            <div class="file" th:each="file:${fileList}" th:if="${#strings.substring(audit.version,0,1)=='A' && (file.lesson_plan_audit_id.toString() == audit.id.toString()) && (file.data_type==1 || file.data_type==2)}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>
+            
+            <div class="container-grid" th:if="${#strings.substring(audit.version,0,1)!='A'}">
+                <div>回饋檔案</div>
+                <div>
+                    <div th:each="file:${fileList}" th:if="${(file.lesson_plan_audit_id.toString() == audit.id.toString()) && file.data_type==5}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>                    
+                </div>
+                <div>回饋內容</div>
+                <div th:text="${audit.audit_feedback}"></div>
+            </div>
+        </div>
+        <button class="btn-closeMemolightBox btn-sm" th:data-lb="${audit.version}" type="button">確定</button>
+    </section>
     <div th:include="front/load/js :: js"></div>
     <script th:src="@{/front/js/lessonProp.js}"></script>
     <script>
