@@ -39,10 +39,13 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " WHEN LP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
-				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE "
+				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
+				   + " TA.NAME AS AUDITOR_NAME, TA2.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
+				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
+				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = LP.AUDITOR2 "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
@@ -80,11 +83,11 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
-				   + " WHERE LP.AUDITOR = ? "
+				   + " WHERE LP.AUDITOR2 = ? "
 				   + " AND LP.FILE_STATUS = 'C' "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
 		
-		args.add(lessonPlan.getAuditor());
+		args.add(lessonPlan.getAuditor2());
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
 		
@@ -103,10 +106,10 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.lesson_plan "
-				   + " WHERE AUDITOR = ? "
+				   + " WHERE AUDITOR2 = ? "
 				   + " AND FILE_STATUS = 'C' ";
 		
-		args.add(lessonPlan.getAuditor());
+		args.add(lessonPlan.getAuditor2());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -232,11 +235,12 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
-				   + " TA.NAME AS AUDITOR_NAME "
+				   + " TA.NAME AS AUDITOR_NAME, TA2.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
+				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = LP.AUDITOR2 "
 				   + " WHERE LP.EDUCATION_ID IN ("+lessonPlan.getEducation_id()+") "
 				   + " AND LP.SUBJECT_ID IN ("+lessonPlan.getSubject_id()+") "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
@@ -329,11 +333,14 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.lesson_plan "
-				   + " WHERE FILE_STATUS = ? "
-				   + " AND CREATE_BY = ? ";
+				   + " WHERE CREATE_BY = ? ";
 		
-		args.add(lessonPlan.getFile_status());
 		args.add(lessonPlan.getCreate_by());
+		
+		if(lessonPlan.getFile_status() != null) {
+			sql += " AND FILE_STATUS = ? ";
+			args.add(lessonPlan.getFile_status());
+		}
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -412,9 +419,15 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.lesson_plan "
-				   + " SET FILE_STATUS = ?, "
-				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
-				   + " WHERE ID = ? ";
+				   + " SET ";
+		
+		if(lessonPlan.getAuditor2() != null) {
+			sql += " AUDITOR2 = ?, ";
+			args.add(lessonPlan.getAuditor2());
+		}
+		
+		sql += " FILE_STATUS = ?, UPDATE_BY = ?, UPDATE_TIME = NOW() "
+			+  " WHERE ID = ? ";
 		
 		args.add(lessonPlan.getFile_status());
 		args.add(lessonPlan.getUpdate_by());

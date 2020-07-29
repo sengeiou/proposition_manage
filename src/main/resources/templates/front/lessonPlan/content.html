@@ -13,9 +13,11 @@
 		<input type="hidden" id="page" th:field="*{page}" />
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
 		<input type="hidden" id="pageCount" th:field="*{page_count}" />
-		<input type="hidden" id="educationId" th:value="${data.education_id}" />
-		<input type="hidden" id="subjectId" th:value="${data.subject_id}" />
-	
+		<input type="hidden" id="educationId" name="education_id" th:value="${data.education_id}" />
+		<input type="hidden" id="subjectId" name="subject_id" th:value="${data.subject_id}" />
+		<input type="hidden" id="createBy" name="create_by" th:value="${data.create_by}" />
+		<input type="hidden" id="fileStatus" name="file_status" th:value="${data.file_status}" />
+		
     <section class="main-content">
         <div class="fixed-width">
             <div class="breadcrumb">
@@ -26,6 +28,21 @@
                 <a href="/lesson">教案列表</a>
                 <i>/</i>
                 <a href="#">詳細資料</a>
+            </div>
+            <!-- 僅校長有此區塊(完稿確認)，因完稿確認、初審、審核的input name一樣，須註解任一區塊，js才會正常 -->
+            <div class="create-content lessonVerify" th:if="${accountSession.level=='6' && data.file_status=='E'}">
+                <h3><i class="fas fa-book"></i>完稿確認<i class="fas fa-book"></i></h3>
+                <div class="create-grid">
+                    <div><span class="required">*</span>審核結果</div>
+                    <div class="basic-h">
+                        <label>
+                            <div class="radio-circle"></div>
+                            <span>通過</span>
+                            <input type="radio" name="verify" value="1" class="dis-n">
+                        </label>
+                    </div>
+                </div>
+                <button class="btn-submit" data-type="lessonContentFinish" type="button">送出</button>
             </div>
             <!-- 僅校長有此區塊(初審)，因校長與審議委員input name一樣，須註解校長或審議委員任一區塊，js才會正常 -->
             <div class="create-content lessonVerify" th:if="${accountSession.level=='6' && data.file_status=='A'}">
@@ -62,7 +79,7 @@
                     <div class="p-left-14px dis-n verifyPass">審議委員</div>
                     <div class="dis-n verifyPass">
                         <div class="verifyTeacherBlock">
-                            <select id="verifyTeacher">
+                            <select id="verifyTeacher" name="auditor">
                                 <option value="0">請輸入審議委員</option>                                                          
                             </select>
                         </div>                        
@@ -84,7 +101,7 @@
                 <button class="btn-submit" data-type="lessonContentVerify_principal" type="button">送出</button>
             </div>
             <!-- 僅審議委員有此區塊(審核)，因校長與審議委員input name一樣，須註解校長或審議委員任一區塊，js才會正常 -->
-            <div class="create-content lessonVerify" th:if="${(accountSession.level=='4' && data.file_status=='C') || (accountSession.level=='6' && data.file_status=='E')}">
+            <div class="create-content lessonVerify" th:if="${(accountSession.level=='4' && data.file_status=='C')}">
                 <h3><i class="fas fa-book"></i>審核<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
                     <div><span class="required">*</span>審核結果</div>
@@ -122,8 +139,8 @@
                 <div class="statusTag failTag" th:if="${data.file_status == 'B'}">初審待修正</div> <!-- 僅管理者、創作教師、校長、組長有此tag -->
                 <div class="statusTag failTag" th:if="${data.file_status == 'D'}">審核待修正</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
                 <div class="statusTag successTag-1" th:if="${data.file_status == 'C'}">初審通過</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
-                <div class="statusTag successTag-1" th:if="${data.file_status == 'E' && accountSession.level!='6'}">審核通過</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
-                <div class="statusTag successTag-2" th:if="${data.file_status == 'E' && accountSession.level=='6'}">完稿確認</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
+                <div class="statusTag successTag-1" th:if="${data.file_status == 'E'}">審核通過</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
+                <div class="statusTag successTag-2" th:if="${data.file_status == 'F'}">完稿</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->
                 <div class="statusTag successTag-3" th:if="${data.file_status == 'G'}">後製完稿</div> <!-- 僅管理者、創作教師、校長、組長有此tag，目前用dis-n隱藏 -->  
                 <h3><i class="fas fa-book"></i>詳細資料<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
@@ -183,16 +200,32 @@
                     <div>後製編輯</div>
                 </div>
                 <div class="overflowY-scroll">
-                    <div class="lessoncontent-file-grid" th:each="list:${contentList}">
+                	<div class="lessoncontent-file-grid" th:each="list:${auditList}">
                         <div>[[${list.create_date}]]</div>
-                        <div th:if="${list.file_status == 'A' || list.file_status == 'B' || list.file_status == 'D'}">
-                        	<div class="stage stageA openLightBox" th:data-lb="${list.version}"> <!-- 有回饋時class新增stageFaild， data-lb="放檔案編號"，利用data-lb=""打開燈箱，目前暫放C01-->
-                            <span>初稿</span>
-                            <span>[[${#strings.substring(list.version,1,3)}]]</span>
+                        <div>
+                            <div class="stage stageA openLightBox" th:if="${#strings.substring(list.version,0,1) == 'A'}" th:data-lb="${list.version}"> <!-- 創作老師class新增stageA， data-lb="放檔案編號"，利用data-lb=""打開燈箱-->
+                                <span th:text="${list.version=='A01' ? '初稿' : '修正'}"></span>
+                                <span>[[${list.version}]]</span>
+                            </div>
                         </div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='C' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'B'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='C' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='E' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'C'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='E' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
+                        <div>
+                        	<div class="stage" th:classappend="${list.file_status=='F' ? 'stagePass' : 'stageFaild openLightBox'}"  th:if="${#strings.substring(list.version,0,1) == 'D'}" th:data-lb="${list.version}">
+	                            <span th:text="${list.file_status=='F' ? '通過' : '回饋'}"></span>
+	                            <span>[[${list.version}]]</span>
+                            </div>
+                        </div>
                         <div></div>
                     </div>
 				</div>
@@ -211,47 +244,26 @@
         <button class="btn-closelightBoxAlert btn-sm">確定</button>
     </section>
 	<!-- 初稿燈箱 -->
-    <section class="lightBoxContent A01-lightBox dis-n lessonFile-lightbox">
-        <button class="btn-closeLightBox" data-lb="A01"><i class="fas fa-times-circle fa-lg"></i></button>
-        <h3 class="title">初稿檔案</h3>
+    <section class="lightBoxContent dis-n lessonFile-lightbox" th:classappend="${audit.version+'-lightBox'}" th:each="audit:${auditList}" th:if="${#strings.substring(audit.version,0,1)=='A' || audit.file_status!='C'}">
+        <button class="btn-closeLightBox" th:data-lb="${audit.version}"><i class="fas fa-times-circle fa-lg"></i></button>
+        <h3 class="title" th:text="${#strings.substring(audit.version,0,1)=='A' ? (audit.version=='A01' ? '初稿檔案' : '修正檔案') : '審核回饋'}"></h3>
         <hr>
         <div class="container">            
-            <div class="file"><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.doc</a></div>
-            <div class="file"><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.pdf</a></div>
-        </div>
-        <button class="btn-closeMemolightBox btn-sm" data-lb="A01">確定</button>
-    </section>
-    <!-- 修正燈箱 -->
-    <section class="lightBoxContent A02-lightBox dis-n lessonFile-lightbox">
-        <button class="btn-closeLightBox" data-lb="A02"><i class="fas fa-times-circle fa-lg"></i></button>
-        <h3 class="title">修正檔案</h3>
-        <hr>
-        <div class="container">            
-            <div class="file"><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.doc</a></div>
-            <div class="file"><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.pdf</a></div>
-        </div>
-        <button class="btn-closeMemolightBox btn-sm" data-lb="A02">確定</button>
-    </section>
-    <!-- 回饋燈箱 -->
-    <section class="lightBoxContent C01-lightBox dis-n lessonFile-lightbox">
-        <button class="btn-closeLightBox" data-lb="C01"><i class="fas fa-times-circle fa-lg"></i></button>
-        <h3 class="title">審核回饋</h3>
-        <hr>
-        <div class="container">
-            <div class="container-grid">
+            <div class="file" th:each="file:${fileList}" th:if="${#strings.substring(audit.version,0,1)=='A' && (file.lesson_plan_audit_id.toString() == audit.id.toString()) && (file.data_type==1 || file.data_type==2)}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>
+            
+            <div class="container-grid" th:if="${#strings.substring(audit.version,0,1)!='A'}">
                 <div>回饋檔案</div>
                 <div>
-                    <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.doc</a></div>
-                    <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題.pdf</a></div>
-                    <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）.pdf</a></div>                    
+                    <div th:each="file:${fileList}" th:if="${(file.lesson_plan_audit_id.toString() == audit.id.toString()) && file.data_type==5}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>                    
                 </div>
                 <div>回饋內容</div>
-                <div>日前因疫情關係，部分知名博物館，如：紐約MoMA、英國泰特美術館、荷蘭阿姆斯特丹國立博物館，為避免疫情擴散，皆暫時休館，不開放民眾入內參觀。所以Google Arts & Culture趁著疫情期間，與眾多博物館合作推出了許多線上藝術特展，再次受到眾人注目，讓民眾不用出門承擔接觸人群染疫的風險，或是炎炎夏日頂著酷暑出門，只須讓孩子在冷氣房動動手指，就可以線上欣賞世界各地的名畫特展，藉此培養美感素養！日前因疫情關係，部分知名博物館，如：紐約MoMA、英國泰特美術館、荷蘭阿姆斯特丹國立博物館，為避免疫情擴散，皆暫時休館，不開放民眾入內參觀。所以Google Arts & Culture趁著疫情期間，與眾多博物館合作推出了許多線上藝術特展，再次受到眾人注目，讓民眾不用出門承擔接觸人群染疫的風險，或是炎炎夏日頂著酷暑出門，只須讓孩子在冷氣房動動手指，就可以線上欣賞世界各地的名畫特展，藉此培養美感素養！</div>
-            </div>            
+                <div th:text="${audit.audit_feedback}"></div>
+            </div>
         </div>
-        <button class="btn-closeMemolightBox btn-sm" data-lb="C01">確定</button>
+        <button class="btn-closeMemolightBox btn-sm" th:data-lb="${audit.version}" type="button">確定</button>
     </section>
     <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/lessonProp.js}"></script>
 	<script>
 		$(function(){
 			//返回列表
