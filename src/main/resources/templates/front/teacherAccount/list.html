@@ -29,8 +29,8 @@
                     <a href="/teacher">老師列表</a>
                 </div>
                 <div>
-                    <button class="btn-mdSolid btnDownFile">範例下載</button>
-                    <button class="btn-mdSolid btn-openLightBox" data-lb="teacherImportData">資料匯入</button>
+                    <button class="btn-mdSolid btnDownFile" type="button">範例下載</button>
+                    <button class="btn-mdSolid btn-openLightBox" data-lb="teacherImportData" type="button">資料匯入</button>
                 </div>
             </div> 
             <div class="list-content">
@@ -278,6 +278,7 @@
     </section>
 
     <div th:include="front/load/js :: js"></div>  
+    <script th:src="@{/front/js/teacher.js}"></script>
 	<script>
 		
 		$(function(){

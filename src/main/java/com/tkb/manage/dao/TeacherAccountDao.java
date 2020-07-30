@@ -20,5 +20,6 @@ public interface TeacherAccountDao {
 	public Map<String, Object> getAuditor(Account account);
 	public List<Map<String, Object>> verifyList(Account account);
 	public List<Map<String, Object>> getAuditorByEduSub(Account account);
+	public Integer checkAccount(String id_no,String id);
 	
 }

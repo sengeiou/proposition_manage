@@ -68,4 +68,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		return teacherAccountDao.getAuditorByEduSub(account);
 	}
 	
+	public Integer checkAccount(String id_no,String id) {
+		return teacherAccountDao.checkAccount(id_no, id);
+	}
+	
 }

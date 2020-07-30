@@ -5,8 +5,9 @@
 	<title>素養教案與命題管理系統 - 建立老師</title>
 	<meta charset="utf-8">
 </head>
-<body class="style-admin">    
+<body class="style-admin">
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    
     <section class="main-content">
         <div class="fixed-width">
             <div class="breadcrumb">
@@ -240,6 +241,7 @@
     </section>
 
     <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/teacher.js}"></script>
 	<script>
 	
 	$("#census_city").on('change',function(){ //點擊戶籍地址City

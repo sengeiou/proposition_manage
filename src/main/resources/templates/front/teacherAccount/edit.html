@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="style-admin">    
+<body class="style-admin">
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
 	    <form id="mainForm" method="POST" th:object="${account}">
 			<input type="hidden" id="id" th:field="*{id}" />
@@ -314,7 +314,8 @@
         <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
     </section>
 
-    <div th:include="front/load/js :: js"></div>    
+    <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/teacher.js}"></script>
 	<script>
 		$(function(){
 			$("#content").click(function(){

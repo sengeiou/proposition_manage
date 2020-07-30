@@ -21,5 +21,6 @@ public interface ContractMaterialDao {
 	public Map<String, Object> callNum(ContractMaterial contractMaterial, Account account);
 	public Integer allUndoneNum(ContractMaterial contractMaterial);
 	public Integer expired(ContractMaterial contractMaterial);
+	public Map<String, Object> contractNum();
 	
 }
