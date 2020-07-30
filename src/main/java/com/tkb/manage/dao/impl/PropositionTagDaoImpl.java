@@ -13,11 +13,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.tkb.manage.dao.PropositionAuditDao;
-import com.tkb.manage.model.PropositionAudit;
+import com.tkb.manage.dao.PropositionTagDao;
+import com.tkb.manage.model.PropositionTag;
 
 @Repository
-public class PropositionAuditDaoImpl implements PropositionAuditDao {
+public class PropositionTagDaoImpl implements PropositionTagDao {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -25,38 +25,48 @@ public class PropositionAuditDaoImpl implements PropositionAuditDao {
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcNameTemplate;
 	
-	public int add(PropositionAudit propositionAudit) {
+	public Integer add(PropositionTag propositionTag) {
 		
-		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(propositionAudit);
+		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(propositionTag);
 		
-		String sql = " INSERT INTO proposition_manage.proposition_audit"
-				   + " (PROPOSITION_ID, AUDITOR, VERSION, FILE_STATUS, AUDIT_FEEDBACK, "
+		String sql = " INSERT INTO proposition_manage.proposition_tag "
+				   + " (PROPOSITION_ID, NAME, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(:proposition_id, :auditor, "
-				   + " (SELECT CONCAT(:version, LPAD(COUNT, 2, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.proposition_audit WHERE PROPOSITION_ID = :proposition_id AND INSTR(VERSION, :version) > 0) L1), "
-				   + " :file_status, :audit_feedback, "
+				   + " VALUES(:lesson_plan_id, :name, "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-				
+		
 		jdbcNameTemplate.update(sql, paramSource, keyHolder);
 		
 		return keyHolder.getKey().intValue();
 		
 	}
 	
-	public List<Map<String, Object>> historyList(PropositionAudit propositionAudit) {
+	public void delete(PropositionTag propositionTag) {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT *, DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') AS CREATE_DATE "
-				   + " FROM proposition_manage.proposition_audit "
-				   + " WHERE PROPOSITION_ID = ? "
-				   + " ORDER BY CREATE_TIME DESC ";
+		String sql = " DELETE FROM proposition_manage.proposition_tag "
+				   + " WHERE PROPOSITION_ID = ? ";
 		
-		args.add(propositionAudit.getProposition_id());
+		args.add(propositionTag.getProposition_id());
+		
+		jdbcTemplate.update(sql, args.toArray());
+		
+	}
+	
+	public List<Map<String, Object>> tagList(PropositionTag propositionTag) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * FROM proposition_manage.proposition_tag "
+				   + " WHERE PROPOSITION_ID = ? ";
+		
+		args.add(propositionTag.getProposition_id());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		
 		if(list!=null && list.size()>0) {
 			return list;
 		} else {

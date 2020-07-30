@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 編輯</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}"> 
+    <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
+    <form id="mainForm" method="POST" th:object="${proposition}">
+		<input type="hidden" id="id" th:field="*{id}" />
+		<input type="hidden" id="page" th:field="*{page}" />
+		<input type="hidden" id="totalPage" th:field="*{total_page}" />
+		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+    <section class="main-content">
+        <div class="fixed-width">
+            <div class="breadcrumb">
+                <a href="/">首頁</a>
+                <i>/</i>
+                <a href="/proposition/basic">命題管理</a>
+                <i>/</i>
+                <a href="/proposition/basic">命題-選擇題列表</a>
+                <i>/</i>
+                <a href="#" id="content">詳細資料</a>
+                <i>/</i>
+                <a href="#">編輯教案</a>
+            </div>
+            <div class="create-content lesson">
+                <h3><i class="fas fa-book-open"></i>編輯命題<i class="fas fa-book"></i></h3>
+                <div class="create-grid">
+                    <div><span class="required">*</span>合約序號</div>
+                    <div class="basic-h">[[${data.contract_id}]]</div>
+                    <div><span class="required">*</span>命題名稱</div>
+                    <div><input type="text" placeholder="請輸入命題名稱" id="lessonName" th:field="${data.name}"></div>
+                    <div><span class="required">*</span>學習領域</div>
+                    <div>
+                        <select id="specialSkill" th:field="${data.field_id}">
+                            <option value="0">請選擇學習領域</option>
+                            <option th:each="field:${fieldList}" th:value="${field.id}" th:text="${field.name}"></option>
+                        </select>
+                    </div>
+                    <div><span class="required">*</span>學科</div>
+                    <div class="basic-h" id="subject">
+                        <!-- label的for 與 input的id要一致 -->
+                        <input type="hidden" id="subjectOption" th:value="${subjectOption}" />
+                        <label class="les-labelBlock" th:each="subject:${subjectList}" >
+                            <div class="checkbox-square" th:id="'subAct'+${subject.id}"></div>
+                            <span>[[${subject.name}]]</span>
+                            <input type="checkbox" class="dis-n" name="subject" th:value="${subject.id}">
+                        </label>
+                    </div>
+                    <div><span class="required">*</span>學制</div>
+                    <div>
+                        <select id="schoolType" th:field="${data.education_id}">
+                            <option value="0">請選擇學制</option>
+                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}">國小</option>
+                        </select>                      
+                    </div>
+                    <div id="gradeTitle"><span class="required">*</span>年級</div>
+                    <div class="basic-h" id="grade">
+                        <!-- label的for 與 input的id要一致 -->
+                        <input type="hidden" id="gradeOption" th:value="${gradeOption}" />
+                        <label class="les-labelBlock" th:each="grade:${gradeList}" >
+                            <div class="checkbox-square" th:id="'graAct'+${grade.id}"></div>
+                            <span>[[${grade.name}]]</span>
+                            <input type="checkbox" class="dis-n" name="grade" th:value="${grade.id}">
+                        </label> 
+                    </div>
+                    <div class="p-left-14px">命題檔案</div>
+                    <div class="basic-h"><a th:href="'/upload/file/proposition/'+${nowFile.upload_name}" target="_blank">[[${nowFile.file_name}]]</a></div>
+<!--                     <div class="p-left-14px">關鍵字</div> -->
+<!--                     <div> -->
+<!--                     	<input type="text" placeholder="請輸入關鍵字" class="keyWord"> -->
+<!--                     	<input type="hidden" class="keyWordInput" name="tag" th:value="${data.tag}"> -->
+<!--                     	<div class="lightboxItem" th:each="tag : ${#strings.arraySplit(data.tag, ',')}"> -->
+<!--                     		<span>[[${tag}]]</span> -->
+<!--                     		<button class="deleteTag"><i class="fas fa-times"></i></button> -->
+<!--                     	</div> -->
+<!--                     </div> -->
+                </div>
+                <button class="btn-submit" data-type="propoBasicEditAdmin" type="button">送出</button>
+            </div>
+<!--             <div class="create-content lessonFile"> -->
+<!--                 <h3><i class="fas fa-book-open"></i>檔案歷程<i class="fas fa-book"></i></h3> -->
+<!--                 <div class="container"> -->
+<!--                     <div>內容上傳</div> -->
+<!--                     <div>審核回饋</div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                     <div><a href="#" target="_blank">單元主題：「曆曆」在目（歷歷在目）</a><span>2019/10/16</span></div> -->
+<!--                 </div> -->
+<!--             </div> -->
+        </div>
+    </section>
+	
+    </form>
+    <!-- 警告燈箱 -->
+    <section class="lightBoxAlert dis-n">        
+        <!-- <button class="btn-closeLightBox" data-lb="lessonOutline"><i class="fas fa-times-circle fa-lg"></i></button> -->        
+        <div class="container">
+            <div>尚未填寫</div>
+        </div>
+        <button class="btn-closelightBoxAlert btn-sm">確定</button>
+    </section>
+
+    <div th:include="front/load/js :: js"></div>
+	<script>
+		$(function(){
+			$("#schoolType").change(function(){
+				if($("#schoolType").val() != "0") {
+					$.ajax({
+						url: '/proposition/basic/get/grade',
+						cache: false,
+						async: false,
+						dataType: 'json',
+						type: 'POST',
+						data: {
+							id: $(this).val()
+						},
+						error: function(xhr) {
+							alert("取得資料錯誤");
+						},
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								$("#gradeTitle").show();
+								$("#grade").show();
+								$("#grade").empty();
+								var str = "";
+								for(i=0; i<data.length; i++) {
+									var child = data[i];
+									str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+										+  "<div class='checkbox-square'></div>"
+										+  "<span>"+child.NAME+"</span>"
+										+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+										+  "</label>"
+								}
+								$("#grade").append(str);
+							}
+						}
+					});
+				} else {
+					$("#gradeTitle").hide();
+					$("#grade").hide();
+				}
+			});
+			$("#content").click(function(){
+				$("#mainForm").attr("action", "/proposition/basic/content");
+				$("#mainForm").submit();
+			})
+			//學科自動選取
+			if($("#subjectOption").val() != null) {
+				var subject = new Array();
+				subject = $("#subjectOption").val().split(",");
+				$("input[name='subject']").each(function(){
+					for(var i=0; i<subject.length; i++) {
+						if($(this).val() == subject[i]) {
+							$(this).attr("checked", true);
+							$("#subAct"+$(this).val()).addClass("active");
+						}
+					}
+				});
+			}
+			//年級自動選取
+			if($("#gradeOption").val() != null) {
+				var grade = new Array();
+				grade = $("#gradeOption").val().split(",");
+				$("input[name='grade']").each(function(){
+					for(var i=0; i<grade.length; i++) {
+						if($(this).val() == grade[i]) {
+							$(this).attr("checked", true);
+							$("#graAct"+$(this).val()).addClass("active");
+						}
+					}
+				});
+			}
+		})
+	</script>
+</body>
+</html>

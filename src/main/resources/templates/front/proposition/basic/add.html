@@ -20,63 +20,97 @@
                 <a href="#">新增命題-選擇題</a>
             </div>
             <div class="create-content lesson">
-                <h3><i class="fas fa-book-open"></i>新增命題-選擇題<i class="fas fa-book"></i></h3>
+                <h3><i class="fas fa-book-open"></i>新增命題<i class="fas fa-book"></i></h3>
                 <form role="form" id="mainForm" th:object="${proposition}" method="post" enctype="multipart/form-data">
-                <div class="create-grid">
-                    <div><span class="required">*</span>合約序號</div>
-                    <div>
-                        <select id="contractNum" th:field="*{contract_id}">
-                            <option value="0">請選擇合約</option>
-                            <option th:each="contract:${contractList}" th:value="${contract.contract_id}" th:text="${contract.contract_id}"></option>
-                        </select>
-                    </div>
-                    <div><span class="required">*</span>命題名稱</div>
-                    <div>
-                        <input type="text" placeholder="請輸入命題名稱" id="lessonName" th:field="*{name}">
-                    </div>
-                    <div><span class="required">*</span>學習領域</div>
-                    <div>
-                        <select id="specialSkill" th:field="*{field_id}">
-                            <option value="0">請選擇學習領域</option>
-                            <option th:each="field:${fieldList}" th:value="${field.id}" th:text="${field.name}"></option>
-                        </select>
-                    </div>
-                    <div class="basic-h"><span class="required">*</span>學科</div>
-                    <div class="basic-h">
-                        <!-- label的for 與 input的id要一致 -->
-                        <label class="les-labelBlock" th:each="subject:${subjectList}" >
-                            <div class="checkbox-square"></div>
-                            <span>[[${subject.name}]]</span>
-                            <input type="checkbox" class="dis-n" name="subject" th:value="${subject.id}">
-                        </label>
-                    </div>
-                    <div><span class="required">*</span>學制</div>
-                    <div>
-                        <select id="schoolType" th:field="*{education_id}">
-                            <option value="0">請選擇學制</option>
-                            <option th:each="education:${educationList}" th:value="${education.id}" th:text="${education.name}">國小</option>
-                        </select>                        
-                    </div>
-                    <div class="basic-h" id="gradeTitle"><span class="required">*</span>年級</div>
-                    <div class="basic-h" id="grade"></div>
-                    <div><span class="required">*</span>初稿檔案</div>
-                    <div>
-                        <label for="lessonFile">
-                            <input type="file" class="dis-n btnFile" id="lessonFile" name="fileName" accept=".pdf,.ppt,.doc,.docx,.xls,.xlsx" value="" data-text="lessonFileText">
-                            <span class="btn-file">選擇檔案</span>
-                        </label>                        
-                        <span class="memo">註：僅接受附檔名為.pdf、.ppt、.doc、.docx、.xls、.xlsx</span>                        
-                        <p class="lessonFileText"></p>
-                    </div>
-<!--                     <div class="p-left-14px">關鍵字</div> -->
-<!--                     <div> -->
-<!--                     	<input type="text" placeholder="請輸入關鍵字" class="keyWord"> -->
-<!--                     	<input type="hidden" value="" class="keyWordInput" name="tag"> -->
-<!--                     </div> -->
-                </div>
-                <button class="btn-submit" data-type="propoBasicCreate" type="button">送出</button>
+                	<input type="hidden" id="educationId" th:field="*{education_id}" />
+                	<input type="hidden" id="subjectId" th:field="*{subject_id}" />
+	                <div class="create-grid">
+	                    <div><span class="required">*</span>合約流水號</div>
+	                    <div>
+	                        <select id="contractNum" th:field="*{contract_id}">
+	                            <option value="0">請選擇合約</option>
+	                            <option th:each="contract:${contractList}" th:value="${contract.contract_id}" th:text="${contract.contract_id}"></option>
+	                        </select>
+	                    </div>
+	                    <div><span class="required">*</span>命題名稱</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入命題名稱" id="lessonName" th:field="*{name}">
+	                    </div>
+	                    <div class="p-left-14px">學制</div>
+	                    <div class="basic-h" id="education">(請選擇合約流水號，學制將由系統自動帶入)</div>
+	                    <div id="gradeTitle"><span class="required">*</span>年級</div>
+	                    <div class="basic-h" id="grade"></div>
+	                    <div class="p-left-14px">學科</div>
+	                    <div class="basic-h" id="subject">(請選擇合約流水號，學科將由系統自動帶入)</div>
+	                    <div id="crossSubjectTitle"><span class="required">*</span>跨科</div>
+	                    <div class="basic-h" id="crossSubject"></div>
+	                    <div><span class="required">*</span>初稿檔案</div>
+	                    <div>
+	                        <div>
+	                            <label for="lessonFile">
+	                                <input type="file" class="dis-n btnFile" id="lessonFile" name="word" accept=".doc,.docx" value="" data-text="lessonFileText">
+	                                <span class="btn-file">選擇原始檔</span>
+	                            </label>                        
+	                            <span class="memo">註：僅接受附檔名為.doc、.docx</span>                        
+	                            <p class="lessonFileText"></p>
+	                        </div>
+	                        <div class="m-top-15px">
+	                            <label for="lessonFilePDF">
+	                                <input type="file" class="dis-n btnFile" id="lessonFilePDF" name="pdf" accept=".pdf" value="" data-text="lessonFilePDFText">
+	                                <span class="btn-file">選擇PDF檔</span>
+	                            </label>                        
+	                            <span class="memo">註：僅接受附檔名為.pdf</span>                        
+	                            <p class="lessonFilePDFText"></p>
+	                        </div>                        
+	                    </div>
+	                    <div class="p-left-14px">附件</div>
+	                    <div class="attachmentBlock">
+	                        <div class="v-center flex-wrap display-spaBetween">
+	                            <div class="v-center">
+	                                <span class="attachNumber">附件1</span>
+	                                <select class="attach-select" name="material_type">
+	                                    <option value="0">請選擇類型</option>
+	                                    <option th:each="materialType:${materialTypeList}" th:value="${materialType.id}">[[${materialType.name}]]</option>
+	                                </select>                            
+	                                <label for="attachment" class="attach-label dis-n">
+	                                    <input type="file" class="dis-n btnFile" id="attachment" name="attachment" accept=".ppt,.doc,.docx,.xls,.xlsx" value="" data-text="attachmentText">
+	                                    <span class="btn-file">選擇檔案</span>
+	                                </label>                        
+	                                <span class="memo attach-label dis-n">註：僅接受附檔名為.doc、.docx</span>
+	                                <input type="text" placeholder="請輸入超連結" name="link" class="attach-label dis-n attach-linkInput">
+	                            </div>                            
+	                            <i class="fas fa-plus-circle fa-lg attach-label dis-n attach-plus" data-number="1"></i>
+	                            <p class="attachmentText dis-n"></p>
+	                        </div>
+	                    </div>
+	                    <div class="p-left-14px">素材授權申請</div>
+	                    <div class="contractMatBlock">
+	                        <div>                            
+	                            範例檔案
+	                            <button class="btn-smSolid btnDownFile" data-btntype="exampleContractMat" type="button">下載範例檔</button>                           
+	                        </div>                        
+	                        <div class="v-center flex-wrap display-spaBetween m-top-15px">
+	                            <div class="v-center">
+	                                <span class="contractMatNumber">檔案1</span>                                                          
+	                                <label for="contractMat">
+	                                    <input type="file" class="dis-n btnFile" id="contractMat" name="contractMat" accept=".doc,.docx,.pdf" value="" data-text="contractMatText">
+	                                    <span class="btn-file">選擇檔案</span>
+	                                </label>                        
+	                                <span class="memo">註：僅接受附檔名為.doc、.docx、.pdf</span>                                
+	                            </div>                            
+	                            <i class="fas fa-plus-circle fa-lg dis-n contractMat-plus" data-number="1"></i>
+	                            <p class="contractMatText dis-n"></p>
+	                        </div>
+	                    </div>
+	                    <div class="p-left-14px">關鍵字</div>
+	                    <div>
+	                        <input type="text" placeholder="請輸入關鍵字" class="keyWord">
+	                        <input type="hidden" value="" class="keyWordInput" name="tag">
+	                    </div>
+	                </div>
+	                <button class="btn-submit" data-type="lessonCreate" type="button">送出</button>
                 </form>
-            </div>                
+            </div>
         </div>
     </section>
     
@@ -86,51 +120,123 @@
         <div class="container">
             <div>尚未填寫</div>
         </div>
-        <button class="btn-closelightBoxAlert btn-sm">確定</button>
+        <button class="btn-closelightBoxAlert btn-sm" type="button">確定</button>
     </section>
 
-    <div th:include="front/load/js :: js"></div>  
+    <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/lessonProp.js}"></script>
 	<script>
+		
 		$("#gradeTitle").hide();
 		$("#grade").hide();
-		$("#schoolType").change(function(){
-			if($("#schoolType").val() != "0") {
-				$.ajax({
-					url: '/proposition/basic/get/grade',
-					cache: false,
-					async: false,
-					dataType: 'json',
-					type: 'POST',
-					data: {
-						id: $(this).val()
-					},
-					error: function(xhr) {
-						alert("取得資料錯誤");
-					},
-					success: function(data) {
-						if(data != null && data.length > 0) {
-							$("#gradeTitle").show();
-							$("#grade").show();
-							$("#grade").empty();
-							var str = "";
-							for(i=0; i<data.length; i++) {
-								var child = data[i];
-								str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
-									+  "<div class='checkbox-square'></div>"
-									+  "<span>"+child.NAME+"</span>"
-									+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
-									+  "</label>"
-							}
-							$("#grade").append(str);
-						}
-					}
-				});
+		$("#crossSubjectTitle").hide();
+		$("#crossSubject").hide();
+	
+		$("#contractNum").change(function(){
+			if($(this).val() != "0") {
+				setContract($(this).val());
 			} else {
+				$("#education").text("(請選擇合約流水號，學制將由系統自動帶入)");
+				$("#subject").text("(請選擇合約流水號，學科將由系統自動帶入)");
 				$("#gradeTitle").hide();
 				$("#grade").hide();
+				$("#crossSubjectTitle").hide();
+				$("#crossSubject").hide();
 			}
-		});
-	
+		})
+
+		function getGrade(id) {
+			$.ajax({
+				url: '/get/grade',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						$("#gradeTitle").show();
+						$("#grade").show();
+						$("#grade").empty();
+						var str = "";
+						for(i=0; i<data.length; i++) {
+							var child = data[i];
+							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+								+  "<div class='checkbox-square'></div>"
+								+  "<span>"+child.NAME+"</span>"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
+								+  "</label>"
+						}
+						$("#grade").append(str);
+					}
+				}
+			});
+		}
+		
+		function getCrossSubject(id) {
+			$.ajax({
+				url: '/get/cross/subject',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						$("#crossSubjectTitle").show();
+						$("#crossSubject").show();
+						$("#crossSubject").empty();
+						var str = "";
+						for(i=0; i<data.length; i++) {
+							var child = data[i];
+							str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
+								+  "<div class='checkbox-square'></div>"
+								+  "<span>"+child.NAME+"</span>"
+								+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='crossSubject' value="+child.ID+">"
+								+  "</label>"
+						}
+						$("#crossSubject").append(str);
+					}
+				}
+			});
+		}
+		
+		function setContract(id) {
+			$.ajax({
+				url: '/set/contract',
+				cache: false,
+				async: false,
+				dataType: 'json',
+				type: 'POST',
+				data: {
+					contract_id: id
+				},
+				error: function(xhr) {
+					alert("取得資料錯誤");
+				},
+				success: function(data) {
+					if(data != null && data.length > 0) {
+						var child = data[0];
+						$("#educationId").val(child.EDUCATION_ID);
+						$("#education").text(child.EDUCATION_NAME);
+						$("#subjectId").val(child.SUBJECT_ID);
+						$("#subject").text(child.SUBJECT_NAME);
+						getGrade(child.EDUCATION_ID);
+						getCrossSubject(child.SUBJECT_ID);
+					}
+				}
+			});
+		}
 	</script>
 </body>
 </html>

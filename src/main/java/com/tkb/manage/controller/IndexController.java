@@ -57,6 +57,7 @@ import com.tkb.manage.model.Proposition;
 import com.tkb.manage.model.PropositionAudit;
 import com.tkb.manage.model.PropositionFile;
 import com.tkb.manage.model.PropositionOption;
+import com.tkb.manage.model.PropositionTag;
 import com.tkb.manage.model.SchoolMaster;
 import com.tkb.manage.model.Subject;
 import com.tkb.manage.model.TeacherAccountOption;
@@ -77,6 +78,7 @@ import com.tkb.manage.service.PropositionAuditService;
 import com.tkb.manage.service.PropositionFileService;
 import com.tkb.manage.service.PropositionOptionService;
 import com.tkb.manage.service.PropositionService;
+import com.tkb.manage.service.PropositionTagService;
 import com.tkb.manage.service.SchoolMasterService;
 import com.tkb.manage.service.SubjectService;
 import com.tkb.manage.service.TeacherAccountOptionService;
@@ -147,6 +149,9 @@ public class IndexController {
 	
 	@Autowired
 	private PropositionAuditService propositionAuditService;
+	
+	@Autowired
+	private PropositionTagService propositionTagService;
 	
 	@Autowired
 	private SubjectService subjectService;
@@ -2053,24 +2058,6 @@ public class IndexController {
 		return "front/path";
 	}
 	
-	@RequestMapping(value = "/lesson/get/field" , method = {RequestMethod.GET, RequestMethod.POST})
-	public void getField(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
-		
-		Field field = new Field();
-		
-		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
-		field.setParent_id(id);
-
-		List<Map<String, Object>> list = fieldService.getChild(field);
-		
-		JSONArray tJSONArray = new JSONArray(list);
-		
-		pResponse.setCharacterEncoding("utf-8");
-		PrintWriter out = pResponse.getWriter();
-		out.write(tJSONArray.toString());
-		
-	}
-	
 	/**
 	 * 命題-基本題
 	 */
@@ -2081,6 +2068,7 @@ public class IndexController {
 		if(proposition.getPage_count() == null) {
 			proposition.setPage_count(10);
 		}
+		
 		model.addAttribute("page_count", proposition.getPage_count());
 		
 		if(proposition.getPage() == null) {
@@ -2105,7 +2093,7 @@ public class IndexController {
 			contract.setTeacher_id(accountSession.getId());
 			//總需上傳數-已上傳=未上傳數
 			Map<String, Object> uploadNum = contractService.uploadNum(contract);
-			//命題總需上傳數
+			//命題基本題總需上傳數
 			int basicNum = Integer.valueOf(uploadNum.get("BASIC_NUM").toString());
 			model.addAttribute("basicNum", basicNum);
 			//合約未完成數
@@ -2114,29 +2102,31 @@ public class IndexController {
 			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
-			proposition.setUpload_status("Y");
+//			lessonPlan.setFile_status("A");
 			int addCount = propositionService.uploadStatusCount(proposition);
 			model.addAttribute("addCount", addCount);
 			//待修訂數
-			proposition.setUpload_status("N");
-			int editCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("editCount", editCount);
+			proposition.setFile_status("B");
+			int bCount = propositionService.uploadStatusCount(proposition);
+			proposition.setFile_status("D");
+			int dCount = propositionService.uploadStatusCount(proposition);
+			model.addAttribute("editCount", bCount+dCount);
 			//已完稿數
-			proposition.setUpload_status("C");
+			proposition.setFile_status("F");
 			int doneCount = propositionService.uploadStatusCount(proposition);
 			model.addAttribute("doneCount", doneCount);
 		} else if(level == 4) {
-			proposition.setAuditor(accountSession.getAccount());
+			proposition.setAuditor2(accountSession.getAccount());
 			list = propositionService.auditList(proposition);
 			count = propositionService.auditCount(proposition);
 		} else if(level == 5) {
-			proposition.setField_id(accountSession.getField_list());
 			proposition.setEducation_id(accountSession.getEducation_list());
+			proposition.setSubject_id(accountSession.getSubject_list());
 			list = propositionService.principalList(proposition);
 			count = propositionService.principalCount(proposition);
 		} else if(level == 6) {
-			proposition.setField_id(accountSession.getField_list());
 			proposition.setEducation_id(accountSession.getEducation_list());
+			proposition.setSubject_id(accountSession.getSubject_list());
 			list = propositionService.leaderList(proposition);
 			count = propositionService.leaderCount(proposition);
 		} else if(level == 7) {
@@ -2172,11 +2162,6 @@ public class IndexController {
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
 		//取得學制清單
 		Education education = new Education();
 		education.setLayer("1");
@@ -2200,41 +2185,33 @@ public class IndexController {
 	public String propositionBasicAddSubmit(Model model,
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
-			@RequestParam("fileName") MultipartFile fileName,
-//			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
+			@RequestParam("word") MultipartFile word,
+			@RequestParam("pdf") MultipartFile pdf,
+			@RequestParam(value="attachment", required=false) MultipartFile[] attachment,
+			@RequestParam(value="contractMat", required=false) MultipartFile[] contractMat,
 			HttpServletRequest pRequest
 			) {
 		
 		try {
 			
-			//取得相關領域審核人
-//			Contract contract = new Contract();
-//			contract.setContract_id(proposition.getContract_id());
-//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+			//取得相關領域審核人(校長)
 			Account account = new Account();
-			account.setId(accountSession.getId());
-			account.setField_id(proposition.getField_id());
-			Map<String, Object> callNum = teacherAccountService.callNum(account);
+			account.setAccount(accountSession.getAccount());
+			account.setPosition("3");
+			account.setEducation_id(proposition.getEducation_id());
+			account.setSubject_id(proposition.getSubject_id());
+			Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
+			
+			//新增
+			proposition.setProposition_number(proposition.getContract_id()+"B");
 			proposition.setQuestion_type("1");
-			proposition.setAuditor(callNum.get("ACCOUNT").toString());
-			proposition.setFile_status("Y");
-			proposition.setUpload_status("Y");
+			proposition.setAuditor(getAuditor.get("ACCOUNT").toString());
+			proposition.setFile_status("A");
 			proposition.setCreate_by(accountSession.getAccount());
 			proposition.setUpdate_by(accountSession.getAccount());
 			int id = propositionService.add(proposition);
 			
 			PropositionOption propositionOption = new PropositionOption();
-			
-			//學科
-			String[] subject = pRequest.getParameterValues("subject");
-			for(int i=0; i<subject.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(String.valueOf(id));
-				propositionOption.setType("2");
-				propositionOption.setCode(subject[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
-			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
@@ -2247,27 +2224,123 @@ public class IndexController {
 				propositionOptionService.add(propositionOption);
 			}
 			
-			//教案檔案
+			//跨學科
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			for(int i=0; i<subject.length; i++) {
+				propositionOption = new PropositionOption();
+				propositionOption.setProposition_id(String.valueOf(id));
+				propositionOption.setType("2");
+				propositionOption.setCode(subject[i]);
+				propositionOption.setCreate_by(accountSession.getAccount());
+				propositionOptionService.add(propositionOption);
+			}
+			
+			//設定初審(校長)
+			PropositionAudit propositionAudit = new PropositionAudit();
+			propositionAudit.setProposition_id(String.valueOf(id));
+			propositionAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+			propositionAudit.setVersion("A");
+			propositionAudit.setFile_status("A");
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//命題檔案
 			PropositionFile propositionFile = new PropositionFile();
 			propositionFile.setProposition_id(String.valueOf(id));
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
-			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-			propositionFile.setType("1");
+			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("1");
+			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(fileName.getOriginalFilename());
+			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
 			propositionFileService.add(propositionFile);
 			
-			//新增審核人
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(String.valueOf(id));
-			propositionAudit.setAuditor(callNum.get("ACCOUNT").toString());
-			propositionAudit.setFile_status("Y");
-			propositionAudit.setUpload_status("Y");
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
+			//初稿(pdf)
+//			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			propositionFile = new PropositionFile();
+			propositionFile.setProposition_id(String.valueOf(id));
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+			
+			uploadName = commonService.uploadFileSaveDateName(pdf, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("2");
+			propositionFile.setMaterial_type_id(null);
+			propositionFile.setMaterial_link(null);
+			propositionFile.setUpload_name(uploadName);
+			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setDisplay("1");
+			propositionFile.setCreate_by(accountSession.getAccount());
+			propositionFile.setUpdate_by(accountSession.getAccount());
+			propositionFileService.add(propositionFile);
+			
+			//附件
+			String[] materialType = pRequest.getParameterValues("material_type");
+			String[] link = pRequest.getParameterValues("link");
+			if((materialType!=null && link!=null && !attachment[0].isEmpty()) && (materialType.length==attachment.length && link.length==attachment.length)) {
+				propositionFile = new PropositionFile();
+				propositionFile.setProposition_id(String.valueOf(id));
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+				for(int i=0; i<attachment.length; i++) {
+					if(!"4".equals(materialType[i])) {
+//						System.out.println("attachment"+i+":"+attachment[i].getOriginalFilename());
+						uploadName = commonService.uploadFileSaveDateName(attachment[i], uploadedFolder+"file/proposition/");
+						propositionFile.setData_type("3");
+						propositionFile.setMaterial_type_id(materialType[i]);
+						propositionFile.setMaterial_link(null);
+						propositionFile.setUpload_name(uploadName);
+						propositionFile.setFile_name(attachment[i].getOriginalFilename());
+					} else {
+						propositionFile.setData_type("3");
+						propositionFile.setMaterial_type_id(materialType[i]);
+						propositionFile.setMaterial_link(!"".equals(link[i]) ? link[i] : null);
+						propositionFile.setUpload_name(null);
+						propositionFile.setFile_name(null);
+					}
+					propositionFile.setDisplay("1");
+					propositionFile.setCreate_by(accountSession.getAccount());
+					propositionFile.setUpdate_by(accountSession.getAccount());
+					propositionFileService.add(propositionFile);
+				}
+			}
+			
+			//素材授權
+			if(!contractMat[0].isEmpty()) {
+				propositionFile = new PropositionFile();
+				propositionFile.setProposition_id(String.valueOf(id));
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+				for(int i=0; i<contractMat.length; i++) {
+//					System.out.println("contractMat"+i+":"+contractMat[i].getOriginalFilename());
+					uploadName = commonService.uploadFileSaveDateName(contractMat[i], uploadedFolder+"file/proposition/");
+					propositionFile.setData_type("4");
+					propositionFile.setMaterial_type_id(null);
+					propositionFile.setMaterial_link(null);
+					propositionFile.setUpload_name(uploadName);
+					propositionFile.setFile_name(contractMat[i].getOriginalFilename());
+					propositionFile.setDisplay("1");
+					propositionFile.setCreate_by(accountSession.getAccount());
+					propositionFile.setUpdate_by(accountSession.getAccount());
+					propositionFileService.add(propositionFile);
+				}
+			}
+			
+			//關鍵字
+			PropositionTag propositionTag = new PropositionTag();
+			propositionTag.setProposition_id(String.valueOf(id));
+			
+			String[] tag = proposition.getTag() != null ? proposition.getTag().split(",") : null;
+			if(tag != null && tag.length > 0) {
+				for(int i=0; i<tag.length; i++) {
+					propositionTag.setName(tag[i]);
+					propositionTag.setCreate_by(accountSession.getAccount());
+					propositionTag.setUpdate_by(accountSession.getAccount());
+					propositionTagService.add(propositionTag);
+				}
+			}
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -2288,20 +2361,6 @@ public class IndexController {
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得學習領域資料
-		Field field = new Field();
-		field.setId(data.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("field_name", field.getName());
-		
-		//取得學科清單
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
-		String subject = subjectOption.get("OPTION").toString();
-		model.addAttribute("subject", subject);
-		
 		//取得學制資料
 		Education education = new Education();
 		education.setId(data.getEducation_id());
@@ -2309,29 +2368,57 @@ public class IndexController {
 		model.addAttribute("education_name", education.getName());
 		
 		//取得年級清單
-		propositionOption = new PropositionOption();
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.gradeOption(propositionOption);
-		String grade = gradeOption.get("OPTION").toString();
-		model.addAttribute("grade", grade);
+		String go = gradeOption.get("OPTION").toString();
+		model.addAttribute("gradeOption", go);
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(data.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subject_name", subject.getName());
+		
+		//取得跨科清單
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
+		model.addAttribute("auditList", auditList);
+		
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-//		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("contentList", contentList);
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
 		
-		//取得審核回饋歷程
-//		propositionFile = new PropositionFile();
-//		propositionFile.setProposition_id(proposition.getId());
-//		propositionFile.setType("2");
-//		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
-//		model.addAttribute("auditList", auditList);
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
 		
-		//取得最新檔案
-		model.addAttribute("nowFile", contentList.get(0));
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -2343,53 +2430,68 @@ public class IndexController {
 	@RequestMapping(value = "/proposition/basic/update" , method = {RequestMethod.POST, RequestMethod.GET})
     public String propositionBasicUpdate(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, Model model){
 		
-		//取得教案資料
+		//取得命題資料
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
-		//取得學制清單
-		Education education = new Education();
-		education.setLayer("1");
-		List<Map<String, Object>> educationList = educationService.getList(education);
-		model.addAttribute("educationList", educationList);
-		
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.option(propositionOption);
-		String so = subjectOption.get("OPTION").toString();
-		model.addAttribute("subjectOption", so);
-		
-		//取得學科清單
-		Subject subject = new Subject();
-		subject.setLayer("1");
-		List<Map<String, Object>> subjectList = subjectService.getList(subject);
-		model.addAttribute("subjectList", subjectList);
-		
 		//取得年級清單
-		education = new Education();
+		Education education = new Education();
 		education.setParent_id(data.getEducation_id());
 		List<Map<String, Object>> gradeList = educationService.getChild(education);
 		model.addAttribute("gradeList", gradeList);
 		
-		propositionOption = new PropositionOption();
+		//串接年級資料
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.option(propositionOption);
 		String go = gradeOption.get("OPTION").toString();
 		model.addAttribute("gradeOption", go);
 		
+		//取得跨科清單
+		Subject subject = new Subject();
+		subject.setParent_id(data.getSubject_id());
+		List<Map<String, Object>> crossSubjectList = subjectService.getChild(subject);
+		model.addAttribute("crossSubjectList", crossSubjectList);
+		
+		//串接跨科資料
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.option(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
+		
 		//取得內容上傳歷程
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
+		model.addAttribute("auditList", auditList);
+		
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("nowFile", contentList.get(0));
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
+		
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
+		
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -2415,27 +2517,56 @@ public class IndexController {
 			propositionOptionService.delete(propositionOption);
 			
 			//學科
-			String[] subject = pRequest.getParameterValues("subject");
-			for(int i=0; i<subject.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(proposition.getId());
+			String[] subjectOption = pRequest.getParameter("subjectOption").split(",");
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			if(!Arrays.equals(subjectOption, subject)) {
 				propositionOption.setType("2");
-				propositionOption.setCode(subject[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
+				propositionOptionService.delete(propositionOption);
+				for(int i=0; i<subject.length; i++) {
+					propositionOption = new PropositionOption();
+					propositionOption.setProposition_id(proposition.getId());
+					propositionOption.setType("2");
+					propositionOption.setCode(subject[i]);
+					propositionOption.setCreate_by(accountSession.getAccount());
+					propositionOptionService.add(propositionOption);
+				}
 			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
-			for(int i=0; i<grade.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(proposition.getId());
+			String[] gradeOption = pRequest.getParameter("gradeOption").split(",");
+			if(!Arrays.equals(gradeOption, grade)) {
 				propositionOption.setType("4");
-				propositionOption.setCode(grade[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
+				propositionOptionService.delete(propositionOption);
+				for(int i=0; i<grade.length; i++) {
+					propositionOption = new PropositionOption();
+					propositionOption.setProposition_id(proposition.getId());
+					propositionOption.setType("4");
+					propositionOption.setCode(grade[i]);
+					propositionOption.setCreate_by(accountSession.getAccount());
+					propositionOptionService.add(propositionOption);
+				}
 			}
 			
+			String tagOld = pRequest.getParameter("tagOld").replace(" ", "");
+			proposition.setTag(proposition.getTag().replace(" ", "").replace("\t", "").replace("\r", "").replace("\n", ""));
+			
+			if(!tagOld.equals(proposition.getTag())) {
+				//關鍵字
+				PropositionTag propositionTag = new PropositionTag();
+				propositionTag.setProposition_id(proposition.getId());
+				propositionTagService.delete(propositionTag);
+				
+				String[] tag = proposition.getTag() != null ? proposition.getTag().split(",") : null;
+				if(tag != null && tag.length > 0) {
+					for(int i=0; i<tag.length; i++) {
+						propositionTag.setName(tag[i]);
+						propositionTag.setCreate_by(accountSession.getAccount());
+						propositionTag.setUpdate_by(accountSession.getAccount());
+						propositionTagService.add(propositionTag);
+					}
+				}
+			}
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -2460,42 +2591,101 @@ public class IndexController {
 		
 		try {
 			
-			String audit = pRequest.getParameter("verify");
-			String file_status = "C", upload_status = "C";
+			//通過：1，待修正：0
+			String verify = pRequest.getParameter("verify");
+			//系統指派：1，人工設定：0
+			String verifyMethod = pRequest.getParameter("verifyMethod");
+			//審核狀態(A：初審中，B：初審待修正，C：初審通過 / 審核中，D：審核待修正，E：審核通過 / 完稿確認，F：完稿，G：完稿待修正)
+			String file_status = pRequest.getParameter("file_status");
+			String version = "B";
 			
-			if("0".equals(audit)) {
-				file_status = "N";
-				upload_status = "N";
-				//教案檔案
+			PropositionAudit propositionAudit = new PropositionAudit();
+			
+			//通過
+			if("1".equals(verify)) {
+				if("A".equals(file_status)) {
+					file_status = "C";
+					version = "B";
+				} else if("C".equals(file_status)) {
+					file_status = "E";
+					version = "C";
+				} else if("E".equals(file_status)) {
+					file_status = "F";
+					version = "D";
+				}
+				
+				//系統指派
+				if("1".equals(verifyMethod)) {
+					//隨機選擇審核人
+					Account account = new Account();
+					account.setAccount(proposition.getCreate_by());
+					account.setPosition("1");
+					account.setEducation_id(proposition.getEducation_id());
+					account.setSubject_id(proposition.getSubject_id());
+					account.setContent_audit("1");
+					Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
+					propositionAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+					proposition.setAuditor2(getAuditor.get("ACCOUNT").toString());
+				//人工設定
+				} else if("0".equals(verifyMethod)) {
+					String auditor = pRequest.getParameter("auditor");
+					propositionAudit.setAuditor(auditor);
+					proposition.setAuditor2(auditor);
+				}
+				
+			//待修正
+			} else {
+				if("A".equals(file_status)) {
+					file_status = "B";
+					version = "B";
+				} else if("C".equals(file_status)) {
+					file_status = "D";
+					version = "C";
+				} else if("E".equals(file_status)) {
+					file_status = "G";
+					version = "D";
+				}
+				
+				//回饋意見
+				String audit_feedback = pRequest.getParameter("audit_feedback");
+				if(!"".equals(audit_feedback)) {
+//					System.out.println(audit_feedback);
+					propositionAudit.setAudit_feedback(audit_feedback);
+				}
+				
+			}
+			
+			//新增審核紀錄
+			propositionAudit.setProposition_id(proposition.getId());
+			propositionAudit.setFile_status(file_status);
+			propositionAudit.setAuditor(accountSession.getAccount());
+			propositionAudit.setVersion(version);
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//回饋檔案
+			if(fileName!=null && !fileName.isEmpty()) {
+				//命題檔案
 				PropositionFile propositionFile = new PropositionFile();
 				propositionFile.setProposition_id(proposition.getId());
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-				propositionFile.setType("2");
+				propositionFile.setData_type("5");
+				propositionFile.setMaterial_type_id(null);
+				propositionFile.setMaterial_link(null);
 				propositionFile.setUpload_name(uploadName);
 				propositionFile.setFile_name(fileName.getOriginalFilename());
+				propositionFile.setDisplay("1");
 				propositionFile.setCreate_by(accountSession.getAccount());
 				propositionFile.setUpdate_by(accountSession.getAccount());
 				propositionFileService.add(propositionFile);
-			} else {
-				file_status = "C";
-				upload_status = "C";
 			}
 			
 			//審核
 			proposition.setFile_status(file_status);
-			proposition.setUpload_status(upload_status);
 			propositionService.audit(proposition);
-			
-			//新增審核紀錄
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(proposition.getId());
-			propositionAudit.setAuditor(accountSession.getAccount());
-			propositionAudit.setFile_status(file_status);
-			propositionAudit.setUpload_status(upload_status);
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -2516,20 +2706,6 @@ public class IndexController {
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得學習領域資料
-		Field field = new Field();
-		field.setId(data.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("field_name", field.getName());
-		
-		//取得學科清單
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
-		String subject = subjectOption.get("OPTION").toString();
-		model.addAttribute("subject", subject);
-		
 		//取得學制資料
 		Education education = new Education();
 		education.setId(data.getEducation_id());
@@ -2537,29 +2713,57 @@ public class IndexController {
 		model.addAttribute("education_name", education.getName());
 		
 		//取得年級清單
-		propositionOption = new PropositionOption();
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.gradeOption(propositionOption);
-		String grade = gradeOption.get("OPTION").toString();
-		model.addAttribute("grade", grade);
+		String go = gradeOption.get("OPTION").toString();
+		model.addAttribute("gradeOption", go);
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(data.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subject_name", subject.getName());
+		
+		//取得跨科清單
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
-		PropositionFile propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("contentList", contentList);
-		
-		//取得審核回饋歷程
-		propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("2");
-		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
 		model.addAttribute("auditList", auditList);
 		
-		//取得最新檔案
-		model.addAttribute("nowFile", contentList.get(0));
+		PropositionFile propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
+		
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
+		
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -2573,40 +2777,73 @@ public class IndexController {
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
 			@RequestParam("fileName") MultipartFile fileName,
-//			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
+			@RequestParam("word") MultipartFile word,
+			@RequestParam("pdf") MultipartFile pdf,
 			HttpServletRequest pRequest
 			) {
 		
 		try {
 			
-			String file_status = "Y", upload_status = "Y";
+			String file_status = pRequest.getParameter("file_status");
+			String auditor = pRequest.getParameter("auditor");
+			String auditor2 = pRequest.getParameter("auditor2");
 			
-			//教案檔案
+			PropositionAudit propositionAudit = new PropositionAudit();
+			
+			if("B".equals(file_status)) {
+				file_status = "A";
+				propositionAudit.setAuditor(auditor);
+			}
+			
+			if("D".equals(file_status)) {
+				file_status = "C";
+				propositionAudit.setAuditor(auditor2);
+			}
+			
+			//新增審核紀錄
+			propositionAudit.setProposition_id(proposition.getId());
+			propositionAudit.setVersion("A");
+			propositionAudit.setFile_status(file_status);
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//命題檔案
 			PropositionFile propositionFile = new PropositionFile();
 			propositionFile.setProposition_id(proposition.getId());
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
-			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-			propositionFile.setType("1");
+			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("1");
+			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(fileName.getOriginalFilename());
+			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setDisplay("1");
+			propositionFile.setCreate_by(accountSession.getAccount());
+			propositionFile.setUpdate_by(accountSession.getAccount());
+			propositionFileService.add(propositionFile);
+			
+			//初稿(pdf)
+//			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			propositionFile = new PropositionFile();
+			propositionFile.setProposition_id(proposition.getId());
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+			
+			uploadName = commonService.uploadFileSaveDateName(pdf, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("2");
+			propositionFile.setMaterial_type_id(null);
+			propositionFile.setMaterial_link(null);
+			propositionFile.setUpload_name(uploadName);
+			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
 			propositionFileService.add(propositionFile);
 			
 			//審核
 			proposition.setFile_status(file_status);
-			proposition.setUpload_status(upload_status);
 			propositionService.audit(proposition);
-			
-			//新增審核紀錄
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(proposition.getId());
-			propositionAudit.setAuditor(accountSession.getAccount());
-			propositionAudit.setFile_status(file_status);
-			propositionAudit.setUpload_status(upload_status);
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -2620,27 +2857,8 @@ public class IndexController {
 		return "front/path";
 	}
 	
-	@RequestMapping(value = "/proposition/basic/get/grade" , method = {RequestMethod.GET, RequestMethod.POST})
-	public void propositionBasicGetGrade(@SessionAttribute("accountSession") Account accountSession, HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
-		
-		Education education = new Education();
-		
-		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
-		education.setParent_id(id);
-
-		List<Map<String, Object>> list = educationService.getChild(education);
-		
-		JSONArray tJSONArray = new JSONArray(list);
-		
-		pResponse.setCharacterEncoding("utf-8");
-		PrintWriter out = pResponse.getWriter();
-		out.write(tJSONArray.toString());
-		
-	}
-	
-	
 	/**
-	 * 命題-題組題
+	 * 命題-混合題
 	 */
 	@RequestMapping(value = "/proposition/group" , method = {RequestMethod.POST, RequestMethod.GET})
     public String propositionGroup(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, @ModelAttribute ContractMaterial contractMaterial, Model model){
@@ -2649,6 +2867,7 @@ public class IndexController {
 		if(proposition.getPage_count() == null) {
 			proposition.setPage_count(10);
 		}
+		
 		model.addAttribute("page_count", proposition.getPage_count());
 		
 		if(proposition.getPage() == null) {
@@ -2673,38 +2892,40 @@ public class IndexController {
 			contract.setTeacher_id(accountSession.getId());
 			//總需上傳數-已上傳=未上傳數
 			Map<String, Object> uploadNum = contractService.uploadNum(contract);
-			//命題總需上傳數
-			int questionsGroupNum = Integer.valueOf(uploadNum.get("QUESTIONS_GROUP_NUM").toString());
-			model.addAttribute("questionsGroupNum", questionsGroupNum);
+			//命題基本題總需上傳數
+			int basicNum = Integer.valueOf(uploadNum.get("BASIC_NUM").toString());
+			model.addAttribute("basicNum", basicNum);
 			//合約未完成數
 //			int undoneCount = contractService.undoneCount(contract);
 			List<Map<String, Object>> contractList = contractService.getList(contract);
 			int undoneCount = contractList != null ? contractList.size() : 0;
 			model.addAttribute("undoneCount", undoneCount);
 			//已上傳數
-			proposition.setUpload_status("Y");
+//			lessonPlan.setFile_status("A");
 			int addCount = propositionService.uploadStatusCount(proposition);
 			model.addAttribute("addCount", addCount);
 			//待修訂數
-			proposition.setUpload_status("N");
-			int editCount = propositionService.uploadStatusCount(proposition);
-			model.addAttribute("editCount", editCount);
+			proposition.setFile_status("B");
+			int bCount = propositionService.uploadStatusCount(proposition);
+			proposition.setFile_status("D");
+			int dCount = propositionService.uploadStatusCount(proposition);
+			model.addAttribute("editCount", bCount+dCount);
 			//已完稿數
-			proposition.setUpload_status("C");
+			proposition.setFile_status("F");
 			int doneCount = propositionService.uploadStatusCount(proposition);
 			model.addAttribute("doneCount", doneCount);
 		} else if(level == 4) {
-			proposition.setAuditor(accountSession.getAccount());
+			proposition.setAuditor2(accountSession.getAccount());
 			list = propositionService.auditList(proposition);
 			count = propositionService.auditCount(proposition);
 		} else if(level == 5) {
-			proposition.setField_id(accountSession.getField_list());
 			proposition.setEducation_id(accountSession.getEducation_list());
+			proposition.setSubject_id(accountSession.getSubject_list());
 			list = propositionService.principalList(proposition);
 			count = propositionService.principalCount(proposition);
 		} else if(level == 6) {
-			proposition.setField_id(accountSession.getField_list());
 			proposition.setEducation_id(accountSession.getEducation_list());
+			proposition.setSubject_id(accountSession.getSubject_list());
 			list = propositionService.leaderList(proposition);
 			count = propositionService.leaderCount(proposition);
 		} else if(level == 7) {
@@ -2740,11 +2961,6 @@ public class IndexController {
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
 		//取得學制清單
 		Education education = new Education();
 		education.setLayer("1");
@@ -2769,40 +2985,33 @@ public class IndexController {
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
 			@RequestParam("fileName") MultipartFile fileName,
-//			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
+			@RequestParam("word") MultipartFile word,
+			@RequestParam("pdf") MultipartFile pdf,
+			@RequestParam(value="attachment", required=false) MultipartFile[] attachment,
+			@RequestParam(value="contractMat", required=false) MultipartFile[] contractMat,
 			HttpServletRequest pRequest
 			) {
 		
 		try {
 			
-			//取得相關領域審核人
-//			Contract contract = new Contract();
-//			contract.setContract_id(proposition.getContract_id());
-//			Map<String, Object> callNum = contractService.callNum(contract, accountSession);
+			//取得相關領域審核人(校長)
 			Account account = new Account();
-			account.setId(accountSession.getId());
-			account.setField_id(proposition.getField_id());
-			Map<String, Object> callNum = teacherAccountService.callNum(account);
+			account.setAccount(accountSession.getAccount());
+			account.setPosition("3");
+			account.setEducation_id(proposition.getEducation_id());
+			account.setSubject_id(proposition.getSubject_id());
+			Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
+			
+			//新增
+			proposition.setProposition_number(proposition.getContract_id()+"B");
 			proposition.setQuestion_type("2");
-			proposition.setAuditor(callNum.get("ACCOUNT").toString());
-			proposition.setFile_status("Y");
-			proposition.setUpload_status("Y");
+			proposition.setAuditor(getAuditor.get("ACCOUNT").toString());
+			proposition.setFile_status("A");
 			proposition.setCreate_by(accountSession.getAccount());
 			proposition.setUpdate_by(accountSession.getAccount());
 			int id = propositionService.add(proposition);
 			
 			PropositionOption propositionOption = new PropositionOption();
-			
-			//學科
-			String[] subject = pRequest.getParameterValues("subject");
-			for(int i=0; i<subject.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(String.valueOf(id));
-				propositionOption.setType("2");
-				propositionOption.setCode(subject[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
-			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
@@ -2815,27 +3024,123 @@ public class IndexController {
 				propositionOptionService.add(propositionOption);
 			}
 			
-			//教案檔案
+			//跨學科
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			for(int i=0; i<subject.length; i++) {
+				propositionOption = new PropositionOption();
+				propositionOption.setProposition_id(String.valueOf(id));
+				propositionOption.setType("2");
+				propositionOption.setCode(subject[i]);
+				propositionOption.setCreate_by(accountSession.getAccount());
+				propositionOptionService.add(propositionOption);
+			}
+			
+			//設定初審(校長)
+			PropositionAudit propositionAudit = new PropositionAudit();
+			propositionAudit.setProposition_id(String.valueOf(id));
+			propositionAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+			propositionAudit.setVersion("A");
+			propositionAudit.setFile_status("A");
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//命題檔案
 			PropositionFile propositionFile = new PropositionFile();
 			propositionFile.setProposition_id(String.valueOf(id));
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
-			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-			propositionFile.setType("1");
+			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("1");
+			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(fileName.getOriginalFilename());
+			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
 			propositionFileService.add(propositionFile);
 			
-			//新增審核人
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(String.valueOf(id));
-			propositionAudit.setAuditor(callNum.get("ACCOUNT").toString());
-			propositionAudit.setFile_status("Y");
-			propositionAudit.setUpload_status("Y");
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
+			//初稿(pdf)
+//			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			propositionFile = new PropositionFile();
+			propositionFile.setProposition_id(String.valueOf(id));
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+			
+			uploadName = commonService.uploadFileSaveDateName(pdf, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("2");
+			propositionFile.setMaterial_type_id(null);
+			propositionFile.setMaterial_link(null);
+			propositionFile.setUpload_name(uploadName);
+			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setDisplay("1");
+			propositionFile.setCreate_by(accountSession.getAccount());
+			propositionFile.setUpdate_by(accountSession.getAccount());
+			propositionFileService.add(propositionFile);
+			
+			//附件
+			String[] materialType = pRequest.getParameterValues("material_type");
+			String[] link = pRequest.getParameterValues("link");
+			if((materialType!=null && link!=null && !attachment[0].isEmpty()) && (materialType.length==attachment.length && link.length==attachment.length)) {
+				propositionFile = new PropositionFile();
+				propositionFile.setProposition_id(String.valueOf(id));
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+				for(int i=0; i<attachment.length; i++) {
+					if(!"4".equals(materialType[i])) {
+//						System.out.println("attachment"+i+":"+attachment[i].getOriginalFilename());
+						uploadName = commonService.uploadFileSaveDateName(attachment[i], uploadedFolder+"file/proposition/");
+						propositionFile.setData_type("3");
+						propositionFile.setMaterial_type_id(materialType[i]);
+						propositionFile.setMaterial_link(null);
+						propositionFile.setUpload_name(uploadName);
+						propositionFile.setFile_name(attachment[i].getOriginalFilename());
+					} else {
+						propositionFile.setData_type("3");
+						propositionFile.setMaterial_type_id(materialType[i]);
+						propositionFile.setMaterial_link(!"".equals(link[i]) ? link[i] : null);
+						propositionFile.setUpload_name(null);
+						propositionFile.setFile_name(null);
+					}
+					propositionFile.setDisplay("1");
+					propositionFile.setCreate_by(accountSession.getAccount());
+					propositionFile.setUpdate_by(accountSession.getAccount());
+					propositionFileService.add(propositionFile);
+				}
+			}
+			
+			//素材授權
+			if(!contractMat[0].isEmpty()) {
+				propositionFile = new PropositionFile();
+				propositionFile.setProposition_id(String.valueOf(id));
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+				for(int i=0; i<contractMat.length; i++) {
+//					System.out.println("contractMat"+i+":"+contractMat[i].getOriginalFilename());
+					uploadName = commonService.uploadFileSaveDateName(contractMat[i], uploadedFolder+"file/proposition/");
+					propositionFile.setData_type("4");
+					propositionFile.setMaterial_type_id(null);
+					propositionFile.setMaterial_link(null);
+					propositionFile.setUpload_name(uploadName);
+					propositionFile.setFile_name(contractMat[i].getOriginalFilename());
+					propositionFile.setDisplay("1");
+					propositionFile.setCreate_by(accountSession.getAccount());
+					propositionFile.setUpdate_by(accountSession.getAccount());
+					propositionFileService.add(propositionFile);
+				}
+			}
+			
+			//關鍵字
+			PropositionTag propositionTag = new PropositionTag();
+			propositionTag.setProposition_id(String.valueOf(id));
+			
+			String[] tag = proposition.getTag() != null ? proposition.getTag().split(",") : null;
+			if(tag != null && tag.length > 0) {
+				for(int i=0; i<tag.length; i++) {
+					propositionTag.setName(tag[i]);
+					propositionTag.setCreate_by(accountSession.getAccount());
+					propositionTag.setUpdate_by(accountSession.getAccount());
+					propositionTagService.add(propositionTag);
+				}
+			}
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -2856,20 +3161,6 @@ public class IndexController {
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得學習領域資料
-		Field field = new Field();
-		field.setId(data.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("field_name", field.getName());
-		
-		//取得學科清單
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
-		String subject = subjectOption.get("OPTION").toString();
-		model.addAttribute("subject", subject);
-		
 		//取得學制資料
 		Education education = new Education();
 		education.setId(data.getEducation_id());
@@ -2877,29 +3168,57 @@ public class IndexController {
 		model.addAttribute("education_name", education.getName());
 		
 		//取得年級清單
-		propositionOption = new PropositionOption();
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.gradeOption(propositionOption);
-		String grade = gradeOption.get("OPTION").toString();
-		model.addAttribute("grade", grade);
+		String go = gradeOption.get("OPTION").toString();
+		model.addAttribute("gradeOption", go);
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(data.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subject_name", subject.getName());
+		
+		//取得跨科清單
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
+		model.addAttribute("auditList", auditList);
+		
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-//		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("contentList", contentList);
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
 		
-		//取得審核回饋歷程
-//		propositionFile = new PropositionFile();
-//		propositionFile.setProposition_id(proposition.getId());
-//		propositionFile.setType("2");
-//		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
-//		model.addAttribute("auditList", auditList);
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
 		
-		//取得最新檔案
-		model.addAttribute("nowFile", contentList.get(0));
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -2911,53 +3230,68 @@ public class IndexController {
 	@RequestMapping(value = "/proposition/group/update" , method = {RequestMethod.POST, RequestMethod.GET})
     public String propositionGroupUpdate(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Proposition proposition, Model model){
 		
-		//取得教案資料
+		//取得命題資料
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得領域清單
-		Field field = new Field();
-		List<Map<String, Object>> fieldList = fieldService.getList(field);
-		model.addAttribute("fieldList", fieldList);
-		
-		//取得學制清單
-		Education education = new Education();
-		education.setLayer("1");
-		List<Map<String, Object>> educationList = educationService.getList(education);
-		model.addAttribute("educationList", educationList);
-		
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.option(propositionOption);
-		String so = subjectOption.get("OPTION").toString();
-		model.addAttribute("subjectOption", so);
-		
-		//取得學科清單
-		Subject subject = new Subject();
-		subject.setLayer("1");
-		List<Map<String, Object>> subjectList = subjectService.getList(subject);
-		model.addAttribute("subjectList", subjectList);
-		
 		//取得年級清單
-		education = new Education();
+		Education education = new Education();
 		education.setParent_id(data.getEducation_id());
 		List<Map<String, Object>> gradeList = educationService.getChild(education);
 		model.addAttribute("gradeList", gradeList);
 		
-		propositionOption = new PropositionOption();
+		//串接年級資料
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.option(propositionOption);
 		String go = gradeOption.get("OPTION").toString();
 		model.addAttribute("gradeOption", go);
 		
+		//取得跨科清單
+		Subject subject = new Subject();
+		subject.setParent_id(data.getSubject_id());
+		List<Map<String, Object>> crossSubjectList = subjectService.getChild(subject);
+		model.addAttribute("crossSubjectList", crossSubjectList);
+		
+		//串接跨科資料
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.option(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
+		
 		//取得內容上傳歷程
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
+		model.addAttribute("auditList", auditList);
+		
 		PropositionFile propositionFile = new PropositionFile();
 		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("nowFile", contentList.get(0));
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
+		
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
+		
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -2983,27 +3317,56 @@ public class IndexController {
 			propositionOptionService.delete(propositionOption);
 			
 			//學科
-			String[] subject = pRequest.getParameterValues("subject");
-			for(int i=0; i<subject.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(proposition.getId());
+			String[] subjectOption = pRequest.getParameter("subjectOption").split(",");
+			String[] subject = pRequest.getParameterValues("crossSubject");
+			if(!Arrays.equals(subjectOption, subject)) {
 				propositionOption.setType("2");
-				propositionOption.setCode(subject[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
+				propositionOptionService.delete(propositionOption);
+				for(int i=0; i<subject.length; i++) {
+					propositionOption = new PropositionOption();
+					propositionOption.setProposition_id(proposition.getId());
+					propositionOption.setType("2");
+					propositionOption.setCode(subject[i]);
+					propositionOption.setCreate_by(accountSession.getAccount());
+					propositionOptionService.add(propositionOption);
+				}
 			}
 			
 			//年級
 			String[] grade = pRequest.getParameterValues("grade");
-			for(int i=0; i<grade.length; i++) {
-				propositionOption = new PropositionOption();
-				propositionOption.setProposition_id(proposition.getId());
+			String[] gradeOption = pRequest.getParameter("gradeOption").split(",");
+			if(!Arrays.equals(gradeOption, grade)) {
 				propositionOption.setType("4");
-				propositionOption.setCode(grade[i]);
-				propositionOption.setCreate_by(accountSession.getAccount());
-				propositionOptionService.add(propositionOption);
+				propositionOptionService.delete(propositionOption);
+				for(int i=0; i<grade.length; i++) {
+					propositionOption = new PropositionOption();
+					propositionOption.setProposition_id(proposition.getId());
+					propositionOption.setType("4");
+					propositionOption.setCode(grade[i]);
+					propositionOption.setCreate_by(accountSession.getAccount());
+					propositionOptionService.add(propositionOption);
+				}
 			}
 			
+			String tagOld = pRequest.getParameter("tagOld").replace(" ", "");
+			proposition.setTag(proposition.getTag().replace(" ", "").replace("\t", "").replace("\r", "").replace("\n", ""));
+			
+			if(!tagOld.equals(proposition.getTag())) {
+				//關鍵字
+				PropositionTag propositionTag = new PropositionTag();
+				propositionTag.setProposition_id(proposition.getId());
+				propositionTagService.delete(propositionTag);
+				
+				String[] tag = proposition.getTag() != null ? proposition.getTag().split(",") : null;
+				if(tag != null && tag.length > 0) {
+					for(int i=0; i<tag.length; i++) {
+						propositionTag.setName(tag[i]);
+						propositionTag.setCreate_by(accountSession.getAccount());
+						propositionTag.setUpdate_by(accountSession.getAccount());
+						propositionTagService.add(propositionTag);
+					}
+				}
+			}
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -3028,42 +3391,101 @@ public class IndexController {
 		
 		try {
 			
-			String audit = pRequest.getParameter("verify");
-			String file_status = "C", upload_status = "C";
+			//通過：1，待修正：0
+			String verify = pRequest.getParameter("verify");
+			//系統指派：1，人工設定：0
+			String verifyMethod = pRequest.getParameter("verifyMethod");
+			//審核狀態(A：初審中，B：初審待修正，C：初審通過 / 審核中，D：審核待修正，E：審核通過 / 完稿確認，F：完稿，G：完稿待修正)
+			String file_status = pRequest.getParameter("file_status");
+			String version = "B";
 			
-			if("0".equals(audit)) {
-				file_status = "N";
-				upload_status = "N";
-				//教案檔案
+			PropositionAudit propositionAudit = new PropositionAudit();
+			
+			//通過
+			if("1".equals(verify)) {
+				if("A".equals(file_status)) {
+					file_status = "C";
+					version = "B";
+				} else if("C".equals(file_status)) {
+					file_status = "E";
+					version = "C";
+				} else if("E".equals(file_status)) {
+					file_status = "F";
+					version = "D";
+				}
+				
+				//系統指派
+				if("1".equals(verifyMethod)) {
+					//隨機選擇審核人
+					Account account = new Account();
+					account.setAccount(proposition.getCreate_by());
+					account.setPosition("1");
+					account.setEducation_id(proposition.getEducation_id());
+					account.setSubject_id(proposition.getSubject_id());
+					account.setContent_audit("1");
+					Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
+					propositionAudit.setAuditor(getAuditor.get("ACCOUNT").toString());
+					proposition.setAuditor2(getAuditor.get("ACCOUNT").toString());
+				//人工設定
+				} else if("0".equals(verifyMethod)) {
+					String auditor = pRequest.getParameter("auditor");
+					propositionAudit.setAuditor(auditor);
+					proposition.setAuditor2(auditor);
+				}
+				
+			//待修正
+			} else {
+				if("A".equals(file_status)) {
+					file_status = "B";
+					version = "B";
+				} else if("C".equals(file_status)) {
+					file_status = "D";
+					version = "C";
+				} else if("E".equals(file_status)) {
+					file_status = "G";
+					version = "D";
+				}
+				
+				//回饋意見
+				String audit_feedback = pRequest.getParameter("audit_feedback");
+				if(!"".equals(audit_feedback)) {
+//					System.out.println(audit_feedback);
+					propositionAudit.setAudit_feedback(audit_feedback);
+				}
+				
+			}
+			
+			//新增審核紀錄
+			propositionAudit.setProposition_id(proposition.getId());
+			propositionAudit.setFile_status(file_status);
+			propositionAudit.setAuditor(accountSession.getAccount());
+			propositionAudit.setVersion(version);
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//回饋檔案
+			if(fileName!=null && !fileName.isEmpty()) {
+				//命題檔案
 				PropositionFile propositionFile = new PropositionFile();
 				propositionFile.setProposition_id(proposition.getId());
+				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-				propositionFile.setType("2");
+				propositionFile.setData_type("5");
+				propositionFile.setMaterial_type_id(null);
+				propositionFile.setMaterial_link(null);
 				propositionFile.setUpload_name(uploadName);
 				propositionFile.setFile_name(fileName.getOriginalFilename());
+				propositionFile.setDisplay("1");
 				propositionFile.setCreate_by(accountSession.getAccount());
 				propositionFile.setUpdate_by(accountSession.getAccount());
 				propositionFileService.add(propositionFile);
-			} else {
-				file_status = "C";
-				upload_status = "C";
 			}
 			
 			//審核
 			proposition.setFile_status(file_status);
-			proposition.setUpload_status(upload_status);
 			propositionService.audit(proposition);
-			
-			//新增審核紀錄
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(proposition.getId());
-			propositionAudit.setAuditor(accountSession.getAccount());
-			propositionAudit.setFile_status(file_status);
-			propositionAudit.setUpload_status(upload_status);
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());
@@ -3084,20 +3506,6 @@ public class IndexController {
 		Proposition data = propositionService.data(proposition);
 		model.addAttribute("data", data);
 		
-		//取得學習領域資料
-		Field field = new Field();
-		field.setId(data.getField_id());
-		field = fieldService.data(field);
-		model.addAttribute("field_name", field.getName());
-		
-		//取得學科清單
-		PropositionOption propositionOption = new PropositionOption();
-		propositionOption.setProposition_id(proposition.getId());
-		propositionOption.setType("2");
-		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
-		String subject = subjectOption.get("OPTION").toString();
-		model.addAttribute("subject", subject);
-		
 		//取得學制資料
 		Education education = new Education();
 		education.setId(data.getEducation_id());
@@ -3105,29 +3513,57 @@ public class IndexController {
 		model.addAttribute("education_name", education.getName());
 		
 		//取得年級清單
-		propositionOption = new PropositionOption();
+		PropositionOption propositionOption = new PropositionOption();
 		propositionOption.setProposition_id(proposition.getId());
 		propositionOption.setType("4");
 		Map<String, Object> gradeOption = propositionOptionService.gradeOption(propositionOption);
-		String grade = gradeOption.get("OPTION").toString();
-		model.addAttribute("grade", grade);
+		String go = gradeOption.get("OPTION").toString();
+		model.addAttribute("gradeOption", go);
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(data.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subject_name", subject.getName());
+		
+		//取得跨科清單
+		propositionOption = new PropositionOption();
+		propositionOption.setProposition_id(proposition.getId());
+		propositionOption.setType("2");
+		Map<String, Object> subjectOption = propositionOptionService.subjectOption(propositionOption);
+		String so = subjectOption.get("OPTION").toString();
+		model.addAttribute("subjectOption", so);
 		
 		//取得內容上傳歷程
-		PropositionFile propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("1");
-		List<Map<String, Object>> contentList = propositionFileService.historyList(propositionFile);
-		model.addAttribute("contentList", contentList);
-		
-		//取得審核回饋歷程
-		propositionFile = new PropositionFile();
-		propositionFile.setProposition_id(proposition.getId());
-		propositionFile.setType("2");
-		List<Map<String, Object>> auditList = propositionFileService.historyList(propositionFile);
+		PropositionAudit propositionAudit = new PropositionAudit();
+		propositionAudit.setProposition_id(proposition.getId());
+		List<Map<String, Object>> auditList = propositionAuditService.historyList(propositionAudit);
 		model.addAttribute("auditList", auditList);
 		
-		//取得最新檔案
-		model.addAttribute("nowFile", contentList.get(0));
+		PropositionFile propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> fileList = propositionFileService.historyList(propositionFile);
+		model.addAttribute("fileList", fileList);
+		
+		//取得標籤
+		PropositionTag propositionTag = new PropositionTag();
+		propositionTag.setProposition_id(proposition.getId());
+		List<Map<String, Object>> tagList = propositionTagService.tagList(propositionTag);
+		model.addAttribute("tagList", tagList);
+		
+		//取得檔案清單
+		propositionFile = new PropositionFile();
+		propositionFile.setProposition_id(proposition.getId());
+		List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+		model.addAttribute("getFile", getFile);
+		
+		//取得附件清單
+		List<Map<String, Object>> getAnnex = propositionFileService.getAnnex(propositionFile);
+		model.addAttribute("getAnnex", getAnnex);
+		
+		//取得授權申請清單
+		List<Map<String, Object>> getMaterial = propositionFileService.getMaterial(propositionFile);
+		model.addAttribute("getMaterial", getMaterial);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -3141,40 +3577,73 @@ public class IndexController {
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
 			@RequestParam("fileName") MultipartFile fileName,
-//			@RequestParam("csofeContractFile") MultipartFile csofeContractFile
+			@RequestParam("word") MultipartFile word,
+			@RequestParam("pdf") MultipartFile pdf,
 			HttpServletRequest pRequest
 			) {
 		
 		try {
 			
-			String file_status = "Y", upload_status = "Y";
+			String file_status = pRequest.getParameter("file_status");
+			String auditor = pRequest.getParameter("auditor");
+			String auditor2 = pRequest.getParameter("auditor2");
 			
-			//教案檔案
+			PropositionAudit propositionAudit = new PropositionAudit();
+			
+			if("B".equals(file_status)) {
+				file_status = "A";
+				propositionAudit.setAuditor(auditor);
+			}
+			
+			if("D".equals(file_status)) {
+				file_status = "C";
+				propositionAudit.setAuditor(auditor2);
+			}
+			
+			//新增審核紀錄
+			propositionAudit.setProposition_id(proposition.getId());
+			propositionAudit.setVersion("A");
+			propositionAudit.setFile_status(file_status);
+			propositionAudit.setCreate_by(accountSession.getAccount());
+			propositionAudit.setUpdate_by(accountSession.getAccount());
+			int lpa_id = propositionAuditService.add(propositionAudit);
+			
+			//命題檔案
 			PropositionFile propositionFile = new PropositionFile();
 			propositionFile.setProposition_id(proposition.getId());
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
-			String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
-			propositionFile.setType("1");
+			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("1");
+			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(fileName.getOriginalFilename());
+			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setDisplay("1");
+			propositionFile.setCreate_by(accountSession.getAccount());
+			propositionFile.setUpdate_by(accountSession.getAccount());
+			propositionFileService.add(propositionFile);
+			
+			//初稿(pdf)
+//			System.out.println("pdf:"+pdf.getOriginalFilename());
+			
+			propositionFile = new PropositionFile();
+			propositionFile.setProposition_id(proposition.getId());
+			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
+			
+			uploadName = commonService.uploadFileSaveDateName(pdf, uploadedFolder+"file/proposition/");
+			propositionFile.setData_type("2");
+			propositionFile.setMaterial_type_id(null);
+			propositionFile.setMaterial_link(null);
+			propositionFile.setUpload_name(uploadName);
+			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
 			propositionFileService.add(propositionFile);
 			
 			//審核
 			proposition.setFile_status(file_status);
-			proposition.setUpload_status(upload_status);
 			propositionService.audit(proposition);
-			
-			//新增審核紀錄
-			PropositionAudit propositionAudit = new PropositionAudit();
-			propositionAudit.setProposition_id(proposition.getId());
-			propositionAudit.setAuditor(accountSession.getAccount());
-			propositionAudit.setFile_status(file_status);
-			propositionAudit.setUpload_status(upload_status);
-			propositionAudit.setCreate_by(accountSession.getAccount());
-			propositionAudit.setUpdate_by(accountSession.getAccount());
-			propositionAuditService.add(propositionAudit);
 			
 		} catch(Exception e) {
 //			System.out.println("error:"+e.getMessage());

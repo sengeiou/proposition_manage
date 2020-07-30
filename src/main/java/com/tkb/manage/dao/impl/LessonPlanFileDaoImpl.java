@@ -30,19 +30,12 @@ public class LessonPlanFileDaoImpl implements LessonPlanFileDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(lessonPlanFile);
 		
 		String sql = " INSERT INTO proposition_manage.lesson_plan_file"
-				   + " (LESSON_PLAN_ID, LESSON_PLAN_AUDIT_ID, DATA_TYPE, MATERIAL_TYPE_ID, MATERIAL_LINK, "
-				   + " UPLOAD_NAME, FILE_NAME, "
+				   + " (LESSON_PLAN_ID, LESSON_PLAN_AUDIT_ID, DATA_TYPE, MATERIAL_TYPE_ID, "
+				   + " MATERIAL_LINK, UPLOAD_NAME, FILE_NAME, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(:lesson_plan_id, :lesson_plan_audit_id, :data_type, :material_type_id, :material_link, ";
-				   
-//		if(lessonPlanFile.getVersion() != null)	{
-//			sql += " (SELECT CONCAT(:version, LPAD(COUNT, 2, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.lesson_plan_file WHERE LESSON_PLAN_ID = :lesson_plan_id AND DATA_TYPE = :data_type AND INSTR(VERSION, :version) > 0) L1), ";
-//		} else {
-//			sql += " :version, ";
-//		}
-		
-		sql += " :upload_name, :file_name, "
-		    +  " :create_by, NOW(), :update_by, NOW()) ";
+				   + " VALUES(:lesson_plan_id, :lesson_plan_audit_id, :data_type, :material_type_id, "
+				   + " :material_link, :upload_name, :file_name, "
+				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 				

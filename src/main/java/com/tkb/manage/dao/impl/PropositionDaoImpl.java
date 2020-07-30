@@ -31,21 +31,21 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN PMP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN PMP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN PMP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN PMP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN PMP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
-				   + " TA.NAME AS TEACHER_NAME "
+				   + " TA.NAME AS TEACHER_NAME, TA2.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.proposition PMP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.CREATE_BY "
+				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = PMP.AUDITOR2 "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
@@ -84,21 +84,20 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT PMP.*, PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+		String sql = " SELECT PMP.*, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA.NAME AS TEACHER_NAME "
 				   + " FROM proposition_manage.proposition PMP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.CREATE_BY "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
-				   + " AND PMP.AUDITOR = ? "
-				   + " AND PMP.FILE_STATUS = 'Y' "
-				   + " AND PMP.UPLOAD_STATUS = 'Y' "
+				   + " AND PMP.AUDITOR2 = ? "
+				   + " AND PMP.FILE_STATUS = 'C' "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
 		args.add(proposition.getQuestion_type());
-		args.add(proposition.getAuditor());
+		args.add(proposition.getAuditor2());
 		
 		sql += " LIMIT "+((proposition.getPage()-1)*proposition.getPage_count())+","+proposition.getPage_count();
 		
@@ -118,12 +117,11 @@ public class PropositionDaoImpl implements PropositionDao {
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.proposition "
 				   + " WHERE QUESTION_TYPE = ? "
-				   + " AND AUDITOR = ? "
-				   + " AND FILE_STATUS = 'Y' "
-				   + " AND UPLOAD_STATUS = 'Y' ";
+				   + " AND AUDITOR2 = ? "
+				   + " AND FILE_STATUS = 'C' ";
 		
 		args.add(proposition.getQuestion_type());
-		args.add(proposition.getAuditor());
+		args.add(proposition.getAuditor2());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -139,20 +137,19 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN PMP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN PMP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN PMP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN PMP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN PMP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA.NAME AS TEACHER_NAME "
 				   + " FROM proposition_manage.proposition PMP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.CREATE_BY "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " AND PMP.CREATE_BY = ? "
@@ -198,24 +195,23 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN PMP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN PMP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN PMP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN PMP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN PMP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA.NAME AS TEACHER_NAME "
 				   + " FROM proposition_manage.proposition PMP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = PMP.CREATE_BY "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
-				   + " AND PMP.FIELD_ID IN ("+proposition.getField_id()+") "
 				   + " AND PMP.EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " AND PMP.SUBJECT_ID IN ("+proposition.getSubject_id()+") "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
 		args.add(proposition.getQuestion_type());
@@ -237,8 +233,8 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition "
 				   + " WHERE QUESTION_TYPE = ? "
-				   + " AND FIELD_ID IN ("+proposition.getField_id()+") "
-				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") ";
+				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " AND SUBJECT_ID IN ("+proposition.getSubject_id()+") ";
 		
 		args.add(proposition.getQuestion_type());
 		
@@ -256,26 +252,26 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN PMP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN PMP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN PMP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN PMP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN PMP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
 				   + " TA1.NAME AS TEACHER_NAME, "
-				   + " TA2.NAME AS AUDITOR_NAME "
+				   + " TA2.NAME AS AUDITOR_NAME, TA3.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.proposition PMP "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA1 ON TA1.ACCOUNT = PMP.CREATE_BY "
 				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = PMP.AUDITOR "
+				   + " LEFT JOIN proposition_manage.teacher_account TA3 ON TA3.ACCOUNT = PMP.AUDITOR2 "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
-				   + " AND PMP.FIELD_ID IN ("+proposition.getField_id()+") "
 				   + " AND PMP.EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " AND PMP.SUBJECT_ID IN ("+proposition.getSubject_id()+") "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
 		args.add(proposition.getQuestion_type());
@@ -297,8 +293,8 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition "
 				   + " WHERE QUESTION_TYPE = ? "
-				   + " AND FIELD_ID IN ("+proposition.getField_id()+") "
-				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") ";
+				   + " AND EDUCATION_ID IN ("+proposition.getEducation_id()+") "
+				   + " AND SUBJECT_ID IN ("+proposition.getSubject_id()+") ";
 		
 		args.add(proposition.getQuestion_type());
 		
@@ -316,23 +312,24 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT PMP.*, "
-				   + " CASE WHEN PMP.FILE_STATUS='Y' THEN '初稿' "
-				   + " WHEN PMP.FILE_STATUS='N' THEN '待修正' "
-				   + " WHEN PMP.FILE_STATUS='C' THEN '完稿' "
+				   + " CASE WHEN PMP.FILE_STATUS='A' THEN '初審中' "
+				   + " WHEN PMP.FILE_STATUS='B' THEN '初審待修正' "
+				   + " WHEN PMP.FILE_STATUS='C' THEN '審核中' "
+				   + " WHEN PMP.FILE_STATUS='D' THEN '審核待修正' "
+				   + " WHEN PMP.FILE_STATUS='E' THEN '完稿確認' "
+				   + " WHEN PMP.FILE_STATUS='F' THEN '完稿' "
 				   + " ELSE '' END FILE_STATUS_NAME, "
-				   + " CASE WHEN PMP.UPLOAD_STATUS='Y' THEN '待審核' "
-				   + " WHEN PMP.UPLOAD_STATUS='N' THEN '未通過' "
-				   + " WHEN PMP.UPLOAD_STATUS='C' THEN '通過' "
-				   + " ELSE '' END UPLOAD_STATUS_NAME, "
-				   + " PMF.NAME AS FIELD_NAME, PME.NAME AS EDUCATION_NAME, "
+				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(PMP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
-				   + " TA1.NAME AS TEACHER_NAME "
-				   + " TA2.NAME AS AUDITOR_NAME "
+				   + " TA1.NAME AS TEACHER_NAME, "
+				   + " TA2.NAME AS AUDITOR_NAME, TA3.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.proposition PMP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = PMP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA1 ON TA1.ACCOUNT = PMP.CREATE_BY "
 				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = PMP.AUDITOR "
+				   + " LEFT JOIN proposition_manage.teacher_account TA3 ON TA3.ACCOUNT = PMP.AUDITOR2 "
 				   + " WHERE PMP.QUESTION_TYPE = ? "
 				   + " ORDER BY PMP.CREATE_TIME DESC ";
 		
@@ -374,12 +371,15 @@ public class PropositionDaoImpl implements PropositionDao {
 		String sql = " SELECT COUNT(*) AS COUNT "
 				   + " FROM proposition_manage.proposition "
 				   + " WHERE QUESTION_TYPE = ? "
-				   + " AND UPLOAD_STATUS = ? "
 				   + " AND CREATE_BY = ? ";
 		
 		args.add(proposition.getQuestion_type());
-		args.add(proposition.getUpload_status());
 		args.add(proposition.getCreate_by());
+		
+		if(proposition.getFile_status() != null) {
+			sql += " AND FILE_STATUS = ? ";
+			args.add(proposition.getFile_status());
+		}
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -395,11 +395,13 @@ public class PropositionDaoImpl implements PropositionDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(proposition);
 		
 		String sql = " INSERT INTO proposition_manage.proposition "
-				   + " (UUID, CONTRACT_ID, NAME, FIELD_ID, EDUCATION_ID, QUESTION_TYPE, "
-				   + " TAG, AUDITOR, FILE_STATUS, UPLOAD_STATUS, "
+				   + " (UUID, CONTRACT_ID, PROPOSITION_NUMBER, NAME, EDUCATION_ID, SUBJECT_ID, "
+				   + " QUESTION_TYPE, DISPLAY, TAG, AUDITOR, FILE_STATUS, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, :name, :field_id,  "
-				   + " :education_id, :question_type, :tag, :auditor, :file_status, :upload_status, "
+				   + " VALUES(REPLACE(UUID(), '-', ''), :contract_id, "
+				   + " (SELECT CONCAT(:proposition_number, LPAD(COUNT, 3, 0)) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.proposition WHERE CONTRACT_ID = :contract_id AND INSTR(PROPOSITION_NUMBER, :proposition_number) > 0) L1), "
+				   + " :name, :education_id, "
+				   + " :subject_id, :question_type, :display, :tag, :auditor, :file_status, "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -415,13 +417,11 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.proposition "
-				   + " SET NAME = ?, FIELD_ID = ?, EDUCATION_ID = ?, TAG = ?, "
+				   + " SET NAME = ?, TAG = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
 		args.add(proposition.getName());
-		args.add(proposition.getField_id());
-		args.add(proposition.getEducation_id());
 		args.add(proposition.getTag());
 		args.add(proposition.getUpdate_by());
 		args.add(proposition.getId());
@@ -434,8 +434,11 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT * FROM proposition_manage.proposition "
-				   + " WHERE ID = ? ";
+		String sql = " SELECT PMP.*, PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME "
+				   + " FROM proposition_manage.proposition PMP "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PMP.EDUCATION_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PMP.SUBJECT_ID "
+				   + " WHERE PMP.ID = ? ";
 		
 		args.add(proposition.getId());
 		
@@ -453,12 +456,17 @@ public class PropositionDaoImpl implements PropositionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " UPDATE proposition_manage.proposition "
-				   + " SET FILE_STATUS = ?, UPLOAD_STATUS = ?, "
-				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
-				   + " WHERE ID = ? ";
+				   + " SET ";
+		
+		if(proposition.getAuditor2() != null) {
+			sql += " AUDITOR2 = ?, ";
+			args.add(proposition.getAuditor2());
+		}
+		
+		sql += " FILE_STATUS = ?, UPDATE_BY = ?, UPDATE_TIME = NOW() "
+			+  " WHERE ID = ? ";
 		
 		args.add(proposition.getFile_status());
-		args.add(proposition.getUpload_status());
 		args.add(proposition.getUpdate_by());
 		args.add(proposition.getId());
 		
@@ -478,10 +486,10 @@ public class PropositionDaoImpl implements PropositionDao {
 				   + " SUM(CASE WHEN P.FILE_STATUS = 'E' THEN 1 ELSE 0 END) E_SUM, "
 				   + " SUM(CASE WHEN P.FILE_STATUS = 'F' THEN 1 ELSE 0 END) F_SUM "
 				   + " FROM proposition_manage.proposition P "
-				   + " WHERE P.AUDITOR = ? "
+				   + " WHERE P.AUDITOR2 = ? "
 				   + " AND P.QUESTION_TYPE = ? ";
 		
-		args.add(proposition.getAuditor());
+		args.add(proposition.getAuditor2());
 		args.add(proposition.getQuestion_type());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
