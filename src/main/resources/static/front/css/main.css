@@ -383,7 +383,7 @@ span.btn-file {
     color: #4b4b4b;
     transform: translate(-50%, -50%);
 }
-.lightBoxContent.teacherImportData-lightBox {
+.lightBoxContent.teacherImportData-lightBox , .delete-categorySubject-lightBox {
     width: 400px; /* 若需「選擇學校」的select 寬度為680px */
     min-height: 220px;
 }
@@ -465,6 +465,19 @@ span.btn-file {
 }
 .lessonFile-lightbox a:hover {
     color: var(--secondary);    
+}
+.edit-categorySubject-lightBox , .create-categorySubject-lightBox {
+    width: 500px;
+    height: 300px;
+}
+.edit-categorySubject-lightBox .container-grid , .delete-categorySubject-lightBox .container-grid  , .create-categorySubject-lightBox .container-grid{
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-row-gap: 15px;
+    align-items: center;
+}
+.edit-categorySubject-lightBox .container-grid input[type='text'] , .create-categorySubject-lightBox .container-grid input[type='text']{
+    margin: 0;
 }
 /* 燈箱 end */
 
@@ -997,18 +1010,16 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    grid-template-columns: 62px 1.5fr 6fr 50px 80px 97px 97px 97px 70px 70px ;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1fr ;
 }
-.list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */
-    /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr; */ /* 含有「上傳狀態」欄位 */
-    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 97px 1fr;
+.list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */    
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
 }
 .list-content .lessonList-verify-grid { /* 教案列表--審議委員 */
-    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
 }
 .list-content .lessonList-principal-grid { /* 教案列表-校長 */
-   /* grid-template-columns: 1.5fr 6fr 1fr 0.8fr 1fr 1fr 97px 1fr 1fr; */ /* 含有「上傳狀態」欄位 */
-   grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1.2fr 1fr 97px 1fr ;
+   grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1.2fr 1fr ;
 }
 .list-content .lessonList-verify-verifyGrid { /* 教案列表--審議委員的審核列表 */
     grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
@@ -1095,6 +1106,9 @@ button.btn-search:hover {
     width: 40%;
     position: relative;
 }
+.category-block .grid-block {
+    width: 60%;
+}
 .category-block .block:nth-child(2) {
     margin-left: 30px;
 }
@@ -1104,6 +1118,17 @@ button.btn-search:hover {
     padding: 20px 0;
     border-bottom: 1px solid #4b4b4b;
     background-color: var(--primary-light);
+}
+.category-block .grid-block .subject-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #4b4b4b;
+    background-color: var(--primary-light);
+}
+.category-block .grid-block .subject-title h3 {
+    width: calc(100% - 80px);
+    border: none;
 }
 .category-block .block .item-group , .category-block .block .none {
     min-height: 200px;
@@ -1164,6 +1189,24 @@ button.btn-search:hover {
 .category-block .block .btns-group button:hover {
     background-color: var(--primary-dark);
     color: #ffffff;    
+}
+.category-block .grid-block .categorySubject-grid{
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr;
+    text-align: center;
+    align-items: center;   
+    margin: 10px 0; 
+}
+.category-block .grid-block .categorySubject-grid span{
+    margin: 0 5px;
+}
+.category-block .grid-block .grid-title {
+    background: var(--secondary);
+    color: white;
+    padding: 10px 0;
+    border-bottom: 1px #111 solid;
+    font-size: 1.2rem;
+    margin: 0;
 }
 /* 分類管理 start */
 /* 頁面底部進度條 start */

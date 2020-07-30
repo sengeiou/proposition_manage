@@ -8,7 +8,7 @@
 </head>
 <body th:class="${accountSession.level<='2' ? 'style-admin' : accountSession.level=='3' ? 'style-content-teacher' : 'style-verify-teacher'}"> 
     <section class="header-content" th:include="front/load/header :: header">&nbsp;</section>
-    <form id="mainForm" method="POST" th:object="${lessonPlan}">
+    <form id="mainForm" method="POST" th:object="${proposition}">
 		<input type="hidden" id="id" th:field="*{id}" />
 		<input type="hidden" id="page" th:field="*{page}" />
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
@@ -18,21 +18,21 @@
             <div class="breadcrumb">
                 <a href="/">首頁</a>
                 <i>/</i>
-                <a href="/lesson">教案管理</a>
+                <a href="/proposition/basic">命題管理</a>
                 <i>/</i>
-                <a href="/lesson">教案列表</a>
+                <a href="/proposition/basic">命題-選擇題列表</a>
                 <i>/</i>
                 <a href="#" id="content">詳細資料</a>
                 <i>/</i>
-                <a href="#">編輯教案</a>
+                <a href="#">編輯命題</a>
             </div>
             <div class="create-content lesson">
-                <h3><i class="fas fa-book-open"></i>編輯教案<i class="fas fa-book"></i></h3>
+                <h3><i class="fas fa-book-open"></i>編輯命題<i class="fas fa-book"></i></h3>
                 <div class="create-grid">
                     <div><span class="required">*</span>合約流水號</div>
                     <div class="basic-h">[[${data.contract_id}]]</div>
-                    <div><span class="required">*</span>教案名稱</div>
-                    <div><input type="text" placeholder="請輸入教案名稱" id="lessonName" th:field="${data.name}"></div>
+                    <div>命題名稱</div>
+                    <div><input type="text" placeholder="請輸入命題名稱" id="lessonName" th:field="${data.name}"></div>
                     <div class="p-left-14px">學制</div>
                     <div class="basic-h">[[${data.education_name}]]</div>
                     <div id="gradeTitle"><span class="required">*</span>年級</div>
@@ -57,17 +57,17 @@
                             <input type="checkbox" class="dis-n" name="crossSubject" th:value="${subject.id}">
                         </label>
                     </div>
-                    <div class="p-left-14px">教案檔案</div>
+                    <div class="p-left-14px">命題檔案</div>
                     <div class="basic-h">
-                    	<p th:each="list:${getFile}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    	<p th:each="list:${getFile}"><a th:href="'/upload/file/proposition/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
                     </div>
                     <div class="p-left-14px">附件</div>
                     <div class="basic-h">
-                        <p th:each="list:${getAnnex}"><a th:href="${list.material_type_id != 4 ? '/upload/file/lessonPlan/'+list.upload_name : list.material_link}" target="_blank">[[${list.material_type_id != 4 ? list.file_name : list.material_link}]]</a></p> 
+                        <p th:each="list:${getAnnex}"><a th:href="${list.material_type_id != 4 ? '/upload/file/proposition/'+list.upload_name : list.material_link}" target="_blank">[[${list.material_type_id != 4 ? list.file_name : list.material_link}]]</a></p> 
                     </div>
                     <div class="p-left-14px">素材授權申請</div>
                     <div class="basic-h">
-                    	<p th:each="list:${getMaterial}"><a th:href="'/upload/file/lessonPlan/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
+                    	<p th:each="list:${getMaterial}"><a th:href="'/upload/file/proposition/'+${list.upload_name}" target="_blank">[[${list.file_name}]]</a></p>
                     </div>
                     <div class="p-left-14px">關鍵字</div>
                     <div>
@@ -80,13 +80,13 @@
                     	</div>
                     </div>
                 </div>
-                <button class="btn-submit" data-type="lessonEditAdmin" type="button">送出</button>
+                <button class="btn-submit" data-type="propoBasicEditAdmin" type="button">送出</button>
             </div>
             <div class="create-content lessonFile">
                 <h3><i class="fas fa-book-open"></i>檔案歷程<i class="fas fa-book"></i></h3>                
                 <div class="lessoncontent-file-grid-title">
                     <div></div>
-                    <div>A  教案上傳</div>
+                    <div>A  命題上傳</div>
                     <div>B  初審</div>
                     <div>C  審核</div>
                     <div>D  完稿確認</div>
@@ -141,12 +141,12 @@
         <h3 class="title" th:text="${#strings.substring(audit.version,0,1)=='A' ? (audit.version=='A01' ? '初稿檔案' : '修正檔案') : '審核回饋'}"></h3>
         <hr>
         <div class="container">            
-            <div class="file" th:each="file:${fileList}" th:if="${#strings.substring(audit.version,0,1)=='A' && (file.lesson_plan_audit_id.toString() == audit.id.toString()) && (file.data_type==1 || file.data_type==2)}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>
+            <div class="file" th:each="file:${fileList}" th:if="${#strings.substring(audit.version,0,1)=='A' && (file.proposition_audit_id.toString() == audit.id.toString()) && (file.data_type==1 || file.data_type==2)}"><a th:href="'/upload/file/proposition/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>
             
             <div class="container-grid" th:if="${#strings.substring(audit.version,0,1)!='A'}">
                 <div>回饋檔案</div>
                 <div>
-                    <div th:each="file:${fileList}" th:if="${(file.lesson_plan_audit_id.toString() == audit.id.toString()) && file.data_type==5}"><a th:href="'/upload/file/lessonPlan/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>                    
+                    <div th:each="file:${fileList}" th:if="${(file.proposition_audit_id.toString() == audit.id.toString()) && file.data_type==5}"><a th:href="'/upload/file/proposition/'+${file.upload_name}" target="_blank">[[${file.file_name}]]</a></div>                    
                 </div>
                 <div>回饋內容</div>
                 <div th:text="${audit.audit_feedback}"></div>
@@ -157,45 +157,8 @@
     <div th:include="front/load/js :: js"></div>
 	<script>
 		$(function(){
-			$("#schoolType").change(function(){
-				if($("#schoolType").val() != "0") {
-					$.ajax({
-						url: '/lesson/get/grade',
-						cache: false,
-						async: false,
-						dataType: 'json',
-						type: 'POST',
-						data: {
-							id: $(this).val()
-						},
-						error: function(xhr) {
-							alert("取得資料錯誤");
-						},
-						success: function(data) {
-							if(data != null && data.length > 0) {
-								$("#gradeTitle").show();
-								$("#grade").show();
-								$("#grade").empty();
-								var str = "";
-								for(i=0; i<data.length; i++) {
-									var child = data[i];
-									str += "<label class='les-labelBlock' for='"+child.NAME+"'>"
-										+  "<div class='checkbox-square'></div>"
-										+  "<span>"+child.NAME+"</span>"
-										+  "<input type='checkbox' id='"+child.NAME+"' class='dis-n' name='grade' value="+child.ID+">"
-										+  "</label>"
-								}
-								$("#grade").append(str);
-							}
-						}
-					});
-				} else {
-					$("#gradeTitle").hide();
-					$("#grade").hide();
-				}
-			});
 			$("#content").click(function(){
-				$("#mainForm").attr("action", "/lesson/content");
+				$("#mainForm").attr("action", "/proposition/basic/content");
 				$("#mainForm").submit();
 			})
 			//學科自動選取

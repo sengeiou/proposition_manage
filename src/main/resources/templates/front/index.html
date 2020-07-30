@@ -56,7 +56,7 @@
                     <div class="principal-grid" th:each="list:${list}" th:if="${list.education_id.toString() == educationSubject.education_id.toString() && list.subject_id.toString() == educationSubject.subject_id.toString()}">
                         <div th:if="${list.question_type == '0'}">教案</div>
                         <div th:if="${list.question_type == '1'}">命題-選擇題</div>
-                        <div th:if="${list.question_type == '2'}">命題-混核題</div>
+                        <div th:if="${list.question_type == '2'}">命題-混合題</div>
                         <div>[[${list.LP1_COUNT}]]</div>
                         <div>
                             <span>[[${list.A_SUM}]]</span>
@@ -87,7 +87,7 @@
                     <div class="verify-grid" th:each="list:${list}">
                         <div th:if="${list.QUESTION_TYPE.toString() == '0'}">教案</div>
                         <div th:if="${list.QUESTION_TYPE.toString() == '1'}">命題-選擇題</div>
-                        <div th:if="${list.QUESTION_TYPE.toString() == '2'}">命題-混核題</div>
+                        <div th:if="${list.QUESTION_TYPE.toString() == '2'}">命題-混合題</div>
                         <div>[[${list.C_SUM}]]</div>
                         <div>[[${list.D_SUM}]]</div>
                         <div>[[${list.E_SUM}]]</div>
@@ -102,7 +102,7 @@
                         <div class="title">已上傳</div>
                         <div class="title">初審中/待修正</div>
                         <div class="title">審核中/待修正</div>
-                        <div class="title">完稿確認</div>
+                        <div class="title">完稿確認/完稿</div>
                         <div class="title">後製完稿</div>
                         <div class="title">須上傳總數</div>
                     </div>
@@ -119,8 +119,12 @@
                             /
                             <span class="text-c-red">[[${educationList.D_SUM}]]</span>
                         </div>
-                        <div>[[${educationList.E_SUM}]]</div>
-                        <div>[[${educationList.F_SUM}]]</div>
+                        <div>
+                        	<span>[[${educationList.E_SUM}]]</span>
+                            /
+                            <span class="text-c-red">[[${educationList.F_SUM}]]</span>
+                        </div>
+                        <div>-</div>
                         <div>[[${educationList.CONTRACT_SUM}]]</div>
                     </div>
                 </div> 

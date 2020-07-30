@@ -44,7 +44,6 @@ import com.tkb.manage.model.Contract;
 import com.tkb.manage.model.ContractMaterial;
 import com.tkb.manage.model.ContractMaterialOption;
 import com.tkb.manage.model.Education;
-import com.tkb.manage.model.Field;
 import com.tkb.manage.model.Function;
 import com.tkb.manage.model.Identity;
 import com.tkb.manage.model.LessonPlan;
@@ -203,16 +202,66 @@ public class IndexController {
 		} else if(level == 3) {
 			contract = new Contract();
 			contract.setTeacher_id(accountSession.getId());
-
+			
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			List<Map<String, Object>> educationSubjectList = new ArrayList<Map<String, Object>>();
 			educationSubjectList = contractService.getSubjectEducationByTeacher(contract);
-
-			for(int i = 0; i < educationSubjectList.size();i++) {
-				Map<String, Object> lessonPlan = contractService.getLessonPlanNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString());
-				Map<String, Object> basic = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "1");
-				Map<String, Object> group = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "2");
-				
+			if(educationSubjectList != null) {
+				for(int i = 0; i < educationSubjectList.size();i++) {
+					Map<String, Object> lessonPlan = contractService.getLessonPlanNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString());
+					Map<String, Object> basic = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "1");
+					Map<String, Object> group = contractService.getPropositionNum(educationSubjectList.get(i).get("TEACHER_ID").toString(), educationSubjectList.get(i).get("EDUCATION_ID").toString(), educationSubjectList.get(i).get("SUBJECT_ID").toString(), "2");
+					
+					if(lessonPlan == null) {
+						lessonPlan = new HashMap<String, Object>();
+						lessonPlan.put("LP1_COUNT", "0");
+						lessonPlan.put("A_SUM", "0");
+						lessonPlan.put("B_SUM", "0");
+						lessonPlan.put("C_SUM", "0");
+						lessonPlan.put("D_SUM", "0");
+						lessonPlan.put("E_SUM", "0");
+						lessonPlan.put("F_SUM", "0");
+					}
+					if(basic == null) {
+						basic = new HashMap<String, Object>();
+						basic.put("LP1_COUNT", "0");
+						basic.put("A_SUM", "0");
+						basic.put("B_SUM", "0");
+						basic.put("C_SUM", "0");
+						basic.put("D_SUM", "0");
+						basic.put("E_SUM", "0");
+						basic.put("F_SUM", "0");
+					}
+					if(group == null) {
+						group = new HashMap<String, Object>();
+						group.put("LP1_COUNT", "0");
+						group.put("A_SUM", "0");
+						group.put("B_SUM", "0");
+						group.put("C_SUM", "0");
+						group.put("D_SUM", "0");
+						group.put("E_SUM", "0");
+						group.put("F_SUM", "0");
+					}
+					lessonPlan.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+					lessonPlan.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+					lessonPlan.put("CONTRACT_SUM", educationSubjectList.get(i).get("LESSON_NUM").toString());
+					lessonPlan.put("QUESTION_TYPE", "0");
+					basic.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+					basic.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+					basic.put("CONTRACT_SUM", educationSubjectList.get(i).get("BASIC_NUM").toString());
+					basic.put("QUESTION_TYPE", "1");
+					group.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
+					group.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
+					group.put("CONTRACT_SUM", educationSubjectList.get(i).get("QUESTIONS_GROUP_NUM").toString());
+					group.put("QUESTION_TYPE", "2");
+					list.add(lessonPlan);
+					list.add(basic);
+					list.add(group);			
+				}
+			} else {
+				Map<String, Object> lessonPlan = null;
+				Map<String, Object> basic = null;
+				Map<String, Object> group = null;
 				if(lessonPlan == null) {
 					lessonPlan = new HashMap<String, Object>();
 					lessonPlan.put("LP1_COUNT", "0");
@@ -243,21 +292,9 @@ public class IndexController {
 					group.put("E_SUM", "0");
 					group.put("F_SUM", "0");
 				}
-				lessonPlan.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
-				lessonPlan.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
-				lessonPlan.put("CONTRACT_SUM", educationSubjectList.get(i).get("LESSON_NUM").toString());
-				lessonPlan.put("QUESTION_TYPE", "0");
-				basic.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
-				basic.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
-				basic.put("CONTRACT_SUM", educationSubjectList.get(i).get("BASIC_NUM").toString());
-				basic.put("QUESTION_TYPE", "1");
-				group.put("EDUCATION_ID", educationSubjectList.get(i).get("EDUCATION_ID").toString());
-				group.put("SUBJECT_ID", educationSubjectList.get(i).get("SUBJECT_ID").toString());
-				group.put("CONTRACT_SUM", educationSubjectList.get(i).get("QUESTIONS_GROUP_NUM").toString());
-				group.put("QUESTION_TYPE", "2");
 				list.add(lessonPlan);
 				list.add(basic);
-				list.add(group);			
+				list.add(group);
 			}
 
 			model.addAttribute("list", list);
@@ -273,7 +310,7 @@ public class IndexController {
 			LessonPlan lessonPlanData = new LessonPlan();
 			lessonPlanData.setAuditor2(teacher.getAccount());
 			Proposition propositionData = new Proposition();
-			propositionData.setAuditor(teacher.getAccount());
+			propositionData.setAuditor2(teacher.getAccount());
 			Map<String, Object> lessonPlan = lessonPlanService.auditNum(lessonPlanData);
 			propositionData.setQuestion_type("1");
 			Map<String, Object> basic = propositionService.auditNum(propositionData);
@@ -2218,6 +2255,12 @@ public class IndexController {
 		List<Map<String, Object>> subjectList = subjectService.getList(subject);
 		model.addAttribute("subjectList", subjectList);
 		
+		//取得素材分類清單
+		MaterialType materialType = new MaterialType();
+		materialType.setParent_id("0");
+		List<Map<String, Object>> materialTypeList = materialTypeService.list(materialType);
+		model.addAttribute("materialTypeList", materialTypeList);
+		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
@@ -2820,7 +2863,6 @@ public class IndexController {
 	public String propositionBasicEditSubmit(Model model,
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
-			@RequestParam("fileName") MultipartFile fileName,
 			@RequestParam("word") MultipartFile word,
 			@RequestParam("pdf") MultipartFile pdf,
 			HttpServletRequest pRequest
@@ -2937,8 +2979,8 @@ public class IndexController {
 			//總需上傳數-已上傳=未上傳數
 			Map<String, Object> uploadNum = contractService.uploadNum(contract);
 			//命題基本題總需上傳數
-			int basicNum = Integer.valueOf(uploadNum.get("BASIC_NUM").toString());
-			model.addAttribute("basicNum", basicNum);
+			int questionsGroupNum = Integer.valueOf(uploadNum.get("QUESTIONS_GROUP_NUM").toString());
+			model.addAttribute("questionsGroupNum", questionsGroupNum);
 			//合約未完成數
 //			int undoneCount = contractService.undoneCount(contract);
 			List<Map<String, Object>> contractList = contractService.getList(contract);
@@ -3017,6 +3059,12 @@ public class IndexController {
 		List<Map<String, Object>> subjectList = subjectService.getList(subject);
 		model.addAttribute("subjectList", subjectList);
 		
+		//取得素材分類清單
+		MaterialType materialType = new MaterialType();
+		materialType.setParent_id("0");
+		List<Map<String, Object>> materialTypeList = materialTypeService.list(materialType);
+		model.addAttribute("materialTypeList", materialTypeList);
+		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
 		model.addAttribute("menu", menu);
@@ -3028,7 +3076,6 @@ public class IndexController {
 	public String propositionGroupAddSubmit(Model model,
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
-			@RequestParam("fileName") MultipartFile fileName,
 			@RequestParam("word") MultipartFile word,
 			@RequestParam("pdf") MultipartFile pdf,
 			@RequestParam(value="attachment", required=false) MultipartFile[] attachment,
@@ -3620,7 +3667,6 @@ public class IndexController {
 	public String propositionGroupEditSubmit(Model model,
 			@SessionAttribute("accountSession") Account accountSession,
 			@ModelAttribute Proposition proposition,
-			@RequestParam("fileName") MultipartFile fileName,
 			@RequestParam("word") MultipartFile word,
 			@RequestParam("pdf") MultipartFile pdf,
 			HttpServletRequest pRequest
