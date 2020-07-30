@@ -96,7 +96,6 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 				   + " CM.CSOFE_CONTRACT_NAME, CM.CSOFE_PARTYA, CM.CSOFE_PARTYB, CM.EDUCATION_ID, CM.SUBJECT_ID, "
 				   + " DATE_FORMAT(CM.BEGIN_DATE, '%Y/%m/%d') AS BEGIN_DATE, "
 				   + " DATE_FORMAT(CM.END_DATE, '%Y/%m/%d') AS END_DATE, "
-				   + " CM.LESSON_NUM, CM.BASIC_NUM, CM.QUESTIONS_GROUP_NUM, "
 				   + " CM.CREATE_BY, CM.CREATE_TIME, CM.UPDATE_BY, CM.UPDATE_TIME, "
 				   + " TA.NAME AS TEACHER_NAME, "
 				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
@@ -114,7 +113,7 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 				   + " FROM proposition_manage.contract_material CM "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ID = CM.TEACHER_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = CM.EDUCATION_ID "
-				   + " LEFT JOIN proposition_manage.subject PMS ON PMF.ID = CM.SUBJECT_ID "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = CM.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.lesson_plan LP ON LP.ID = CM.LP_ID "
 				   + " LEFT JOIN proposition_manage.proposition PMP ON PMP.ID = CM.LP_ID "
 				   + " LEFT JOIN proposition_manage.contract_material_option CMO ON CMO.CONTRACT_MATERIAL_ID = CM.ID "
@@ -137,16 +136,17 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		SqlParameterSource paramSource = new BeanPropertySqlParameterSource(contractMaterial);
 		
 		String sql = " INSERT INTO proposition_manage.contract_material "
-				   + " (UUID, TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
+				   + " (UUID, CONTRACT_ID, TEACHER_ID, TKB_CONTRACT_NUM, TKB_CONTRACT_FILE, TKB_CONTRACT_NAME, TKB_PARTYA, "
 				   + " TKB_PARTYB, CSOFE_CONTRACT_NUM, CSOFE_CONTRACT_FILE, CSOFE_CONTRACT_NAME, CSOFE_PARTYA, "
 				   + " CSOFE_PARTYB, LP_ID, LP_TYPE, EDUCATION_ID, SUBJECT_ID, BEGIN_DATE, END_DATE, "
-				   + " LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(REPLACE(UUID(), '-', ''), :teacher_id, :tkb_contract_num, "
+				   + " VALUES(REPLACE(UUID(), '-', ''), "
+				   + " ((SELECT CONCAT(:contract_id, (SELECT LPAD(COUNT, 2, 0) FROM (SELECT COUNT(*)+1 AS COUNT FROM proposition_manage.contract_material WHERE INSTR(CONTRACT_ID, :contract_id) > 0) L1)))), "
+				   + " :teacher_id, :tkb_contract_num, "
 				   + " :tkb_contract_file, :tkb_contract_name, :tkb_partya, :tkb_partyb, :csofe_contract_num, "
 				   + " :csofe_contract_file, :csofe_contract_name, :csofe_partya, :csofe_partyb, :lp_id, :lp_type, "
-				   + " :education_id, :subject_id, :begin_date, :end_date, :lesson_num, :basic_num, "
-				   + " :questions_group_num, :create_by, NOW(), :update_by, NOW()) ";
+				   + " :education_id, :subject_id, :begin_date, :end_date, "
+				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
@@ -165,7 +165,6 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 				   + " TKB_PARTYA = ?, TKB_PARTYB = ?, CSOFE_CONTRACT_NUM = ?, "
 				   + " CSOFE_CONTRACT_FILE = ?, CSOFE_CONTRACT_NAME = ?, CSOFE_PARTYA = ?, CSOFE_PARTYB = ?, "
 				   + " EDUCATION_ID = ?, SUBJECT_ID = ?, BEGIN_DATE = ?, END_DATE = ?, "
-				   + " LESSON_NUM = ?, BASIC_NUM = ?, QUESTIONS_GROUP_NUM = ?, "
 				   + " UPDATE_BY = ?, UPDATE_TIME = NOW() "
 				   + " WHERE ID = ? ";
 		
@@ -183,9 +182,6 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		args.add(contractMaterial.getSubject_id());
 		args.add(contractMaterial.getBegin_date());
 		args.add(contractMaterial.getEnd_date());
-		args.add(contractMaterial.getLesson_num());
-		args.add(contractMaterial.getBasic_num());
-		args.add(contractMaterial.getQuestions_group_num());
 		args.add(contractMaterial.getUpdate_by());
 		args.add(contractMaterial.getId());
 		
@@ -274,18 +270,8 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		
 		String sql = " SELECT * FROM ( "
 				   + " SELECT PMC.*, "
-				   + " COUNT(LP1.ID) AS LP1_COUNT, SUM(IF(LP2.ID IS NULL, 0, 1)) LP2_SUM, "
-				   + " COUNT(PMP1.ID) PMP1_COUNT, SUM(IF(PMP2.ID IS NULL, 0, 1)) PMP2_SUM, "
-				   + " COUNT(PMP3.ID) PMP3_COUNT, SUM(IF(PMP4.ID IS NULL, 0, 1)) PMP4_SUM, "
-				   + " (PMC.LESSON_NUM-COUNT(LP1.ID)+PMC.LESSON_NUM-SUM(IF(LP2.ID IS NULL, 0, 1))+PMC.BASIC_NUM-COUNT(PMP1.ID)+PMC.BASIC_NUM-SUM(IF(PMP2.ID IS NULL, 0, 1))+PMC.QUESTIONS_GROUP_NUM-COUNT(PMP3.ID)+PMC.QUESTIONS_GROUP_NUM-SUM(IF(PMP4.ID IS NULL, 0, 1))) AS UNDONE_NUM, "
 				   + " IF(NOW() BETWEEN PMC.BEGIN_DATE AND PMC.END_DATE, '有效', '過期') AS CONTRACT_LIMIT "
 				   + " FROM proposition_manage.contract_material PMC "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP1 ON LP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.lesson_plan LP2 ON LP2.UPLOAD_STATUS = 'C' AND LP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP1 ON PMP1.QUESTION_TYPE = '1' AND PMP1.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP2 ON PMP2.QUESTION_TYPE = '1' AND PMP2.UPLOAD_STATUS = 'C' AND PMP2.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP3 ON PMP3.QUESTION_TYPE = '2' AND PMP3.CONTRACT_ID = PMC.CONTRACT_ID "
-				   + " LEFT JOIN proposition_manage.proposition PMP4 ON PMP4.QUESTION_TYPE = '2' AND PMP4.UPLOAD_STATUS = 'C' AND PMP4.CONTRACT_ID = PMC.CONTRACT_ID "
 				   + " WHERE PMC.TEACHER_ID = ? "
 				   + " GROUP BY PMC.CONTRACT_ID "
 				   + " ) L1 "
