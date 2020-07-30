@@ -29,13 +29,10 @@ public class ContractMaterial extends Base {
 	private String subject_id;				//學科流水號
 	private String begin_date;				//合約生效日期
 	private String end_date;				//合約結束日期
-	private String lesson_num;				//教案授權數量
-	private String basic_num;				//命題基本題授權數量
-	private String questions_group_num;		//命題題組題授權數量
 	
 	private String teacher_name;			//老師名稱
-	private String field_name;				//領域名稱
 	private String education_name;			//學制名稱
+	private String subject_name;			//學科名稱
 	private String name;					//教案命題名稱
 	private String lp_type_name;			//教案命題類別名稱
 	private String material_type_name;		//素材類別名稱

@@ -1170,17 +1170,17 @@ public class IndexController {
 		
 		contractMaterial.setTeacher_id(getDataByAccount!=null ? getDataByAccount.get("ID").toString() : "");
 		
-		//取得領域資料
-//		Field field = new Field();
-//		field.setId(contractMaterial.getField_id());
-//		field = fieldService.data(field);
-//		model.addAttribute("fieldName", field.getName());
-		
 		//取得學制清單
 		Education education = new Education();
 		education.setId(contractMaterial.getEducation_id());
 		education = educationService.data(education);
 		model.addAttribute("educationName", education.getName());
+		
+		//取得學科資料
+		Subject subject = new Subject();
+		subject.setId(contractMaterial.getSubject_id());
+		subject = subjectService.data(subject);
+		model.addAttribute("subjectName", subject.getName());
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -1204,16 +1204,14 @@ public class IndexController {
 			contractMaterial.setTkb_contract_name(tkbContractFile.getOriginalFilename());
 			contractMaterial.setCsofe_contract_file(!"".equals(csofeContractFile.getOriginalFilename()) ? commonService.uploadFileSaveDateName(csofeContractFile, uploadedFolder+"file/contract/") : null);
 			contractMaterial.setCsofe_contract_name(csofeContractFile.getOriginalFilename());
-			contractMaterial.setLesson_num((contractMaterial.getLesson_num()==null || "".equals(contractMaterial.getLesson_num())) ? "0" : contractMaterial.getLesson_num());
-			contractMaterial.setBasic_num((contractMaterial.getBasic_num()==null || "".equals(contractMaterial.getBasic_num())) ? "0" : contractMaterial.getBasic_num());
-			contractMaterial.setQuestions_group_num((contractMaterial.getQuestions_group_num()==null || "".equals(contractMaterial.getQuestions_group_num())) ? "0" : contractMaterial.getQuestions_group_num());
+			contractMaterial.setContract_id("M"+contractMaterial.getContract_id());
 			contractMaterial.setCreate_by(accountSession.getAccount());
 			contractMaterial.setUpdate_by(accountSession.getAccount());
 			int id = contractMaterialService.add(contractMaterial);
 			//修改合約序號，規則：年月日+流水號後四碼=共10碼
-			contractMaterial = new ContractMaterial();
-			contractMaterial.setId(String.valueOf(id));
-			contractMaterialService.updateTeacherId(contractMaterial);
+//			contractMaterial = new ContractMaterial();
+//			contractMaterial.setId(String.valueOf(id));
+//			contractMaterialService.updateTeacherId(contractMaterial);
 			
 			ContractMaterialOption contractMaterialOption = new ContractMaterialOption();
 			String[] contractType = pRequest.getParameterValues("contractType");

@@ -17,6 +17,7 @@
 	<form id="contractForm" method="POST" th:object="${contractMaterial}">
 		<input type="hidden" id="lp_id" th:field="*{lp_id}" />
 		<input type="hidden" id="lp_type" th:field="*{lp_type}" />
+		<input type="hidden" id="contract_id" th:field="*{contract_id}" />
 		<input type="hidden" id="education_id" th:field="*{education_id}" />
 		<input type="hidden" id="subject_id" th:field="*{subject_id}" />
 	</form>
@@ -81,7 +82,7 @@
                         <div th:text="${list.auditor2_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
-                        <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${list.education_id}]],[[${list.subject_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${#strings.substring(list.lesson_plan_number,1,#strings.length(list.lesson_plan_number))}]],[[${list.education_id}]],[[${list.subject_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
                 <div class="list-block" th:if="${accountSession.level == '3' || accountSession.level == '5'}"> <!-- 內容老師、組長，顯示列表 -->                    
@@ -175,9 +176,10 @@
 			
 		}
 		
-		function toContractAdd(lp_id, education_id, subject_id) {
+		function toContractAdd(lp_id, lesson_plan_number, education_id, subject_id) {
 			$("#lp_id").val(lp_id);
 			$("#lp_type").val("1");
+			$("#contract_id").val(lesson_plan_number);
 			$("#education_id").val(education_id);
 			$("#subject_id").val(subject_id);
 			$("#contractForm").attr("action", "/contract/material/add");

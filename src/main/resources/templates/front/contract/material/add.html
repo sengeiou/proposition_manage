@@ -28,8 +28,9 @@
 					<input type="hidden" id="lp_type" th:field="*{lp_type}" />
 					<input type="hidden" id="tkb_partya" name="tkb_partya" th:value="臺灣知識庫" />
 					<input type="hidden" id="csofe_partya" name="csofe_partya" th:value="中華未來教育學會" />
-					<input type="hidden" id="field_id" th:field="*{field_id}" />
+					<input type="hidden" id="contract_id" th:field="*{contract_id}" />
 					<input type="hidden" id="education_id" th:field="*{education_id}" />
+					<input type="hidden" id="subject_id" th:field="*{subject_id}" />
 	                <div class="container">
 	                    <!-- <p>合約必須至少上傳一份</p> -->
 	                    <div class="page">
@@ -101,22 +102,15 @@
 	                            <input type="checkbox" id="音檔" class="dis-n" name="contractType" value="4">
 	                        </label>
 	                    </div>
-	                    <div class="p-left-14px">領域</div>
-	                    <div class="basic-h">[[${fieldName}]]</div>
 	                    <div class="p-left-14px">學制</div>
 	                    <div class="basic-h">[[${educationName}]]</div>
+	                    <div class="p-left-14px">學科</div>
+	                    <div class="basic-h">[[${subjectName}]]</div>
 	                    <div><span class="required">*</span>合約時限</div>
 	                    <div>
 	                        <input type="text" placeholder="請輸入開始日期" id="contractStart" th:field="*{begin_date}" autocomplete="off">
 	                        <input type="text" placeholder="請輸入結束日期" id="contractEnd" th:field="*{end_date}" autocomplete="off">
-	                    </div>
-	                    <div><span class="required">*</span>合約內容</div>
-	                    <div class="basic-h">
-	                        <p>合約授權內容必須至少填寫一欄，合約送出後將自動產生上傳教案與命題欄位</p>
-	                        <div>教案授權數量<input type="text" class="fileNumInput" id="lessonNum" th:field="*{lesson_num}">份</div>
-	                        <div>命題基本題授權數量<input type="text" class="fileNumInput" id="propoBasicNum" th:field="*{basic_num}">份</div>
-	                        <div>命題題組題授權數量<input type="text" class="fileNumInput" id="propoGroupNum" th:field="*{questions_group_num}">份</div>
-	                    </div>                   
+	                    </div>               
 	                </div>            
 	                <button class="btn-submit" data-type="contractMatCreate" type="button">送出</button>
                 </form>
