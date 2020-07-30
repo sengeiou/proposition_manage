@@ -34,7 +34,7 @@
                 <h3>教案列表</h3>
                 <div class="lessonList-memo" th:if="${accountSession.level=='3'}"><!-- 內容老師，顯示提示文字 -->
                     您尚有<span>[[${lessonNum-addCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
-                    <a href="/lesson/add" th:if="${lessonNum-addCount-editCount-doneCount > 0}"><button class="btn-sm">新增教案</button></a>
+                    <a href="/lesson/add" th:if="${lessonNum-addCount > 0}"><button class="btn-sm">新增教案</button></a>
                 </div>
                 <div class="lessonList-memo" th:if="${accountSession.level=='4'}">您尚有<span>[[${lessonPlan.count}]]</span>份教案未審核</div><!-- 審核老師，顯示提示文字 -->                
                 <div class="pageList-block">

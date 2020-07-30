@@ -32,7 +32,7 @@
 	                            <option th:each="contract:${contractList}" th:value="${contract.contract_id}" th:text="${contract.contract_id}"></option>
 	                        </select>
 	                    </div>
-	                    <div><span class="required">*</span>命題名稱</div>
+	                    <div>命題名稱</div>
 	                    <div>
 	                        <input type="text" placeholder="請輸入命題名稱" id="lessonName" th:field="*{name}">
 	                    </div>
@@ -108,7 +108,7 @@
 	                        <input type="hidden" value="" class="keyWordInput" name="tag">
 	                    </div>
 	                </div>
-	                <button class="btn-submit" data-type="lessonCreate" type="button">送出</button>
+	                <button class="btn-submit" data-type="propoBasicCreate" type="button">送出</button>
                 </form>
             </div>
         </div>

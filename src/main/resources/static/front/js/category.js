@@ -1,5 +1,66 @@
 $(function(){
+    function openlightBoxAlert(text) {        
+        $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')
+        $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
+        $("section.lightBoxAlert .container div").text(text)
+    }
+
     //分類管理
+    $(".category-block").on("click",".openLightBox",function(){   //打開燈箱
+        let lightBox = $(this).data('lb')
+        let state = true
+        let alertText = ''
+
+        if (lightBox == 'edit-categorySubject') {   //分類管理--學科管理--編輯button
+            let item = $(this).parent().siblings('.subjectName')   
+            let elementary = $(this).parent().siblings('.elementary')   
+            let junior = $(this).parent().siblings('.junior')   
+            let high = $(this).parent().siblings('.high')   
+            //判斷哪些學制有學科，渲染在燈箱內的checkbox
+            !elementary.text() == true ? false: $(`input#elementary`).prop('checked', true).siblings('.checkbox-square').addClass('active')
+            !junior.text() == true ? false: $(`input#junior`).prop('checked', true).siblings('.checkbox-square').addClass('active')
+            !high.text() == true ? false: $(`input#high`).prop('checked', true).siblings('.checkbox-square').addClass('active')             
+            //更改燈箱文字及綁學科id、編號於燈箱的「確定」按鈕上
+            $(`section.${lightBox}-lightBox .container #categorySubject`).val(item.find('span').eq(0).text())
+            $(`section.${lightBox}-lightBox .container #subcategorySubject`).val(item.find('span').eq(1).text())
+            $(`section.${lightBox}-lightBox button.editNewDataBtn`).data('id',item.attr('id'))
+            $(`section.${lightBox}-lightBox button.editNewDataBtn`).data('no',item.data('no'))
+
+        }else if (lightBox == 'edit-categoryMaterial') {    //分類管理--素材分類--編輯button
+            let item = $(this).parent().siblings('.item-group').find('.active')
+            if (item.length == 0) {
+                state = false   
+                alertText = '請先選擇欲編輯項目'              
+            }else {
+                $(`section.${lightBox}-lightBox .container p`).text(item.text())                
+                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
+            }   
+        }else if (lightBox == 'delete-categorySubject') {  //分類管理--學科管理--刪除button
+            let item = $(this).parent().siblings('.subjectName')   
+            let elementary = $(this).parent().siblings('.elementary')  
+            let junior = $(this).parent().siblings('.junior')   
+            let high = $(this).parent().siblings('.high')
+            //判斷各學制下有沒有該學科
+            let elementaryText = !elementary.text() == true ? '' :'國小' 
+            let juniorText = !junior.text() == true ? '' :',國中' 
+            let highText = !high.text() == true ? '' :',高中'
+            //更改燈箱文字及綁學科id、編號於燈箱的「確定」按鈕上
+            $(`section.${lightBox}-lightBox .container-grid p`).eq(1).text(item.find('span').eq(0).text())
+            $(`section.${lightBox}-lightBox .container-grid p`).eq(3).text(item.find('span').eq(1).text())
+            $(`section.${lightBox}-lightBox .container-grid p`).eq(5).text(elementaryText+juniorText+highText)
+            $(`section.${lightBox}-lightBox button.editNewDataBtn`).data('id',item.attr('id'))     
+        }
+
+
+        if (state) {
+            $("section.lightBoxBG").removeClass('dis-n').addClass('dis-b')
+            $(`section.${lightBox}-lightBox`).removeClass('dis-n').addClass('dis-b')
+        }else {
+            openlightBoxAlert(alertText)
+        }
+    })
+
+
     $(".block").on('click','.item',function(){ //點擊選項         
         $(this).addClass('active')
         $(this).siblings('.item').removeClass('active')
@@ -25,6 +86,7 @@ $(function(){
     })
     $(".deleteBtn").on('click',function(){ //點擊「刪除」按鈕
         let item = $(this).parent().siblings('.item-group').find('.active').attr('id')   
+        item == undefined ? openlightBoxAlert('請先選擇欲刪除項目') :false
         console.log('刪除按鈕在這～～要刪除的id : '+item)
     })
     $(".upBtn").on('click',function(){ //點擊「上移」按鈕

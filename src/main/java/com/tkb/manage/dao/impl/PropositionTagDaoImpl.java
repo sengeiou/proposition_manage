@@ -32,7 +32,7 @@ public class PropositionTagDaoImpl implements PropositionTagDao {
 		String sql = " INSERT INTO proposition_manage.proposition_tag "
 				   + " (PROPOSITION_ID, NAME, "
 				   + " CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME) "
-				   + " VALUES(:lesson_plan_id, :name, "
+				   + " VALUES(:proposition_id, :name, "
 				   + " :create_by, NOW(), :update_by, NOW()) ";
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
