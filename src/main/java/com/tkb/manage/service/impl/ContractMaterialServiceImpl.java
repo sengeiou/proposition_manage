@@ -69,4 +69,8 @@ public class ContractMaterialServiceImpl implements ContractMaterialService {
 		return contractMaterialDao.expired(contractMaterial);
 	}
 	
+	public Map<String, Object> contractNum() {
+		return contractMaterialDao.contractNum();
+	}
+	
 }

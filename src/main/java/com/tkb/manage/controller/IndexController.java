@@ -186,10 +186,14 @@ public class IndexController {
 		
 		//管理者(幾份合約未履行、幾份合約到期)
 		if(level <= 2) {
-
+			//老師授權合約
 			contract = new Contract();	
 			Map<String, Object> contractNum = contractService.contractNum(contract);
+			contractNum.put("NO_COMPLETE", Integer.valueOf(contractNum.get("TOTAL").toString())-Integer.valueOf(contractNum.get("COMPLETE").toString()));
 			model.addAttribute("contractNum", contractNum);
+			//素材授權合約
+			Map<String, Object> contractMaterialNum = contractMaterialService.contractNum();
+			model.addAttribute("contractMaterialNum", contractMaterialNum);
 		//創作教師(幾份教案、命題基本題、命題題組題未審核及未修訂)
 		} else if(level == 3) {
 			contract = new Contract();
@@ -512,7 +516,6 @@ public class IndexController {
 		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
 		if(educationList != null) {
 			for(int i=0; i<educationList.length; i++) {
-				System.out.println(educationList[i]);
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("3");
 				teacherAccountOption.setCode(educationList[i]);
@@ -524,7 +527,6 @@ public class IndexController {
 		if(subjectList != null) {
 			teacherAccountOption = new TeacherAccountOption();
 			for(int i=0; i<subjectList.length; i++) {
-//				System.out.println(fieldList[i]);
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("1");
 				teacherAccountOption.setCode(subjectList[i]);
@@ -536,6 +538,24 @@ public class IndexController {
 		model.addAttribute("PATH", "/");
 		return "front/path";
     }
+	
+	@RequestMapping(value = "/teacher/check" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void checkAccount(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+
+		String id_no = pRequest.getParameter("id_no") == null ? "" : pRequest.getParameter("id_no");
+		String id = pRequest.getParameter("id") == null ? "" : pRequest.getParameter("id");
+		String status = "F";
+		int check_id = teacherAccountService.checkAccount(id_no, id);
+
+    	if(check_id == 0) {
+    		status = "T";
+    	}
+    	
+    	pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(status);
+		
+	}
 	
 	@RequestMapping(value = "/teacher/add" , method = {RequestMethod.POST, RequestMethod.GET})
     public String teacherAdd(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){	
@@ -619,7 +639,7 @@ public class IndexController {
 		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
 		if(educationList != null) {
 			for(int i=0; i<educationList.length; i++) {
-				System.out.println(educationList[i]);
+
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("3");
 				teacherAccountOption.setCode(educationList[i]);
@@ -668,6 +688,7 @@ public class IndexController {
 		account.setPage(page);
 		account.setTotal_page(total_page);
 		account.setPage_count(page_count);
+
 		model.addAttribute("account", account);
 		
 		//取得學科清單
@@ -887,15 +908,24 @@ public class IndexController {
 	        	String name = sheet.getCell(0, i).getContents() == "" ? null : sheet.getCell(0, i).getContents();
 	        	String school_master_id = sheet.getCell(1, i).getContents() == "" ? null : sheet.getCell(1, i).getContents();
 	        	String id_no = sheet.getCell(2, i).getContents() == "" ? null : sheet.getCell(2, i).getContents();
-	        	String phone = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
-	        	String email = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
-	        	String address = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();
-	        	String bank = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
-	        	String branch = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
-	        	String remittance_account = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
-	        	String field_name = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();
-	        	String content_provision = "".equals(sheet.getCell(10, i).getContents()) ? null : ("是".equals(sheet.getCell(10, i).getContents()) ? "1" : "0");
-	        	String content_audit = "".equals(sheet.getCell(11, i).getContents()) ? null : ("是".equals(sheet.getCell(101, i).getContents()) ? "1" : "0");
+	        	String mobile_phone = sheet.getCell(3, i).getContents() == "" ? null : sheet.getCell(3, i).getContents();
+	        	String telephone = sheet.getCell(4, i).getContents() == "" ? null : sheet.getCell(4, i).getContents();
+	        	String email = sheet.getCell(5, i).getContents() == "" ? null : sheet.getCell(5, i).getContents();        	
+	        	String address_zip = sheet.getCell(6, i).getContents() == "" ? null : sheet.getCell(6, i).getContents();
+	        	String address_city = sheet.getCell(7, i).getContents() == "" ? null : sheet.getCell(7, i).getContents();
+	        	String address_area = sheet.getCell(8, i).getContents() == "" ? null : sheet.getCell(8, i).getContents();
+	        	String address_road = sheet.getCell(9, i).getContents() == "" ? null : sheet.getCell(9, i).getContents();      	
+	        	String census_zip = sheet.getCell(10, i).getContents() == "" ? null : sheet.getCell(10, i).getContents();
+	        	String census_city = sheet.getCell(11, i).getContents() == "" ? null : sheet.getCell(11, i).getContents();
+	        	String census_area = sheet.getCell(12, i).getContents() == "" ? null : sheet.getCell(12, i).getContents();
+	        	String census_road = sheet.getCell(13, i).getContents() == "" ? null : sheet.getCell(13, i).getContents();
+	        	String bank = sheet.getCell(14, i).getContents() == "" ? null : sheet.getCell(14, i).getContents();
+	        	String branch = sheet.getCell(15, i).getContents() == "" ? null : sheet.getCell(15, i).getContents();
+	        	String remittance_account = sheet.getCell(16, i).getContents() == "" ? null : sheet.getCell(16, i).getContents();
+	        	String education_id = sheet.getCell(17, i).getContents() == "" ? null : sheet.getCell(17, i).getContents();
+	        	String subject_id = sheet.getCell(18, i).getContents() == "" ? null : sheet.getCell(18, i).getContents();
+	        	String content_provision = "".equals(sheet.getCell(19, i).getContents()) ? null : ("是".equals(sheet.getCell(19, i).getContents()) ? "1" : "0");
+	        	String content_audit = "".equals(sheet.getCell(20, i).getContents()) ? null : ("是".equals(sheet.getCell(20, i).getContents()) ? "1" : "0");
 	        	String position = "1";
 	        	String status = "1";
 	        	
@@ -903,14 +933,20 @@ public class IndexController {
 	        		break;
 	        	}
 	        	
-	        	if(email == null) {
+//	        	if(email == null) {
+//	        		continue;
+//	        	}
+	        	
+//	        	if(phone == null) {
+//	        		continue;
+//	        	}
+	        	
+	        	int check_id = teacherAccountService.checkAccount(id_no, "0");
+	        	
+	        	if(check_id != 0) {
 	        		continue;
 	        	}
-	        	
-	        	if(phone == null) {
-	        		continue;
-	        	}
-	        	
+
 	        	String level = "4";
 	        	if("1".equals(content_provision)) {
 	        		level = "3";
@@ -929,25 +965,33 @@ public class IndexController {
 //	        	Map<String ,Object> schoolId = schoolMasterService.searchName(schoolMaster);
 //	        	String school_master_id = schoolId!=null ? schoolId.get("ID").toString() : null;
 	        	
-	        	Field field = new Field();
-	        	field.setName(field_name);
-	        	Map<String ,Object> fieldId = fieldService.searchName(field);
-	        	String field_id = fieldId!=null ? fieldId.get("ID").toString() : null;
+//	        	Field field = new Field();
+//	        	field.setName(field_name);
+//	        	Map<String ,Object> fieldId = fieldService.searchName(field);
+//	        	String field_id = fieldId!=null ? fieldId.get("ID").toString() : null;
 	        	
 	        	account = new Account();
 	        	account.setAccount(id_no);
-	        	account.setPassword(phone);
+	        	account.setPassword(id_no.substring(id_no.length()-4,id_no.length()));
 	        	account.setName(name);
 	        	account.setSchool_master_id(school_master_id);
 	        	account.setId_no(id_no);
-//	        	account.setPhone(phone);
+	        	account.setMobile_phone(mobile_phone);
+	        	account.setTelephone(telephone);
 	        	account.setEmail(email);
-//	        	account.setAddress(address);
+	        	account.setAddress_zip(address_zip);
+	        	account.setAddress_city(address_city);
+	        	account.setAddress_area(address_area);
+	        	account.setAddress_road(address_road);
+	        	account.setCensus_zip(census_zip);
+	        	account.setCensus_city(census_city);
+	        	account.setCensus_area(census_area);
+	        	account.setCensus_road(census_road);
 	        	account.setBank(bank);
 	        	account.setBranch(branch);
 	        	account.setRemittance_account(remittance_account);
-//	        	account.setAddress(address);
-	        	account.setField_id(field_id);
+	        	account.setEducation_id(education_id);
+	        	account.setSubject_id(subject_id);
 	        	account.setIdentity_id(identity_id);
 	        	account.setPosition(position);
 	        	account.setContent_provision(content_provision);

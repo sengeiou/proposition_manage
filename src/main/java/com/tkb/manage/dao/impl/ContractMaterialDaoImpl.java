@@ -358,4 +358,27 @@ public class ContractMaterialDaoImpl implements ContractMaterialDao {
 		
 	}
 	
+	public Map<String, Object> contractNum() {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT SUM(EFFECTIVE_NUM) EFFECTIVE_NUM, SUM(EXPIRE_NUM) EXPIRE_NUM, COUNT(CONTRACT_ID) AS TOTAL "
+				   + " FROM( "
+				   + " SELECT "
+				   + " (CASE WHEN DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d') THEN 1 ELSE 0 END) EFFECTIVE_NUM, "
+				   + " (CASE WHEN DATE_FORMAT(NOW(), '%Y%m%d') NOT BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d') THEN 1 ELSE 0 END) EXPIRE_NUM, "
+				   + " CONTRACT_ID "
+				   + " FROM proposition_manage.contract_material  "
+				   + " )A ";
+		
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

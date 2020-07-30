@@ -473,18 +473,19 @@ public class ContractDaoImpl implements ContractDao {
 		
 		List<Object> args = new ArrayList<Object>();
 
-		String sql = " SELECT C.*, (C.EFFECTIVE_NUM+C.EXPIRE_NUM-C.COMPLETE) AS NO_COMPLETE, (C.EFFECTIVE_NUM+C.EXPIRE_NUM) AS TOTAL FROM ( "
-				   +  " SELECT "
-				   +  " (SELECT COUNT(*) FROM proposition_manage.contract WHERE DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d')) AS EFFECTIVE_NUM , "
-				   +  " (SELECT COUNT(*) FROM proposition_manage.contract WHERE DATE_FORMAT(NOW(), '%Y%m%d') not BETWEEN DATE_FORMAT(BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(END_DATE, '%Y%m%d')) AS EXPIRE_NUM, "
-				   +  " (SELECT COUNT(*) FROM proposition_manage.proposition P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'F') AS COMPLETE "
-				   +  " FROM proposition_manage.contract PMC "
-				   +  " ) C ";
+		String sql = " SELECT "
+				   +  " (CASE WHEN (LESSON_NUM = F_SUML AND BASIC_NUM = F_SUM1 AND QUESTIONS_GROUP_NUM = F_SUM2) THEN 1 ELSE 0 END) COMPLETE, "
+				   +  " EFFECTIVE_NUM, (TOTAL-EFFECTIVE_NUM) EXPIRE_NUM, TOTAL "
+				   +  " FROM ( "
+				   +  " SELECT LESSON_NUM, BASIC_NUM, QUESTIONS_GROUP_NUM, COUNT(PMC.CONTRACT_ID) AS TOTAL, "
+				   +  " SUM((CASE WHEN DATE_FORMAT(NOW(), '%Y%m%d') BETWEEN DATE_FORMAT(PMC.BEGIN_DATE, '%Y%m%d') AND DATE_FORMAT(PMC.END_DATE, '%Y%m%d') THEN 1 ELSE 0 END)) AS EFFECTIVE_NUM, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan P WHERE PMC.CONTRACT_ID = P.CONTRACT_ID AND P.FILE_STATUS = 'F') AS F_SUML, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F' AND LP.QUESTION_TYPE = '1') AS F_SUM1, "
+				   +  " (SELECT COUNT(*) AS COUNT FROM proposition_manage.proposition LP WHERE PMC.CONTRACT_ID = LP.CONTRACT_ID AND LP.FILE_STATUS = 'F' AND LP.QUESTION_TYPE = '2') AS F_SUM2 "
+				   +  " FROM proposition_manage.contract PMC   "
+				   +  " )A ";
 		
-		if(contract.getTeacher_id() != null) {
-			sql += " WHERE TEACHER_ID = ? ";
-			args.add(contract.getTeacher_id());
-		}
+
 
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

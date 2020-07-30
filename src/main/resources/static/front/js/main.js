@@ -491,10 +491,32 @@ $(function(){
             text = '請選擇通訊地址對應的郵遞區號'            
         }
         
-        $("#c_area").val($("#census_area").val());
-        $("#address_area").val($("#area").val());
-        $("#census_zip").val($("#residenceSelectZip").val());
-        $("#address_zip").val($("#selectZip").val());
+        var checkAccountText = "";
+        $.ajax({
+            url: '/teacher/check',
+            cache: false,
+            async: false,
+            dataType: 'text',
+            type: 'POST',
+            xhrFilds:{withCredentials:true},
+            data: {
+                id_no: $("#teacherID").val(),
+                id: $("#id").val()
+            },
+            error: function(xhr) {
+            	checkAccountText = '檢查帳號錯誤';                   
+            },
+            success: function(data) {              
+                if(data != "T"){
+                	checkAccountText = '帳號重複註冊請重新輸入帳號'  
+                }
+            }
+        });   
+        
+        if (checkAccountText != "") {
+            status = false
+            text = checkAccountText         
+        }
 
         if (!status) {
             $("section.lightBoxAlert").removeClass('dis-n').add('dis-b')

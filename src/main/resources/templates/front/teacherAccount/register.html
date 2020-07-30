@@ -5,7 +5,7 @@
 	<title>素養教案與命題管理系統 - 建立老師</title>
 	<meta charset="utf-8">
 </head>
-<body class="style-admin">   
+<body class="style-admin">
 	<form class="form-horizontal" role="form" id="mainForm" method="POST" th:object="${account}" enctype="multipart/form-data">
 	<section class="header-content">
         <div class="fixed-width header">
@@ -216,6 +216,7 @@
  </form>
 
     <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/teacher.js}"></script> 
 	<script>
 	
 	$("#census_city").on('change',function(){ //點擊戶籍地址City

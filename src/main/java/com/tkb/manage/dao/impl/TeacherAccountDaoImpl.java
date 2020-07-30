@@ -364,4 +364,22 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public Integer checkAccount(String id_no,String id) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.teacher_account WHERE ACCOUNT = ? AND ID <> ? ";
+		
+		args.add(id_no);
+		args.add(id);
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return Integer.valueOf(list.get(0).get("COUNT").toString());
+		} else {
+			return null;
+		}
+		
+	}
+	
 }
