@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="front/load/css :: css"></head>
 <head>
-	<title>素養教案與命題管理系統 - 命題選擇題列表</title>
+	<title>素養教案與命題管理系統 - 命題基本題列表</title>
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -17,9 +17,8 @@
 	<form id="contractForm" method="POST" th:object="${contractMaterial}">
 		<input type="hidden" id="lp_id" th:field="*{lp_id}" />
 		<input type="hidden" id="lp_type" th:field="*{lp_type}" />
-		<input type="hidden" id="contract_id" th:field="*{contract_id}" />
+		<input type="hidden" id="field_id" th:field="*{field_id}" />
 		<input type="hidden" id="education_id" th:field="*{education_id}" />
-		<input type="hidden" id="subject_id" th:field="*{subject_id}" />
 	</form>
     <section class="main-content">
         <div class="fixed-width">            
@@ -33,7 +32,7 @@
             <div class="list-content">
                 <h3>命題-基本題列表</h3>
                 <div class="lessonList-memo" th:if="${accountSession.level=='3'}"><!-- 內容老師，顯示提示文字 -->
-                    您尚有<span>[[${basicNum-addCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
+                    您尚有<span>[[${basicNum-addCount-editCount-doneCount}]]</span>份未上傳 ; <span>[[${editCount}]]</span>份待修訂（總計<span>[[${undoneCount}]]</span>份合約未完成）
                     <a href="/proposition/basic/add" th:if="${basicNum-addCount-editCount-doneCount > 0}"><button class="btn-sm">新增命題</button></a>
                 </div>
                 <div class="lessonList-memo" th:if="${accountSession.level=='4'}">您尚有<span>[[${proposition.count}]]</span>份教案未審核</div><!-- 審核老師，顯示提示文字 -->                
@@ -50,97 +49,88 @@
                 </div>
                 <div class="list-block" th:if="${accountSession.level <= '2'}"> <!-- 管理者，顯示列表 -->                    
                     <div class="grid lessonList-admin-grid grid-title">
-                    	<div>
-                            <label for="checkAll">
-                                <div class="checkbox-square"></div> 
-                                <span>全選</span>                               
-                                <input type="checkbox" id="checkAll" class="dis-n">
-                            </label>
-                        </div>
-                        <div>合約流水號</div>
+                        <div>合約序號</div>
                         <div>創作教師</div>
+                        <div>學習領域</div>
                         <div>學制</div>
-                        <div>學科</div>
                         <div>檔案狀態</div>
-                        <div>審議委員<i class="fas fa-paper-plane"></i></div>
+<!--                         <div>上傳狀態</div> -->
                         <div>建立時間</div>
                         <div>詳細資料</div>
                         <div>新增合約</div>
                     </div>
-                    <div class="grid lessonList-admin-grid" th:each="list,stat:${list}">
-                    	<div>
-                            <label th:for="${list.lesson_plan_number}">
-                                <div class="checkbox-square"></div>                                
-                                <input type="checkbox" th:id="${list.lesson_plan_number}" class="dis-n listCheckBox">
-                            </label>
-                        </div>
+                    <div class="grid lessonList-admin-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.teacher_name}"></div>
+                        <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
-                        <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
-                        <div th:text="${list.auditor2_name}"></div>
+<!--                         <div th:text="${list.upload_status_name}"></div> -->
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
-                        <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${#strings.substring(list.proposition_number,1,#strings.length(list.proposition_number))}]],[[${list.education_id}]],[[${list.subject_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a href="#" th:onclick="toContractAdd([[${list.id}]],[[${list.field_id}]],[[${list.education_id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>
                 </div>
                 <div class="list-block" th:if="${accountSession.level == '3' || accountSession.level == '5'}"> <!-- 內容老師、組長，顯示列表 -->                    
                     <div class="grid lessonList-content-grid grid-title">
-                        <div>合約流水號</div>
+                        <div>合約序號</div>
                         <div>創作教師</div>
+                        <div>學習領域</div>
                         <div>學制</div>
-                        <div>學科</div>
                         <div>檔案狀態</div>
+<!--                         <div>上傳狀態</div> -->
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
-                    <div class="grid lessonList-content-grid" th:each="list,stat:${list}">
+                    <div class="grid lessonList-content-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.teacher_name}"></div>
+                        <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
-                        <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
+<!--                         <div th:text="${list.upload_status_name}"></div> -->
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>
                 </div>
                 <div class="list-block" th:if="${accountSession.level == '4'}"> <!-- 審核老師，顯示列表 --> 
                     <div class="grid lessonList-verify-grid grid-title">
-                        <div>合約流水號</div>
+                        <div>合約序號</div>
                         <div>創作教師</div>
+                        <div>學習領域</div>
                         <div>學制</div>
-                        <div>學科</div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
-                    <div class="grid lessonList-verify-grid" th:each="list,stat:${list}">
+                    <div class="grid lessonList-verify-grid" th:if="${list} != null" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.teacher_name}"></div>
+                        <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
-                        <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>
                 </div>
                 <div class="list-block" th:if="${accountSession.level == '6'}"> <!-- 校長，顯示列表 -->
                     <div class="grid lessonList-principal-grid grid-title">
-                        <div>合約流水號</div>
+                        <div>合約序號</div>
                         <div>創作教師</div>
+                        <div>學習領域</div>
                         <div>學制</div>
-                        <div>學科</div>
                         <div>檔案狀態</div>
-                        <div>審議委員<i class="fas fa-paper-plane"></i></div>
+                        <!-- <div>上傳狀態</div> -->
+                        <div>審議委員</div>
                         <div>建立時間</div>
                         <div>詳細資料</div>
                     </div>
                     <div class="grid lessonList-principal-grid" th:each="list,stat:${list}">
                         <div th:text="${list.contract_id}"></div>
                         <div th:text="${list.teacher_name}"></div>
+                        <div th:text="${list.field_name}"></div>
                         <div th:text="${list.education_name}"></div>
-                        <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.file_status_name}"></div>
-                        <div th:text="${list.auditor2_name}"></div>
+                        <!-- <div>待審核</div> -->
+                        <div th:text="${list.auditor_name}"></div>
                         <div th:text="${list.create_date}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-book fa-lg"></i></a></div>
                     </div>
@@ -151,8 +141,6 @@
     </section>    
 
     <div th:include="front/load/js :: js"></div>
-    <script th:src="@{/front/js/datepicker.js}"></script>
-    <script th:src="@{/front/js/lessonProp.js}"></script>
 	<script>
 		
 		$(function(){
@@ -176,12 +164,11 @@
 			
 		}
 		
-		function toContractAdd(lp_id, proposition_number, education_id, subject_id) {
+		function toContractAdd(lp_id, field_id, education_id) {
 			$("#lp_id").val(lp_id);
 			$("#lp_type").val("2");
-			$("#contract_id").val(proposition_number);
+			$("#field_id").val(field_id);
 			$("#education_id").val(education_id);
-			$("#subject_id").val(subject_id);
 			$("#contractForm").attr("action", "/contract/material/add");
 			$("#contractForm").submit();
 		}

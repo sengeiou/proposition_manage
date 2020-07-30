@@ -39,9 +39,11 @@ public class PropositionOptionDaoImpl implements PropositionOptionDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " DELETE FROM proposition_manage.proposition_option "
-				   + " WHERE PROPOSITION_ID = ? ";
+				   + " WHERE PROPOSITION_ID = ? "
+				   + " AND TYPE = ? ";
 		
 		args.add(propositionOption.getProposition_id());
+		args.add(propositionOption.getType());
 		
 		jdbcTemplate.update(sql, args.toArray());
 		
@@ -75,7 +77,7 @@ public class PropositionOptionDaoImpl implements PropositionOptionDao {
 		
 		String sql = " SELECT GROUP_CONCAT(PMS.NAME SEPARATOR '、') AS OPTION "
 				   + " FROM proposition_manage.proposition_option PO "
-				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = CODE "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = PO.CODE "
 				   + " WHERE PO.PROPOSITION_ID = ? "
 				   + " AND PO.TYPE = ? ";
 		
@@ -98,7 +100,7 @@ public class PropositionOptionDaoImpl implements PropositionOptionDao {
 		
 		String sql = " SELECT GROUP_CONCAT(PME.NAME SEPARATOR '、') AS OPTION "
 				   + " FROM proposition_manage.proposition_option PO "
-				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = CODE "
+				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = PO.CODE "
 				   + " WHERE PO.PROPOSITION_ID = ? "
 				   + " AND PO.TYPE = ? ";
 		

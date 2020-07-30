@@ -287,16 +287,14 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 				   + " ELSE '' END FILE_STATUS_NAME, "
 				   + " PME.NAME AS EDUCATION_NAME, PMS.NAME AS SUBJECT_NAME, "
 				   + " DATE_FORMAT(LP.CREATE_TIME, '%Y/%m/%d') AS CREATE_DATE, "
-				   + " TA.NAME AS AUDITOR_NAME "
+				   + " TA.NAME AS AUDITOR_NAME, TA2.NAME AS AUDITOR2_NAME "
 				   + " FROM proposition_manage.lesson_plan LP "
 				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = LP.FIELD_ID "
 				   + " LEFT JOIN proposition_manage.education PME ON PME.ID = LP.EDUCATION_ID "
 				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = LP.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.teacher_account TA ON TA.ACCOUNT = LP.AUDITOR "
+				   + " LEFT JOIN proposition_manage.teacher_account TA2 ON TA2.ACCOUNT = LP.AUDITOR2 "
 				   + " ORDER BY LP.CREATE_TIME DESC ";
-		
-//		args.add(lessonPlan.getField_id());
-//		args.add(lessonPlan.getEducation_id());
 		
 		sql += " LIMIT "+((lessonPlan.getPage()-1)*lessonPlan.getPage_count())+","+lessonPlan.getPage_count();
 		
@@ -314,9 +312,6 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		List<Object> args = new ArrayList<Object>();
 		
 		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.lesson_plan ";
-		
-//		args.add(lessonPlan.getField_id());
-//		args.add(lessonPlan.getEducation_id());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

@@ -24,4 +24,16 @@ public class PropositionFileServiceImpl implements PropositionFileService {
 		return propositionFileDao.historyList(propositionFile);
 	}
 	
+	public List<Map<String, Object>> getFile(PropositionFile propositionFile) {
+		return propositionFileDao.getFile(propositionFile);
+	}
+	
+	public List<Map<String, Object>> getAnnex(PropositionFile propositionFile) {
+		return propositionFileDao.getAnnex(propositionFile);
+	}
+	
+	public List<Map<String, Object>> getMaterial(PropositionFile propositionFile) {
+		return propositionFileDao.getMaterial(propositionFile);
+	}
+	
 }
