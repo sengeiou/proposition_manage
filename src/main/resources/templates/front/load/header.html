@@ -12,6 +12,12 @@
             </div>
             <nav>
                 <ul>
+                	<li class="menu" th:if="${accountSession.level=='5' || accountSession.level=='6'}">
+                        老師管理
+                        <ul class="sub-menu">
+                            <li><a href="/teacher" class="btn-subMenu">老師列表</a></li>
+                        </ul>
+                    </li>
                     <li class="menu" th:each="menu1:${menu}">
                         <a th:if="${menu1.link} != null" th:href="${menu1.link}" class="btn-menu" th:text="${menu1.name}"></a>
                         [[${menu1.link==null ? menu1.name : ''}]]

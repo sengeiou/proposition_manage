@@ -58,20 +58,20 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 				   + " FROM proposition_manage.teacher_account TA "
 				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
-				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
-				   + " WHERE TA.POSITION = ? ";
+				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID ";
+//				   + " WHERE TA.POSITION = ? ";
 		
-		args.add(account.getPosition());
-		
-		if("1".equals(account.getContent_provision()) && "1".equals(account.getContent_audit())) {
-			if(account.getContent_provision().equals(account.getContent_audit())) {
-				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
-			}else {
-				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
-			}
-			args.add(account.getContent_provision());
-			args.add(account.getContent_audit());
-		}
+//		args.add(account.getPosition());
+//		
+//		if("1".equals(account.getContent_provision()) && "1".equals(account.getContent_audit())) {
+//			if(account.getContent_provision().equals(account.getContent_audit())) {
+//				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
+//			}else {
+//				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
+//			}
+//			args.add(account.getContent_provision());
+//			args.add(account.getContent_audit());
+//		}
 
 		
 		sql += " LIMIT "+((account.getPage()-1)*account.getPage_count())+","+account.getPage_count();
@@ -317,21 +317,10 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
 				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
-				   + " WHERE TA.POSITION = ? AND TA.STATUS = ? ";
+				   + " WHERE TA.STATUS = ? ";
 		
-		args.add(account.getPosition());
 		args.add(account.getStatus());
 		
-		if(!"".equals(account.getContent_provision()) && !"".equals(account.getContent_audit())) {
-			if(account.getContent_provision().equals(account.getContent_audit())) {
-				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
-			}else {
-				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
-			}
-			args.add(account.getContent_provision());
-			args.add(account.getContent_audit());
-		}
-
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
 			return list;
@@ -379,6 +368,22 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		} else {
 			return null;
 		}
+		
+	}
+	
+	public void audit(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " UPDATE proposition_manage.teacher_account "
+				   + " SET STATUS = ?, UPDATE_BY = ?, UPDATE_TIME = NOW() "
+				   + " WHERE ID = ? ";
+		
+		args.add(account.getStatus());
+		args.add(account.getUpdate_by());
+		args.add(account.getId());
+		
+		jdbcTemplate.update(sql, args.toArray());
 		
 	}
 	

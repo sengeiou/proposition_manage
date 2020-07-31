@@ -433,51 +433,24 @@ public class IndexController {
 		}
 		
 //		account.setPage_count(page_count);
-
-		if(account.getPosition() == null || "".equals(account.getPosition())) {
-			account.setPosition("1");
-			account.setContent_provision("1");
-			account.setContent_audit("1");
-		}else if("2".equals(account.getPosition()) || "3".equals(account.getPosition())) {
-			account.setContent_provision("0");
-			account.setContent_audit("0");
-		}
-		
-		if(account.getContent_provision() == null) {
-			account.setContent_provision("0");
-		}
-		
-		if(account.getContent_audit() == null) {
-			account.setContent_audit("0");
-		}
-
 		List<Map<String, Object>> list = teacherAccountService.list(account);
 		model.addAttribute("list", list);
-		model.addAttribute("account", account);
-		model.addAttribute("accountSession", accountSession);
-		
-		Account verify = new Account();
-		verify.setContent_provision("1");
-		verify.setContent_audit("1");
-		verify.setPosition("1");
-		verify.setStatus("2");
-		List<Map<String, Object>> verifyList = teacherAccountService.verifyList(verify);
-		model.addAttribute("verifyList", verifyList);
 		
 		int count = teacherAccountService.count(account);
 		account.setCount(count);
 		account.setTotal_page((account.getCount()/account.getPage_count())<1 ? 1 : ((account.getCount()/account.getPage_count())+((account.getCount()%account.getPage_count()) > 0 ? 1 : 0)));
 		
+		if("6".equals(accountSession.getLevel())) {
+			Account ac = new Account();
+			ac.setStatus("2");
+			List<Map<String, Object>> verifyList = teacherAccountService.verifyList(ac);
+			model.addAttribute("verifyList", verifyList);
+		}
+		
 		//取得學校清單
 		SchoolMaster schoolMaster = new SchoolMaster();
 		List<Map<String, Object>> schoolMasterList = schoolMasterService.getList(schoolMaster);
 		model.addAttribute("schoolMasterList", schoolMasterList);
-		
-		//取得學科清單
-		Subject subject = new Subject();
-		subject.setLayer("1");
-		List<Map<String, Object>> subjectList = subjectService.getList(subject);
-		model.addAttribute("subjectList", subjectList);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -580,6 +553,31 @@ public class IndexController {
 		model.addAttribute("PATH", "/");
 		return "front/path";
     }
+	
+	@RequestMapping(value = "/teacher/audit" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String teacherAudit(Model model,
+			@SessionAttribute("accountSession") Account accountSession,
+			@ModelAttribute Account account,
+			HttpServletRequest pRequest
+			) {
+		
+		try {
+			
+			//審核
+			account.setUpdate_by(accountSession.getUpdate_by());
+			teacherAccountService.audit(account);
+			
+		} catch(Exception e) {
+//			System.out.println("error:"+e.getMessage());
+			logger.error("error:"+e.getMessage(), dateFormat.format(new Date()));
+		}
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		model.addAttribute("PATH", "/teacher");
+		return "front/path";
+	}
 	
 	@RequestMapping(value = "/teacher/check" , method = {RequestMethod.GET, RequestMethod.POST})
 	public void checkAccount(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
