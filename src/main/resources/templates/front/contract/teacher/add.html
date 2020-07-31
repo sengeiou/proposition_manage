@@ -62,7 +62,7 @@
 		                    </div>
 		                    <div><span class="required">*</span>學科</div>
 		                    <div>
-		                    	<select id="specialSkill" th:field="*{subject_id}">
+		                    	<select id="subject" th:field="*{subject_id}">
 		                            <option value="0">請選擇學科</option>
 		                            <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
 		                        </select>
