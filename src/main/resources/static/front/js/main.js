@@ -556,8 +556,8 @@ $(function(){
         	if (type == 'teacherCreate') {
             	$("#c_area").val($("#census_area").val());
                 $("#address_area").val($("#area").val());
-                $("#census_zip").val($("#residenceSelectZip").val());
-                $("#address_zip").val($("#selectZip").val());
+                $("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
+                $("#address_zip").val($("#selectZip").val().substring(0, 5));
         		
             	$("#mainForm").attr("action", "/teacher/addSubmit");
                 $("#mainForm").submit();
@@ -567,14 +567,14 @@ $(function(){
             		$("#c_city").val($("#census_city").val());
             		$("#c_area").val($("#census_area").val());
             		$("#census_road").val($("#residenceAddress").val());
-            		$("#census_zip").val($("#residenceSelectZip").val());
+            		$("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
             	}
             	
             	if($("#city").val() != "" && $("#area").val() != "0" && $("#selectZip").val() != "0" && $("address").val() != ""){
             		$("#address_city").val($("#city").val());
             		$("#address_area").val($("#area").val());
             		$("#address_road").val($("#address").val());
-            		$("#address_zip").val($("#selectZip").val());
+            		$("#address_zip").val($("#selectZip").val().substring(0, 5));
             	}
             	
             	$("#mainForm").attr("action", "/teacher/editSubmit");
@@ -583,8 +583,8 @@ $(function(){
             }else if (type == 'register') {
                 $("#c_area").val($("#census_area").val());
                 $("#address_area").val($("#area").val());
-                $("#census_zip").val($("#residenceSelectZip").val());
-                $("#address_zip").val($("#selectZip").val());
+                $("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
+                $("#address_zip").val($("#selectZip").val().substring(0, 5));
             	
                 $("#mainForm").attr("action", "/teacher/registerSubmit");
             	$("#mainForm").submit();
