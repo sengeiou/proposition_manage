@@ -49,7 +49,7 @@
                     </div>
                     <div><span class="required">*</span>學科</div>
                     <div>
-                        <select id="specialSkill" th:field="*{subject_id}">
+                        <select id="subject" th:field="*{subject_id}">
                             <option value="0">請選擇學科</option>
                             <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
                         </select>
@@ -250,7 +250,7 @@
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
-    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    					str += "<option value='"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
     				}
     			}								
     			//$("#residenceSelectZip").append(str);
@@ -294,7 +294,7 @@
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
-    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    					str += "<option value='"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
     				}
     			}								
     			$(".customselect-block").html("<select id='selectZip' class='custom-select'>"+str+"</select>")

@@ -275,7 +275,7 @@
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
-    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    					str += "<option value='"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
     				}
     			}								
     			//$("#residenceSelectZip").append(str);
@@ -320,7 +320,7 @@
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
-    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    					str += "<option value='"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
     				}
     			}								
     			$(".customselect-block").html("<select id='selectZip' class='custom-select'>"+str+"</select>")
