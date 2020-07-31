@@ -72,4 +72,8 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		return teacherAccountDao.checkAccount(id_no, id);
 	}
 	
+	public void audit(Account account) {
+		teacherAccountDao.audit(account);
+	}
+	
 }
