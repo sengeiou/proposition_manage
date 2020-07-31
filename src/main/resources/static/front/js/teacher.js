@@ -29,13 +29,13 @@ $(function(){
     })
 
     $(".selectCity").on("change",function(){
-        alert('選擇的縣市：：'+$(this).val())        
+//        alert('選擇的縣市：：'+$(this).val())        
         // $(this).siblings('.selectArea').html(ajax 出來的鄉鎮放在這邊)
         sameAbove('selectCity')
     })
 
     $(".selectArea").on("change",function(){
-        alert('選擇的鄉鎮市區：：'+$(this).val())
+//        alert('選擇的鄉鎮市區：：'+$(this).val())
         // $(this).siblings('.selectRoad').html(ajax 出來的路段放在這邊)  
         $(this).siblings(".customselect-block").html(' ')
         let html = `<option value="0">請選擇對應的郵遞區號</option>
@@ -50,7 +50,7 @@ $(function(){
     })
 
     $(".selectResidenceArea").on("change",function(){
-        alert('選擇的戶籍地址鄉鎮市區：：'+$(this).val())
+//        alert('選擇的戶籍地址鄉鎮市區：：'+$(this).val())
         // $(this).siblings('.selectRoad').html(ajax 出來的路段放在這邊)  
         $(this).siblings(".customselect-residence-block").html(' ')
         let html = `<option value="0">請選擇對應的郵遞區號</option>

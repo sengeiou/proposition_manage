@@ -141,7 +141,7 @@
                         <div th:text="${list.school_master_name}"></div>
                         <div th:text="${list.status_texe}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
-                        <div><a  th:onclick="toContractAdd([[${list.id}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a th:onclick="toContractAdd([[${list.id}]], [[${list.name}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>                                         
                 </div>
                 
@@ -206,6 +206,11 @@
 	        <button class="createTagBtn btn-sm" data-tag="teacherImportData" type="button" onclick="importExcel()">確定</button>
         </form>
     </section>
+    <form id="contractForm" method="POST" th:object="${contract}">
+		<input type="hidden" id="teacher_id" th:field="*{teacher_id}" />
+		<input type="hidden" id="tkb_partyb" th:field="*{tkb_partyb}" />
+		<input type="hidden" id="csofe_partyb" th:field="*{csofe_partyb}" />
+	</form>
     <!-- 審核燈箱 -->
     <section class="lightBoxContent verify-lightBox dis-n">        
         <button class="btn-closeLightBox" data-lb="verify"><i class="fas fa-times-circle fa-lg"></i></button>
