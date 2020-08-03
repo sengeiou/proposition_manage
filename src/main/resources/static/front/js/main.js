@@ -91,6 +91,20 @@ $(function(){
         $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
         $(`section.lightBoxAlert`).removeClass('dis-b').addClass('dis-n')
     })
+    
+    $(".openLightBox").on("click",function(){   //打開燈箱
+        let lightBox = $(this).data('lb')
+        let state = true
+        let alertText = ''
+
+        if (state) {
+            $("section.lightBoxBG").removeClass('dis-n').addClass('dis-b')
+            $(`section.${lightBox}-lightBox`).removeClass('dis-n').addClass('dis-b')
+        }else {
+            openlightBoxAlert(alertText)
+        }
+    })
+
 
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')

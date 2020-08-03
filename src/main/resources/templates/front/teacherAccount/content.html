@@ -30,8 +30,8 @@
                 <div class="create-grid">
                     <div>姓名</div>
                     <div>[[${data.name}]]</div>
-                    <div>身份證字號</div>
-                    <div>[[${data.id_no}]]</div>
+                    <div th:if="${accountSession.level <= '2'}">身份證字號</div>
+                    <div th:if="${accountSession.level <= '2'}">[[${data.id_no}]]</div>
                     <div>電子信箱</div>
                     <div>[[${data.email}]]</div>
                     <div>手機</div>
@@ -46,8 +46,8 @@
                     <div><span th:if="${data.content_provision == '1'}">創作教師</span><span th:if="${data.content_audit == '1'}">審議委員</span></div>
                     <div>服務學校</div>
                     <div>台灣大學</div>
-                    <div>匯款銀行</div>
-                    <div>
+                    <div th:if="${accountSession.level <= '2'}">匯款銀行</div>
+                    <div th:if="${accountSession.level <= '2'}">
                         <p>銀行代碼：<span>[[${data.bank}]]</span></p>
                         <p>分行代碼：<span>[[${data.branch}]]</span></p>
                         <p>匯款帳號：<span>[[${data.remittance_account}]]</span></p>                        
@@ -59,7 +59,7 @@
                 </div>
                 <div class="btn-block">                    
                     <a href="#" id="back"><button class="btn-md">返回列表</button></a>
-                    <a href="#" id="edit"><button class="btn-md">編輯</button></a>
+                    <a href="#" id="edit" th:if="${accountSession.level <= '2'}"><button class="btn-md">編輯</button></a>
                 </div>
             </div>              
         </div>
