@@ -28,7 +28,7 @@
                     <i>/</i>
                     <a href="/teacher">老師列表</a>
                 </div>
-                <div>
+                <div th:if="${accountSession.level <= '2'}">
                     <button class="btn-mdSolid btnDownFile" data-btntype="exampleTeacherList" type="button">範例下載</button>
                     <button class="btn-mdSolid btn-openLightBox" data-lb="teacherImportData" type="button">資料匯入</button>
                 </div>
@@ -141,7 +141,7 @@
                         <div th:text="${list.school_master_name}"></div>
                         <div th:text="${list.status_texe}"></div>
                         <div><a href="#" th:onclick="toContent([[${list.id}]])"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
-                        <div><a th:onclick="toContractAdd([[${list.id}]], [[${list.name}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
+                        <div><a href="#" th:if="${list.content_provision}=='1'" th:onclick="toContractAdd([[${list.id}]], [[${list.name}]])"><i class="fas fa-lg fa-file-alt"></i></a></div>
                     </div>                                         
                 </div>
                 

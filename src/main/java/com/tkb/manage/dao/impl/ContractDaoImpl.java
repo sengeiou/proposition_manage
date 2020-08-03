@@ -652,7 +652,7 @@ public class ContractDaoImpl implements ContractDao {
 				   + " FROM proposition_manage.lesson_plan P "
 				   + " LEFT JOIN proposition_manage.contract PMC ON PMC.CONTRACT_ID = P.CONTRACT_ID "
 				   + " WHERE PMC.EDUCATION_ID = ? AND PMC.SUBJECT_ID = ? "
-				   + " AND P.AUDITOR2 = ? "
+				   + " AND P.AUDITOR = ? "
 				   + " )A ";
 
 		args.add(contract.getEducation_id());
