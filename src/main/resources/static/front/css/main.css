@@ -73,7 +73,7 @@ button.btn-closeLightBox {
     border: none;
     color: var(--primary);
     position: absolute;
-    top: 10px;
+    top: 13px;
     right: 5px;
     font-size: 1.5rem;
 }
@@ -110,6 +110,12 @@ button.btn-sm {
     padding: 5px 10px;
     color: var(--primary-dark);
 }
+button.btn-smRed {
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: var(--red);
+    border-color: var(--red);
+}
 button.btn-mdSolid {
     border-radius: 5px;
     padding: 8px 15px;
@@ -129,6 +135,10 @@ button.btn-smSolid {
 button.btn-submit:hover , button.btn-mdSolid:hover , button.btn-sm:hover , button.btn-md:hover , button.btn-xl:hover , button.btn-smSolid:hover{
     color: #ffffff;
     background-color: var(--primary-dark);
+}
+button.btn-smRed:hover {
+    color: #ffffff;
+    background-color: var(--red);
 }
 .radio-circle {
     box-sizing: border-box;
@@ -174,8 +184,10 @@ span.btn-file {
     line-height: 1.1rem;
 }
 .font-size-08 { font-size: 0.8rem; }
+.text-center { text-align: center; }
 .p-left-14px { padding-left: 12px; }
 .m-top-15px { margin-top: 15px; }
+.m-top-30px { margin-top: 30px; }
 .failTag { background-color: var(--red); }
 .successTag-1 { background-color:var(--lightGreen) } /*初審通過、審核通過*/
 .successTag-2 { background-color: var(--green); } /*完稿*/
@@ -383,7 +395,7 @@ span.btn-file {
     color: #4b4b4b;
     transform: translate(-50%, -50%);
 }
-.lightBoxContent.teacherImportData-lightBox , .delete-categorySubject-lightBox {
+.lightBoxContent.teacherImportData-lightBox , .delete-categorySubject-lightBox , .restart-categorySubject-lightBox{
     width: 400px; /* 若需「選擇學校」的select 寬度為680px */
     min-height: 220px;
 }
@@ -470,7 +482,7 @@ span.btn-file {
     width: 500px;
     height: 300px;
 }
-.edit-categorySubject-lightBox .container-grid , .delete-categorySubject-lightBox .container-grid  , .create-categorySubject-lightBox .container-grid{
+.edit-categorySubject-lightBox .container-grid , .delete-categorySubject-lightBox .container-grid  , .create-categorySubject-lightBox .container-grid , .restart-categorySubject-lightBox .container-grid {
     display: grid;
     grid-template-columns: 1fr 3fr;
     grid-row-gap: 15px;
@@ -536,8 +548,7 @@ span.btn-file {
 .header .account-name ul {
     position: absolute;
     border: 1px solid #111;
-    background-color: #fff;
-    display: none;
+    background-color: #fff;    
     overflow: hidden;
 }
 .header .account-name ul li {
@@ -571,14 +582,13 @@ span.btn-file {
     position: relative;
     cursor: pointer;
 }
-.header>nav>ul>li.menu>ul.sub-menu {
-    display: none;    
+.header>nav>ul>li.menu>ul.sub-menu {    
     position: absolute;
     background: #ffffff;
     border: 1px solid #111111;
     width: max-content;
-    border-bottom: none;
-    margin-top: 10px;
+    border-bottom: none;    
+    top: 25px;
 }
 .header>nav>ul>li.menu>ul.sub-menu>li {
     border-bottom: 1px solid #111111;
@@ -1010,18 +1020,33 @@ div.basic-h {
     margin: 0 3px;
 }
 .list-content .lessonList-admin-grid { /* 教案列表-管理者 */    
-    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1fr ;
+    grid-template-columns: 62px 1.5fr 6fr 50px 80px 97px 97px 97px 70px 70px ;  
 }
 .list-content .lessonList-content-grid { /* 教案列表-創作教師、組長 */    
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1fr 97px 1fr
 }
 .list-content .lessonList-verify-grid { /* 教案列表--審議委員 */
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
+    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1.2fr 97px 1fr;
 }
 .list-content .lessonList-principal-grid { /* 教案列表-校長 */
-   grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1.2fr 1fr ;
+    grid-template-columns: 1.5fr 6fr 0.8fr 1fr 1.2fr 1fr 97px 1fr ;
 }
 .list-content .lessonList-verify-verifyGrid { /* 教案列表--審議委員的審核列表 */
+    grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
+}
+.list-content .propList-admin-grid { /* 命題列表-管理者 */    
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1fr ;
+}
+.list-content .propList-content-grid { /* 命題列表-創作教師、組長 */    
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
+}
+.list-content .propList-verify-grid { /* 命題列表--審議委員 */
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr 1fr;
+}
+.list-content .propList-principal-grid { /* 命題列表-校長 */
+   grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1.2fr 1fr ;
+}
+.list-content .propList-verify-verifyGrid { /* 命題列表--審議委員的審核列表 */
     grid-template-columns: 1.5fr 6fr 1fr 1fr 1.2fr 1fr 1fr;
 }
 .list-content .lessonList-grid>div {
@@ -1337,7 +1362,7 @@ button.btn-openArea i {
     margin-left: 10px;
 }
 .verify-block .verify-list {
-    height: 0px;
+    /* height: 0px; */
     overflow: hidden;    
 }
 .verify-block .verify-list .overflow-auto {

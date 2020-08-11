@@ -22,5 +22,9 @@ public interface CommonService {
 	public boolean checkImageHeight(MultipartFile filePath,int maxHeight) throws IOException;
 	//寄送信件
 	public void sendEmail(String email, String title, String content) throws IOException;
+	//加密
+	public String encrypt(String sSrc, String sKey) throws Exception;
+	//解密
+	public String decrypt(String sSrc, String sKey) throws Exception;
 	
 }

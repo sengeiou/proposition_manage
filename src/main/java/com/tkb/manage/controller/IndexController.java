@@ -9,9 +9,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -419,7 +421,19 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value = "/teacher" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String list(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, @ModelAttribute Contract contract, Model model){
+    public String list(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	@ModelAttribute Contract contract,
+    	HttpServletRequest pRequest,
+    	Model model){
+		
+		int level = Integer.valueOf(accountSession.getLevel());
+		
+		String search_content_provision = (pRequest.getParameter("search_content_provision")==null || "0".equals(pRequest.getParameter("search_content_provision"))) ? "0" : "1";
+		String search_content_audit = (pRequest.getParameter("search_content_audit")==null || "0".equals(pRequest.getParameter("search_content_audit"))) ? "0" : "1";
+		account.setSearch_content_provision(search_content_provision);
+		account.setSearch_content_audit(search_content_audit);
 		
 		//設定每頁筆數
 		if(account.getPage_count() == null) {
@@ -432,6 +446,12 @@ public class IndexController {
 			account.setPage(1);
 		}
 		
+		if(account.getSearch_position() == null) {
+			account.setSearch_position("1");
+			account.setSearch_content_provision("1");
+			account.setSearch_content_audit("1");
+		}
+		
 //		account.setPage_count(page_count);
 		List<Map<String, Object>> list = teacherAccountService.list(account);
 		model.addAttribute("list", list);
@@ -440,12 +460,18 @@ public class IndexController {
 		account.setCount(count);
 		account.setTotal_page((account.getCount()/account.getPage_count())<1 ? 1 : ((account.getCount()/account.getPage_count())+((account.getCount()%account.getPage_count()) > 0 ? 1 : 0)));
 		
-		if("6".equals(accountSession.getLevel())) {
+		if(level == 6) {
 			Account ac = new Account();
 			ac.setStatus("2");
 			List<Map<String, Object>> verifyList = teacherAccountService.verifyList(ac);
 			model.addAttribute("verifyList", verifyList);
 		}
+		
+		//取得學科清單
+		Subject subject = new Subject();
+		subject.setLayer("1");
+		List<Map<String, Object>> subjectList = subjectService.getList(subject);
+		model.addAttribute("subjectList", subjectList);
 		
 		//取得學校清單
 		SchoolMaster schoolMaster = new SchoolMaster();
@@ -562,7 +588,6 @@ public class IndexController {
 			) {
 		
 		try {
-			
 			//審核
 			account.setUpdate_by(accountSession.getUpdate_by());
 			teacherAccountService.audit(account);
@@ -705,10 +730,19 @@ public class IndexController {
     }
 	
 	@RequestMapping(value = "/teacher/content" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String teacherContent(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
+    public String teacherContent(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
 		
 		Account data = teacherAccountService.data(account);
 		model.addAttribute("data", data);
+		
+		String search_content_provision = (pRequest.getParameter("search_content_provision")==null || "0".equals(pRequest.getParameter("search_content_provision"))) ? "0" : "1";
+		String search_content_audit = (pRequest.getParameter("search_content_audit")==null || "0".equals(pRequest.getParameter("search_content_audit"))) ? "0" : "1";
+		account.setSearch_content_provision(search_content_provision);
+		account.setSearch_content_audit(search_content_audit);
 		
 		//選單
 		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
@@ -718,17 +752,30 @@ public class IndexController {
     }
 	
 	@RequestMapping(value = "/teacher/edit" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String teacherEdit(@SessionAttribute("accountSession") Account accountSession, @ModelAttribute Account account, Model model){
+    public String teacherEdit(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
 		
 		int page = account.getPage();
 		int total_page = account.getTotal_page();
 		int page_count = account.getPage_count();
 		
+		Account search = account;
+		
 		account = teacherAccountService.data(account);
+		account.setSearch_position(search.getSearch_position());
+		account.setSearch_content_provision(search.getSearch_content_provision());
+		account.setSearch_content_audit(search.getSearch_content_audit());
+		account.setSearch_name(search.getSearch_name());
+		account.setSearch_subject(search.getSearch_subject());
+		account.setSearch_school_master(search.getSearch_school_master());
+		account.setSearch_email(search.getSearch_email());
+		
 		account.setPage(page);
 		account.setTotal_page(total_page);
 		account.setPage_count(page_count);
-
 		model.addAttribute("account", account);
 		
 		//取得學科清單
@@ -856,6 +903,10 @@ public class IndexController {
 		model.addAttribute("page", account.getPage());
 		model.addAttribute("total_page", account.getTotal_page());
 		model.addAttribute("page_count", account.getPage_count());
+		
+		model.addAttribute("account", account);
+		
+		System.out.println();
 		
 		model.addAttribute("PATH", "/teacher");
 		return "front/path";
@@ -1050,7 +1101,39 @@ public class IndexController {
 		}
 		
 		model.addAttribute("PATH", "/teacher");
+		model.addAttribute("ACT", "teacher");
 		return "front/path";
+		
+	}
+	
+	@RequestMapping(value = "/teacher/send/verify" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void sendVerify(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		Account account = new Account();
+		
+		account.setAccount(pRequest.getParameter("account") == null ? "" : pRequest.getParameter("account"));
+		
+		account.setContent_audit("1");
+		account.setEducation_id("2");
+		account.setSubject_id("1");
+		
+		String cKey = "tKb_ma#Na^ge_Api";
+		Calendar date = Calendar.getInstance();
+		DateFormat yyyymmdd = new SimpleDateFormat("yyyyMMddHHmmss");
+		String yyyymmddStr = yyyymmdd.format(date.getTime());
+		String temp = account.getAccount() + "," + yyyymmddStr;
+		String content = commonService.encrypt(temp, cKey);
+		System.out.println("content:"+content);
+		
+		//10分鐘內不可重複寄送
+		
+		List<Map<String, Object>> list = teacherAccountService.getAuditorByEduSub(account);
+
+		JSONArray tJSONArray = new JSONArray(list);
+		
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(tJSONArray.toString());
 		
 	}
 	
@@ -2238,6 +2321,7 @@ public class IndexController {
 		//取得合約清單
 		Contract contract = new Contract();
 		contract.setTeacher_id(accountSession.getId());
+		contract.setBasic_num("0");		//設定0，表示命題選擇題數需大於0才顯示
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
 		
@@ -3042,6 +3126,7 @@ public class IndexController {
 		//取得合約清單
 		Contract contract = new Contract();
 		contract.setTeacher_id(accountSession.getId());
+		contract.setQuestions_group_num("0");		//設定0，表示命題混合題數需大於0才顯示
 		List<Map<String, Object>> contractList = contractService.getList(contract);
 		model.addAttribute("contractList", contractList);
 		

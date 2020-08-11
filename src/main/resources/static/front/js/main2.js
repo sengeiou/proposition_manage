@@ -1,18 +1,10 @@
 $(function(){
-    $(".menu").mouseenter(function(){ //header子選單        
-        $(this).find("ul.sub-menu").removeClass('dis-n')
+    $(".menu").hover(function(){ //header子選單
+        $(this).find("ul.sub-menu").toggle()
     })
 
-    $(".menu").mouseleave(function(){ //header子選單        
-        $(this).find("ul.sub-menu").addClass('dis-n')
-    })
-
-    $(".account-name").mouseenter(function(){ //header子選單        
-        $(this).find('ul').removeClass('dis-n')
-    })
-
-    $(".account-name").mouseleave(function(){ //header子選單        
-        $(this).find('ul').addClass('dis-n')
+    $(".account-name").hover(function(){ //header子選單        
+        $(this).find('ul').toggle()
     })
 
     $(document).on("click","input[type='checkbox']",function(){
@@ -99,7 +91,7 @@ $(function(){
         $("section.lightBoxBG").removeClass('dis-b').addClass('dis-n')
         $(`section.lightBoxAlert`).removeClass('dis-b').addClass('dis-n')
     })
-
+    
     $(".openLightBox").on("click",function(){   //打開燈箱
         let lightBox = $(this).data('lb')
         let state = true
@@ -113,12 +105,21 @@ $(function(){
         }
     })
 
+
     $(".btn-openLightBox").on("click",function(){ //打開燈箱
         let lightBox = $(this).data('lb')
         let state = true
         let alertText = ''
-        
-        if (lightBox == 'create-categorySubGrade' && $(".subItemGroup").hasClass('none')) {            
+        if (lightBox == 'edit-categoryGrade') {    
+            let item = $(this).parent().siblings('.item-group').find('.active')
+            if (item.length == 0) {
+                state = false   
+                alertText = '請先選擇欲編輯項目'              
+            }else {
+                $(`section.${lightBox}-lightBox .container p`).text(item.text())                
+                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
+            }        
+        }else if (lightBox == 'create-categorySubGrade' && $(".subItemGroup").hasClass('none')) {            
             state = false            
             alertText = '請先選擇學制'
         }else if (lightBox == 'verify') {            
@@ -127,27 +128,6 @@ $(function(){
             $("section.verify-lightBox .container .name").text($(this).parent().siblings('.listName').text())
             $("section.verify-lightBox .container .school").text($(this).parent().siblings('.listSchool').text())
             $("section.verify-lightBox .editNewDataBtn").data('id',$(this).data('id'))
-        }else if (lightBox == 'edit-categoryMaterial' || lightBox == 'edit-categoryGrade') {    //分類管理--素材分類、學制年級（學制）--編輯button
-            let item = $(this).parent().siblings('.item-group').find('.active')
-            if (item.length == 0) {
-                state = false   
-                alertText = '請先選擇欲編輯項目'              
-            }else {
-                $(`section.${lightBox}-lightBox .container p`).text(item.text())                
-                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
-            }   
-        }else if (lightBox == 'edit-categorySubGrade' && $(".subItemGroup").hasClass('none')) {     //分類管理--學制年級（年級）--編輯button
-            state = false            
-            alertText = '請先選擇學制'
-        }else if (lightBox == 'edit-categorySubGrade' && !$(".subItemGroup").hasClass('none')) {    //分類管理--學制年級（年級）--編輯button
-            let item = $(this).parent().siblings('.item-group').find('.active')
-            if (item.length == 0) {
-                state = false   
-                alertText = '請先選擇欲編輯項目'              
-            }else {
-                $(`section.${lightBox}-lightBox .container p`).text(item.text())                
-                $(`section.${lightBox}-lightBox .container input`).data('id',item.attr('id'))                                
-            }
         }
 
         if (state) {
@@ -207,7 +187,7 @@ $(function(){
                 state = false
                 text = '請輸入完整的匯款資訊'
             }
-        }else if (newData == 'edit-categoryMaterial' || newData == 'edit-categoryGrade') { //分類管理--素材分類、學制年級（學制）--編輯燈箱的「確定」button
+        }else if (newData == 'edit-categoryMaterial') { //分類管理--素材分類--編輯燈箱的「確定」button
             let val = $(`input#${inputIDName}`).val()
             if (val != '') {
                 let itemId = $(`section.${newData}-lightBox .container input`).data('id')
@@ -220,48 +200,33 @@ $(function(){
             let subVal = $(`input#sub${inputIDName}`).val()
             let itemId = $(`section.${newData}-lightBox button.editNewDataBtn`).data('id')
             let itemNo = $(`section.${newData}-lightBox button.editNewDataBtn`).data('no')
-            if (val != '' && subVal != ''&& $(".schoolType:checked").length >0) {                
+            if (val != '' && subVal != '') {                
                 $(`div#${itemId} span`).eq(0).text(val)
-                $(`div#${itemId} span`).eq(1).text(subVal)    
-                //清空表格內的值                   
-                $("input.schoolType").each(function(){                
-                    $(`div#${itemId}`).siblings(`.${$(this).attr('id')}`).text('')
-                })
-                //渲染新的值在表格內
-                let schooltTypeArr = []
-                $("input.schoolType:checked").each(function(){                
-                    $(`div#${itemId}`).siblings(`.${$(this).attr('id')}`).text(itemNo)
-                    schooltTypeArr.push(`${$(this).attr('id')}`)
-                })
-                console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val +'，新縮寫資料為：'+subVal+'，新的學制為：'+schooltTypeArr)       
-                //清空燈箱內的值
-                $(".edit-categorySubject-lightBox .container-grid input[type='text']").val('')   
-                $(".edit-categorySubject-lightBox .container-grid input[type='checkbox']").prop('checked',false)
-                $(".edit-categorySubject-lightBox .container-grid .checkbox-square").removeClass('active')     
-            }else {
-                state = false
-                text = '請將欄位填寫完整'
-            }                        
-        }else if (newData == 'delete-categorySubject') {  //分類管理--學科管理--停用燈箱的「確定」button
-            let itemId = $(`section.${newData}-lightBox button.editNewDataBtn`).data('id') 
-            let deleteBtn = $(`#${itemId}`).siblings().find("[data-lb='delete-categorySubject']")
-            //將「停用」按鈕。換成「啟用」，顯示「編輯」按鈕
-            deleteBtn.parent().parent().addClass('failed-list')
-            deleteBtn.parent().prev().children().remove()
-            deleteBtn.addClass('dis-n').siblings().removeClass('dis-n')
-            console.log('要停用的 id 為：' + itemId )
-        }else if (newData == 'restart-categorySubject') {    //分類管理--學科管理--啟用燈箱的「確定」button            
-            let itemId = $(`section.${newData}-lightBox button.editNewDataBtn`).data('id')            
-            let deleteBtn = $(`#${itemId}`).siblings().find("[data-lb='delete-categorySubject']")
-            //將「啟用」按鈕。換成「停用」，隱藏「編輯」按鈕
-            deleteBtn.parent().parent().removeClass('failed-list')
-            deleteBtn.parent().prev().html("<button class='btn-sm openLightBox' data-lb='edit-categorySubject'>編輯</button>")
-            deleteBtn.removeClass('dis-n').siblings().addClass('dis-n')
-            console.log('要啟用的 id 為：' + itemId )
+                $(`div#${itemId} span`).eq(1).text(subVal)                
+            }     
+            //清空表格內的值                   
+            $("input.schoolType").each(function(){                
+                $(`div#${itemId}`).siblings(`.${$(this).attr('id')}`).text('')
+            })
+            //渲染新的值在表格內
+            let schooltTypeArr = []
+            $("input.schoolType:checked").each(function(){                
+                $(`div#${itemId}`).siblings(`.${$(this).attr('id')}`).text(itemNo)
+                schooltTypeArr.push(`${$(this).attr('id')}`)
+            })
+            console.log('要編輯的 id 為：'+itemId+'，新資料為：'+val +'，新縮寫資料為：'+subVal+'，新的學制為：'+schooltTypeArr)
+            //清空燈箱內的值
+            $(".edit-categorySubject-lightBox .container-grid input[type='text']").val('')   
+            $(".edit-categorySubject-lightBox .container-grid input[type='checkbox']").prop('checked',false)
+            $(".edit-categorySubject-lightBox .container-grid .checkbox-square").removeClass('active')
+        }else if (newData == 'delete-categorySubject') {  //分類管理--學科管理--刪除燈箱的「確定」button
+            let itemId = $(`section.${newData}-lightBox button.editNewDataBtn`).data('id')
+            console.log('要刪除的 id 為：' + itemId )
         }else if (newData == 'create-categorySubject') {    //分類管理--學科管理--新增燈箱的「確定」button
             let itemName = $("input#createCategorySubject").val()
             let itemSubName = $("input#createSubcategorySubject").val()
-            let itemNumber = $(".categorySubject-grid").length            
+            let itemNumber = $(".categorySubject-grid").length
+            console.log(!itemName)
             if (itemName && itemSubName && $(".createSchoolType:checked").length >0) {
                 let html =  `<div class="categorySubject-grid">
                             <div class="subjectName" id='${itemName}' data-no='${itemNumber}'>
@@ -271,29 +236,24 @@ $(function(){
                             <div class="junior">${$("#createJunior").is(':checked') ? itemNumber : ''}</div>
                             <div class="high">${$("#createHigh").is(':checked') ? itemNumber : ''}</div>                            
                             <div><button class="btn-sm openLightBox" data-lb="edit-categorySubject">編輯</button></div>
-                            <div>
-                                <button class="btn-smRed openLightBox" data-lb="delete-categorySubject">停用</button>
-                                <button class="btn-sm openLightBox dis-n" data-lb="restart-categorySubject">啟用</button>
-                            </div>
+                            <div><button class="btn-sm openLightBox" data-lb="delete-categorySubject">刪除</button></div>
                         </div>`
                 category = true 
                 $(".create-categorySubject-lightBox input[type='checkbox']").prop('checked',false)
                 $(".create-categorySubject-lightBox div.checkbox-square").removeClass('active')
                 $(".grid-group").append(html) 
-                console.log('新增的名稱：：'+itemName+'/新增的縮寫'+itemSubName)
             }else {
-                state = false
-                text = '請將欄位填寫完整'
+
             }
-        }else if (newData == 'create-categoryMaterial' || newData == 'create-categoryGrade') {   //分類管理--素材分類、學制年級（學制）--新增燈箱的「確定」button
+        }else if (newData == 'create-categoryMaterial') {   //分類管理--素材分類--新增燈箱的「確定」button
             let categoryItem = $("section.lightBoxContent .container .categoryItem").val()
             if (categoryItem) {
                 let html = `<p class="item item-grid" id='${categoryItem}'>${categoryItem}</p>`  
                 $(".category-block .item-group").append(html)
                 category = true
                 console.log('新增的名稱為：：'+categoryItem)
-            }        
-        }else if (newData == 'create-categorySubGrade' ) { // 分類管理--學制年級（年級）--新增燈箱的「確定」button
+            }
+        }else if (newData == 'create-categorySubGrade' ) { // 新增年級
             let categoryItem = $("section.create-categorySubGrade-lightBox .container .categoryItem").val()
             if (categoryItem) {
                 let html = `<p class="item item-grid" id='${categoryItem}'>${categoryItem}</p>`  
@@ -301,15 +261,21 @@ $(function(){
                 let schoolType = $(".category-block .item-group .item.active").attr('id')
                 console.log('學制為：：'+schoolType+',要新增的年級在這～～～'+categoryItem)
                 category = true
-            }
-        }else if (newData == 'edit-categorySubGrade') {     // 分類管理--學制年級（年級）--編輯燈箱的「確定」button
-            let val = $(`input#${inputIDName}`).val()
-            if (val != '') {
-                let schoolType = $(".category-block .item-group .item.active").attr('id')
-                let itemId = $(`section.${newData}-lightBox .container input`).data('id')
-                console.log('學制為：：'+schoolType+'要編輯的 id 為：'+itemId+'，新資料為：'+val)
-                $(`p#${itemId}`).text(val)
-                $(`input#${inputIDName}`).val('')                                
+            }            
+        }else if (newData == 'create-categorySubjectType') { //新增學科
+            let categoryItem = $("section.lightBoxContent .container .categoryItem").val()
+            let categorySubItem = $("section.lightBoxContent .container .categorySubItem").val()
+            if (categoryItem && categorySubItem) {
+                let html = `<p class="item item-grid" id='${categoryItem}'>                            
+                                <span>${categoryItem}</span>
+                                <span>${categorySubItem}</span>
+                            </p>`  
+                $(".category-block .item-group").append(html)
+                category = true
+                console.log('新增的名稱為：：'+categoryItem+',新增的縮寫為：：'+categorySubItem)
+            }else {
+                state = false
+                text = '請輸入完整資訊'
             }
         }else if (newData == 'edit-password') { //會員中心-修改密碼
             if ($("#password").val() != $("#check-password").val()) {
@@ -333,8 +299,8 @@ $(function(){
         }else if (newData == 'forgetPassword') {
             let account = $("input#account").val()
             if (account) {
-//                alert('註冊帳號：：'+account)
-//                openlightBoxAlert('已將通知信寄到您註冊信箱，請至信箱進行密碼重置流程')     
+                alert('註冊帳號：：'+account)
+                openlightBoxAlert('已將通知信寄到您註冊信箱，請至信箱進行密碼重置流程')     
             }            
         }
 
@@ -604,8 +570,8 @@ $(function(){
         	if (type == 'teacherCreate') {
             	$("#c_area").val($("#census_area").val());
                 $("#address_area").val($("#area").val());
-                $("#census_zip").val($("#residenceSelectZip").val());
-                $("#address_zip").val($("#selectZip").val());
+                $("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
+                $("#address_zip").val($("#selectZip").val().substring(0, 5));
         		
             	$("#mainForm").attr("action", "/teacher/addSubmit");
                 $("#mainForm").submit();
@@ -615,14 +581,14 @@ $(function(){
             		$("#c_city").val($("#census_city").val());
             		$("#c_area").val($("#census_area").val());
             		$("#census_road").val($("#residenceAddress").val());
-            		$("#census_zip").val($("#residenceSelectZip").val());
+            		$("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
             	}
             	
             	if($("#city").val() != "" && $("#area").val() != "0" && $("#selectZip").val() != "0" && $("address").val() != ""){
             		$("#address_city").val($("#city").val());
             		$("#address_area").val($("#area").val());
             		$("#address_road").val($("#address").val());
-            		$("#address_zip").val($("#selectZip").val());
+            		$("#address_zip").val($("#selectZip").val().substring(0, 5));
             	}
             	
             	$("#mainForm").attr("action", "/teacher/editSubmit");
@@ -631,8 +597,8 @@ $(function(){
             }else if (type == 'register') {
                 $("#c_area").val($("#census_area").val());
                 $("#address_area").val($("#area").val());
-                $("#census_zip").val($("#residenceSelectZip").val());
-                $("#address_zip").val($("#selectZip").val());
+                $("#census_zip").val($("#residenceSelectZip").val().substring(0, 5));
+                $("#address_zip").val($("#selectZip").val().substring(0, 5));
             	
                 $("#mainForm").attr("action", "/teacher/registerSubmit");
             	$("#mainForm").submit();
@@ -1008,11 +974,17 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-        	if (type == 'lessonContentFinish') {            	
+        	if (type == 'lessonContentFinish') {
+        		$("#mainForm").attr("action", "/lesson/audit");
+                $("#mainForm").submit();
                 console.log('校長--教案詳細資料審核--完稿確認')
-            }else if (type == 'propoGroupContentFinish') {            	
+            }else if (type == 'propoGroupContentFinish') {
+            	$("#mainForm").attr("action", "/proposition/group/audit");
+                $("#mainForm").submit();
                 console.log('校長--命題-混合題：：詳細資料審核--完稿確認')
-            }else if (type == 'propoBasicContentFinish') {            	
+            }else if (type == 'propoBasicContentFinish') {
+            	$("#mainForm").attr("action", "/proposition/basic/audit");
+                $("#mainForm").submit();
                 console.log('校長--命題-選擇題：：教案詳細資料審核--完稿確認')
             }
         }

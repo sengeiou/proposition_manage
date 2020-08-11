@@ -17,6 +17,7 @@
 		<input type="hidden" id="page" th:field="*{page}" />
 		<input type="hidden" id="totalPage" th:field="*{total_page}" />
 		<input type="hidden" id="pageCount" th:field="*{page_count}" />
+		<input type="hidden" id="status" th:field="*{status}" />
 	
     <section class="main-content">
         <div class="fixed-width">
@@ -35,8 +36,66 @@
             </div> 
             <div class="list-content">
             	<h3>老師列表</h3>
+            	<!-- 管理者身份的「搜尋區塊」 -->
+                <div class="search-block">
+                    <div class="search-grid">
+                        <div>系統身份</div>
+                        <div class="basic-h">
+                            <!-- 管理者身份可以看到三個radio，校長只允許「一般老師」的radio -->
+                            <label for="teacher">
+                                <div class="radio-circle" th:classappend="${account.search_position}=='1' ? 'active'"></div> <!-- 管理者身份預設「一般老師」被勾選，此div class新增active -->
+                                <span>一般老師</span>
+                                <input type="radio" class="dis-n" id="teacher" th:field="*{search_position}" th:value="1"><!-- 管理者身份預設「一般老師」被勾選，此input新增checked -->
+                            </label>
+                            <label for="team-leader" th:if="${(accountSession.level == '1' || accountSession.level == '2')}">
+                                <div class="radio-circle" th:classappend="${account.search_position}=='2' ? 'active'"></div>
+                                <span>組長</span>
+                                <input type="radio" class="dis-n" id="team-leader" th:field="*{search_position}" th:value="2">
+                            </label>
+                            <label for="principal" th:if="${(accountSession.level == '1' || accountSession.level == '2')}">
+                                <div class="radio-circle" th:classappend="${account.search_position}=='3' ? 'active'"></div>
+                                <span>校長</span>
+                                <input type="radio" class="dis-n" id="principal" th:field="*{search_position}" th:value="3">
+                            </label>
+                        </div>
+                        <div class="teacherBlock" th:classappend="${account.search_position=='1' ? '' : 'dis-n'}">老師身份</div>
+                        <div class="basic-h teacherBlock" th:classappend="${account.search_position=='1' ? '' : 'dis-n'}">
+                            <label for="content-teacher">
+                                <div class="checkbox-square" th:classappend="${account.search_content_provision}=='0'?'':'active'"></div>
+                                <span>創作教師</span>
+                                <input type="checkbox" id="content-teacher" class="dis-n identityState" name="search_content_provision" th:checked="${account.search_content_provision}=='0'?'false':'true'">
+                            </label>
+                            <label for="verify-teacher">
+                                <div class="checkbox-square" th:classappend="${account.search_content_audit}=='0'?'':'active'"></div>
+                                <span>審議委員</span>
+                                <input type="checkbox" id="verify-teacher" class="dis-n identityState" name="search_content_audit" th:checked="${account.search_content_audit}=='0'?'false':'true'">
+                            </label>
+                        </div>
+                        <div>老師姓名</div>
+                        <div><input type="text" placeholder="請輸入老師姓名" id="teacherName" th:field="*{search_name}"></div>                                               
+                    </div>
+                    <div class="search-grid">                        
+                        <div>學科</div>
+                        <div>
+	                        <select id="subject" class="subject" th:field="*{search_subject}">
+	                            <option value="0">請選擇學科</option>
+	                            <option th:each="subject:${subjectList}" th:value="${subject.ID}" th:text="${subject.NAME}"></option>
+	                        </select>
+	                    </div>
+                        <div>服務學校</div>
+                        <div>
+	                        <select id="select-school" class="custom-select" th:field="*{search_school_master}">
+	                            <option value="0">請選擇學校</option>
+	                            <option th:each="schoolMaster:${schoolMasterList}" th:value="${schoolMaster.ID}" th:text="${schoolMaster.NAME}"></option>
+	                        </select>
+	                    </div>
+                        <div>電子信箱</div>
+                        <div><input type="text" placeholder="請輸入老師電子信箱" id="teacherEmail" th:field="*{search_email}"></div> 
+                    </div>
+                    <button class="btn-search" data-search="teacherList" type="button">搜尋</button>
+                </div>
 				 <!-- 組長、校長身份的「審核區塊」 -->
-                <div class="verify-block" th:if="${accountSession.level == '6'}">
+                <div class="verify-block" th:if="${accountSession.level == '6' && verifyList!=null}">
                     <button class="btn-openArea" type="button">待審核<i class="fas fa-angle-up"></i></button>
                     <div class="verify-list">
                         <div class="grid teacherList-principal-verifyGrid grid-title">
@@ -44,8 +103,8 @@
                             <div>審議委員</div>
                             <div>學制</div>
                             <div>學科</div>
-                            <div>姓名</div>
-                            <div>電子信箱</div>
+                            <div>姓名<i class="fas fa-paper-plane"></i></div>
+                            <div>電子信箱<i class="fas fa-paper-plane"></i></div>
                             <div>手機市話</div>
                             <div>服務學校</div>
                             <div>詳細資料</div>
@@ -65,7 +124,7 @@
                                 </div>
                                 <div class="listSchool" th:text="${verifyList.school_master_name}"></div>
                                 <div><a href="#" th:onclick="toContent([[${verifyList.id}]])"><i class="fas fa-lg fa-graduation-cap"></i></a></div>
-                                <div><button class="btn-sm btn-openLightBox" data-lb="verify" th:data-id="${verifyList.id}" type="button" id="audit">審核</button></div><!-- data-id="放老師身分證字號" -->                            
+                                <div><button class="btn-sm btn-openLightBox audit" data-lb="verify" th:data-id="${verifyList.id}" type="button">審核</button></div><!-- data-id="放老師身分證字號" -->                            
                             </div>
                         </div><!-- overflow-auto end -->
                           
@@ -86,18 +145,18 @@
                 </div>
                 
                 <!-- 管理者身份，組長/校長列表 -->
-                <div class="list-block principal" th:if="${accountSession.level == '0'}">
+                <div class="list-block principal" th:if="${(accountSession.level == '1' || accountSession.level == '2') && (account.search_position == '2' || account.search_position == '3')}">
                     <div class="grid teacherList-admin-principalGrid grid-title">
                         <div>學制</div>
                         <div>學科</div>
-                        <div>姓名</div>
-                        <div>電子信箱</div>
+                        <div>姓名<i class="fas fa-paper-plane"></i></div>
+                        <div>電子信箱<i class="fas fa-paper-plane"></i></div>
                         <div>手機市話</div>
                         <div>服務學校</div>
                         <div>帳號狀態</div>
                         <div>詳細資料</div>                        
                     </div>
-                    <div class="grid teacherList-admin-principalGrid" th:each="list:${list}" th:if="${list != null}">
+                    <div class="grid teacherList-admin-principalGrid" th:classappend="${list.status.toString()=='0' ? 'failed-list' : ''}" th:each="list:${list}" th:if="${list != null}">
                         <div th:text="${list.education_name}"></div>
                         <div th:text="${list.subject_name}"></div>
                         <div th:text="${list.name}"></div>
@@ -113,21 +172,21 @@
                 </div>
                 
                 <!-- 管理者身份，一般教師列表 -->
-                <div class="list-block teacher" th:if="${(accountSession.level == '1' || accountSession.level == '2')}">
+                <div class="list-block teacher" th:if="${(accountSession.level == '1' || accountSession.level == '2') && account.search_position == '1'}">
                     <div class="grid teacherList-admin-teacherGrid grid-title">
                         <div>創作教師</div>
                         <div>審議委員</div>
                         <div>學制</div>
                         <div>學科</div>
-                        <div>姓名</div>
-                        <div>電子信箱</div>
+                        <div>姓名<i class="fas fa-paper-plane"></i></div>
+                        <div>電子信箱<i class="fas fa-paper-plane"></i></div>
                         <div>手機市話</div>
                         <div>服務學校</div>
                         <div>帳號狀態</div>
                         <div>詳細資料</div>
                         <div>新增合約</div>
                     </div>
-                    <div class="grid teacherList-admin-teacherGrid" th:each="list:${list}" th:if="${list != null}">
+                    <div class="grid teacherList-admin-teacherGrid" th:classappend="${list.status.toString()=='0' ? 'failed-list' : ''}" th:each="list:${list}" th:if="${list != null}">
                         <div><i class="fas fa-check" th:if="${list.content_provision == 1}"></i></div>
                         <div><i class="fas fa-check" th:if="${list.content_audit == 1}"></i></div>
                         <div th:text="${list.education_name}"></div>
@@ -152,14 +211,14 @@
                         <div>審議委員</div>
                         <div>學制</div>
                         <div>學科</div>
-                        <div>姓名</div>
-                        <div>電子信箱</div>
+                        <div>姓名<i class="fas fa-paper-plane"></i></div>
+                        <div>電子信箱<i class="fas fa-paper-plane"></i></div>
                         <div>手機市話</div>
                         <div>服務學校</div>
                         <div>帳號狀態</div>
                         <div>詳細資料</div>                        
                     </div>
-                    <div class="grid teacherList-principal-grid" th:each="list:${list}" th:if="${list != null}">
+                    <div class="grid teacherList-principal-grid" th:classappend="${list.status.toString()=='0' ? 'failed-list' : ''}" th:each="list:${list}" th:if="${list != null}">
                         <div><i class="fas fa-check" th:if="${list.content_provision == 1}"></i></div>
                         <div><i class="fas fa-check" th:if="${list.content_audit == 1}"></i></div>
                         <div th:text="${list.education_name}"></div>
@@ -216,8 +275,8 @@
         <button class="btn-closeLightBox" data-lb="verify"><i class="fas fa-times-circle fa-lg"></i></button>
         <h3 class="title">審核</h3>
         <hr>
-        <form id="auditForm" method="POST" th:object="${account}">
-        	<input type="hidden" id="audit_id" name="id" />
+<!--         <form id="auditForm" method="POST" th:object="${account}"> -->
+<!--         	<input type="hidden" id="audit_id" name="id" /> -->
         <div class="container">
             <div>
                 <div>審核</div>
@@ -225,18 +284,18 @@
                     <label for="pass">
                         <div class="radio-circle"></div>
                         <span>通過</span>
-                        <input type="radio" class="dis-n" id="pass" name="status" value="1">
+                        <input type="radio" class="dis-n" id="pass" name="audit_status" value="1">
                     </label>
                     <label for="failed">
                         <div class="radio-circle"></div>
                         <span>不通過</span>
-                        <input type="radio" class="dis-n" id="failed" name="status" value="0">
+                        <input type="radio" class="dis-n" id="failed" name="audit_status" value="0">
                     </label>
                 </div>
             </div>
         </div>
         <button class="btn-sm" type="button" id="auditSend">確定</button>
-        </form>
+<!--         </form> -->
     </section>
 
     <div th:include="front/load/js :: js"></div>  
@@ -244,6 +303,20 @@
 	<script>
 		
 		$(function(){
+			//初始設定
+// 			if($("#searchPosition").val()!="") {
+// 				$("input[name='position'][value='"+$("#searchPosition").val()+"']").attr('checked',true); 
+// 			}
+// 			if($("#searchContentProvision").val()!="") {
+// 				$("input[name='content_provision']").val($("#searchContentProvision").val());
+// 			}
+// 			if($("#searchContentAudit").val()!="") {
+// 				$("input[name='content_audit']").val($("#searchContentAudit").val());
+// 			}
+// 			$("input[name='name']").val($("#searchName").val());
+// 			$("input[name='subject_id']").val($("#searchSubject").val());
+// 			$("input[name='school_master_id']").val($("#searchSchoolMaster").val());
+// 			$("input[name='email']").val($("#searchEmail").val());
 			
 			$("#changePage").change(function(){
 				var total_page = $("#changePage").attr("data-totalPage");
@@ -255,33 +328,41 @@
 				var page = 1;
 				toList(page);
 			});
-			$("#audit").click(function(){
-				$("#audit_id").val($(this).attr("data-id"));
+			$(".audit").on('click',function(){
+				$("#id").val($(this).attr("data-id"));
 			});
 			$("#auditSend").click(function(){
-				$("#auditForm").attr("action", "/teacher/audit");
-				$("#auditForm").submit();
+				$("#status").val($("input[name='audit_status']:checked").val());
+				$("#mainForm").attr("action", "/teacher/audit");
+				$("#mainForm").submit();
 			});
+			$(".btn-search").click(function(){
+				toList("1");
+			})
+			
+			$("input[name='search_position']").on('click',function(){ //老師身份radio
+		        let position = $(this).attr('id')
+		        if (position != 'teacher') {
+		            $(`div[class*='Block']`).addClass('dis-n')
+		            $("div.principalBlock").removeClass('dis-n')
+		        }else {
+		            $(`div[class*='Block']`).addClass('dis-n')
+		            $("div.teacherBlock").removeClass('dis-n')
+		        }      
+		    })
 		})
 	
 		function toList(page) {
-			
-			if($("input[name='content_provision']").prop("checked")){
-				$("input[name='content_provision']").val("1");
-			}else{
-				$("input[name='content_provision']").val("0");
-			}
-			
-			if($("input[name='content_audit']").prop("checked")){
-				$("input[name='content_audit']").val("1");
-			}else{
-				$("input[name='content_audit']").val("0");
-			}
-			
 			$("#page").val(page);
+// 			$("#searchPosition").val($("input[name='position']:checked").val());
+// 			$("#searchContentProvision").val($("input[name='content_provision']").val());
+// 			$("#searchContentAudit").val($("input[name='content_audit']").val());
+// 			$("#searchName").val($("input[name='name']").val());
+// 			$("#searchSubject").val($("select[name='subject_id'] :selected").val());
+// 			$("#searchSchoolMaster").val($("select[name='school_master_id'] :selected").val());
+// 			$("#searchEmail").val($("input[name='email']").val());
 			$("#mainForm").attr("action", "/teacher");
 			$("#mainForm").submit();
-			
 		}
 		
 		function importExcel(){

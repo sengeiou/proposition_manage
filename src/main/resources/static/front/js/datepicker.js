@@ -5,7 +5,7 @@ $(function() {
         "dateFormat": "yy-mm-dd"
     })
     $("#contractEnd").datepicker({
-        minDate: new Date(),
+        // minDate: new Date(),
         "dateFormat": "yy-mm-dd"
     })
 
