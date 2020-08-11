@@ -58,4 +58,12 @@ public class Account extends Base {
 	private String subject_list;			//學科選取清單
 	private String status_texe;				//帳號狀態文字(0：關閉，1：開啟,2：待審核)
 	
+	private String search_position;				//搜尋老師身份(1：一般老師，2：組長，3：校長)
+	private String search_content_provision;	//搜尋內容提供(0：否，1：是)
+	private String search_content_audit;		//搜尋內容審核(0：否，1：是)
+	private String search_name;					//搜尋姓名
+	private String search_subject;				//搜尋學科
+	private String search_school_master;		//搜尋學校
+	private String search_email;				//搜尋電子信箱
+	
 }

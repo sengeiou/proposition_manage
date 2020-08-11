@@ -58,23 +58,45 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 				   + " FROM proposition_manage.teacher_account TA "
 				   + " LEFT JOIN proposition_manage.subject S ON S.ID = TA.SUBJECT_ID "
 				   + " LEFT JOIN proposition_manage.school_master SM ON SM.ID = TA.SCHOOL_MASTER_ID "
-				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID ";
-//				   + " WHERE TA.POSITION = ? ";
+				   + " LEFT JOIN proposition_manage.education E ON E.ID = TA.EDUCATION_ID "
+				   + " WHERE TA.POSITION = ? ";
 		
-//		args.add(account.getPosition());
-//		
-//		if("1".equals(account.getContent_provision()) && "1".equals(account.getContent_audit())) {
-//			if(account.getContent_provision().equals(account.getContent_audit())) {
-//				sql += " AND( TA.CONTENT_PROVISION = ? OR TA.CONTENT_AUDIT = ?) ";
-//			}else {
-//				sql += " AND( TA.CONTENT_PROVISION = ? AND TA.CONTENT_AUDIT = ?) ";
-//			}
-//			args.add(account.getContent_provision());
-//			args.add(account.getContent_audit());
-//		}
-
+		args.add(account.getSearch_position());
 		
-		sql += " LIMIT "+((account.getPage()-1)*account.getPage_count())+","+account.getPage_count();
+		if("1".equals(account.getSearch_position())) {
+			if("0".equals(account.getSearch_content_provision()) && "0".equals(account.getSearch_content_audit())) {
+				sql += " AND TA.CONTENT_PROVISION = ? "
+					+  " AND TA.CONTENT_AUDIT = ? ";
+			} else {
+				sql += " AND (TA.CONTENT_PROVISION = ? "
+					+  " OR TA.CONTENT_AUDIT = ?) ";
+			}
+			args.add(account.getSearch_content_provision());
+			args.add(account.getSearch_content_audit());
+		}
+		
+		if(account.getSearch_name() != null && !"".equals(account.getSearch_name())) {
+			sql += " AND INSTR(TA.NAME, ?) > 0 ";
+			args.add(account.getSearch_name());
+		}
+		
+		if(account.getSearch_subject() != null && !"0".equals(account.getSearch_subject())) {
+			sql += " AND TA.SUBJECT_ID = ? ";
+			args.add(account.getSearch_subject());
+		}
+		
+		if(account.getSearch_school_master() != null && !"0".equals(account.getSearch_school_master())) {
+			sql += " AND TA.SCHOOL_MASTER_ID = ? ";
+			args.add(account.getSearch_school_master());
+		}
+		
+		if(account.getSearch_email() != null && !"".equals(account.getSearch_email())) {
+			sql += " AND INSTR(TA.EMAIL, ?) > 0 ";
+			args.add(account.getSearch_email());
+		}
+		
+		sql += " ORDER BY TA.CREATE_TIME DESC "
+			+  " LIMIT "+((account.getPage()-1)*account.getPage_count())+","+account.getPage_count();
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
@@ -89,7 +111,42 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.teacher_account ";
+		String sql = " SELECT COUNT(*) AS COUNT FROM proposition_manage.teacher_account "
+				   + " WHERE POSITION = ? ";
+		
+		args.add(account.getSearch_position());
+		
+		if("1".equals(account.getSearch_position())) {
+			if("0".equals(account.getSearch_content_provision()) && "0".equals(account.getSearch_content_audit())) {
+				sql += " AND CONTENT_PROVISION = ? "
+					+  " AND CONTENT_AUDIT = ? ";
+			} else {
+				sql += " AND (CONTENT_PROVISION = ? "
+					+  " OR CONTENT_AUDIT = ?) ";
+			}
+			args.add(account.getSearch_content_provision());
+			args.add(account.getSearch_content_audit());
+		}
+		
+		if(account.getSearch_name() != null && !"".equals(account.getSearch_name())) {
+			sql += " AND INSTR(NAME, ?) > 0 ";
+			args.add(account.getSearch_name());
+		}
+		
+		if(account.getSearch_subject() != null && !"0".equals(account.getSearch_subject())) {
+			sql += " AND SUBJECT_ID = ? ";
+			args.add(account.getSearch_subject());
+		}
+		
+		if(account.getSearch_school_master() != null && !"0".equals(account.getSearch_school_master())) {
+			sql += " AND SCHOOL_MASTER_ID = ? ";
+			args.add(account.getSearch_school_master());
+		}
+		
+		if(account.getSearch_email() != null && !"".equals(account.getSearch_email())) {
+			sql += " AND INSTR(EMAIL, ?) > 0 ";
+			args.add(account.getSearch_email());
+		}
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {
