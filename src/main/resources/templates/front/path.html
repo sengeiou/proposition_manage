@@ -16,13 +16,13 @@
 			<input type="hidden" id="parent_name" name="parent_name" th:value="${parent_name}"></input>
 			<input type="hidden" id="layer" name="layer" th:value="${layer}"></input>
 			
-			<input type="hidden" id="searchPosition" name="search_position" th:value="${account.search_position}" />
-			<input type="hidden" id="searchContentProvision" name="search_content_provision" th:value="${account.search_content_provision}" />
-			<input type="hidden" id="searchContentAudit" name="search_content_audit" th:value="${account.search_content_audit}" />
-			<input type="hidden" id="searchName" name="search_name" th:value="${account.search_name}" />
-			<input type="hidden" id="searchSubject" name="search_subject" th:value="${account.search_subject}" />
-			<input type="hidden" id="searchSchoolMaster" name="search_school_master" th:value="${account.search_school_master}" />
-			<input type="hidden" id="searchEmail" name="search_email" th:value="${account.search_email}" />
+			<input type="hidden" id="searchPosition" name="search_position" th:if="${account}!=null" th:value="${account.search_position}" />
+			<input type="hidden" id="searchContentProvision" name="search_content_provision" th:if="${account}!=null" th:value="${account.search_content_provision}" />
+			<input type="hidden" id="searchContentAudit" name="search_content_audit" th:if="${account}!=null" th:value="${account.search_content_audit}" />
+			<input type="hidden" id="searchName" name="search_name" th:if="${account}!=null" th:value="${account.search_name}" />
+			<input type="hidden" id="searchSubject" name="search_subject" th:if="${account}!=null" th:value="${account.search_subject}" />
+			<input type="hidden" id="searchSchoolMaster" name="search_school_master" th:if="${account}!=null" th:value="${account.search_school_master}" />
+			<input type="hidden" id="searchEmail" name="search_email" th:if="${account}!=null" th:value="${account.search_email}" />
 		</form>
 	</body>
     <script>

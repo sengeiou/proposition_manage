@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +66,6 @@ import com.tkb.manage.service.ContractMaterialOptionService;
 import com.tkb.manage.service.ContractMaterialService;
 import com.tkb.manage.service.ContractService;
 import com.tkb.manage.service.EducationService;
-import com.tkb.manage.service.FieldService;
 import com.tkb.manage.service.IdentityService;
 import com.tkb.manage.service.LessonPlanAuditService;
 import com.tkb.manage.service.LessonPlanFileService;
@@ -88,7 +86,6 @@ import com.tkb.manage.service.TeacherAccountService;
 import jxl.Sheet;
 import jxl.Workbook;
 
-@CrossOrigin
 @Controller
 @SessionAttributes("accountSession")
 @RequestMapping("/")
@@ -106,8 +103,8 @@ public class IndexController {
 	@Autowired
 	private IdentityService identityService;
 	
-	@Autowired
-	private FieldService fieldService;
+//	@Autowired
+//	private FieldService fieldService;
 	
 	@Autowired
 	private SchoolMasterService schoolMasterService;
@@ -177,6 +174,9 @@ public class IndexController {
 	
 	@Value("${teacher.fileName}") 
 	private String teacherFileName;
+	
+	private String[] edu = {"E", "J", "S"};
+	private String[] sub = {"C", "E", "M"};
 	
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -1573,6 +1573,21 @@ public class IndexController {
 			lessonPlan.setUpdate_by(accountSession.getAccount());
 			int id = lessonPlanService.add(lessonPlan);
 			
+			/**
+			 * 設定檔名
+			 * 檔名編碼規則：
+			 * 1：國小(E)，2：國中(J)，3：高中(S)
+			 * 1：國文(C)，2：英文(E)，3：數學(M)
+			 * 教案流水號：3碼
+			 * 命題流水號：4碼
+			 */
+			LessonPlan lp = new LessonPlan();
+			lp.setEducation_id(lessonPlan.getEducation_id());
+			lp.setSubject_id(lessonPlan.getSubject_id());
+			lp.setId(String.valueOf(id));
+			Map<String, Object> getNum = lessonPlanService.getNum(lp);
+			String file_name = edu[Integer.valueOf(lessonPlan.getEducation_id())]+sub[Integer.valueOf(lessonPlan.getSubject_id())]+"-L-"+getNum.get("NUM").toString();
+			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
 			
 			//年級
@@ -1619,7 +1634,7 @@ public class IndexController {
 			lessonPlanFile.setData_type("1");
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setUpload_name(uploadName);
-			lessonPlanFile.setFile_name(word.getOriginalFilename());
+			lessonPlanFile.setFile_name(file_name+word.getOriginalFilename().substring(word.getOriginalFilename().lastIndexOf("."), word.getOriginalFilename().length()));
 			lessonPlanFile.setDisplay("1");
 			lessonPlanFile.setCreate_by(accountSession.getAccount());
 			lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -1637,7 +1652,7 @@ public class IndexController {
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setMaterial_link(null);
 			lessonPlanFile.setUpload_name(uploadName);
-			lessonPlanFile.setFile_name(pdf.getOriginalFilename());
+			lessonPlanFile.setFile_name(file_name+pdf.getOriginalFilename().substring(pdf.getOriginalFilename().lastIndexOf("."), pdf.getOriginalFilename().length()));
 			lessonPlanFile.setDisplay("1");
 			lessonPlanFile.setCreate_by(accountSession.getAccount());
 			lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -2035,12 +2050,16 @@ public class IndexController {
 				lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
 				lessonPlanFile.setLesson_plan_audit_id(String.valueOf(lpa_id));
 				
+				//取得檔案清單
+				List<Map<String, Object>> getFile = lessonPlanFileService.getFile(lessonPlanFile);
+				String pdf_name = getFile.get(1).get("file_name").toString();
+				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/lessonPlan/");
 				lessonPlanFile.setData_type("5");
 				lessonPlanFile.setMaterial_type_id(null);
 				lessonPlanFile.setMaterial_link(null);
 				lessonPlanFile.setUpload_name(uploadName);
-				lessonPlanFile.setFile_name(fileName.getOriginalFilename());
+				lessonPlanFile.setFile_name(pdf_name.substring(0,pdf_name.lastIndexOf("."))+fileName.getOriginalFilename().substring(fileName.getOriginalFilename().lastIndexOf("."), fileName.getOriginalFilename().length()));
 				lessonPlanFile.setDisplay("1");
 				lessonPlanFile.setCreate_by(accountSession.getAccount());
 				lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -2176,11 +2195,16 @@ public class IndexController {
 			lessonPlanFile.setLesson_plan_id(lessonPlan.getId());
 			lessonPlanFile.setLesson_plan_audit_id(String.valueOf(lpa_id));
 			
+			//取得檔案清單
+			List<Map<String, Object>> getFile = lessonPlanFileService.getFile(lessonPlanFile);
+			String word_name = getFile.get(0).get("file_name").toString();
+			String pdf_name = getFile.get(1).get("file_name").toString();
+			
 			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/lessonPlan/");
 			lessonPlanFile.setData_type("1");
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setUpload_name(uploadName);
-			lessonPlanFile.setFile_name(word.getOriginalFilename());
+			lessonPlanFile.setFile_name(word_name);
 			lessonPlanFile.setDisplay("1");
 			lessonPlanFile.setCreate_by(accountSession.getAccount());
 			lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -2198,7 +2222,7 @@ public class IndexController {
 			lessonPlanFile.setMaterial_type_id(null);
 			lessonPlanFile.setMaterial_link(null);
 			lessonPlanFile.setUpload_name(uploadName);
-			lessonPlanFile.setFile_name(pdf.getOriginalFilename());
+			lessonPlanFile.setFile_name(pdf_name);
 			lessonPlanFile.setDisplay("1");
 			lessonPlanFile.setCreate_by(accountSession.getAccount());
 			lessonPlanFile.setUpdate_by(accountSession.getAccount());
@@ -2380,6 +2404,22 @@ public class IndexController {
 			proposition.setUpdate_by(accountSession.getAccount());
 			int id = propositionService.add(proposition);
 			
+			/**
+			 * 設定檔名
+			 * 檔名編碼規則：
+			 * 1：國小(E)，2：國中(J)，3：高中(S)
+			 * 1：國文(C)，2：英文(E)，3：數學(M)
+			 * 教案流水號：3碼
+			 * 命題流水號：4碼
+			 */
+			Proposition p = new Proposition();
+			p.setQuestion_type("1");
+			p.setEducation_id(proposition.getEducation_id());
+			p.setSubject_id(proposition.getSubject_id());
+			p.setId(String.valueOf(id));
+			Map<String, Object> getNum = propositionService.getNum(p);
+			String file_name = edu[Integer.valueOf(proposition.getEducation_id())]+sub[Integer.valueOf(proposition.getSubject_id())]+"-B-"+getNum.get("NUM").toString();
+			
 			PropositionOption propositionOption = new PropositionOption();
 			
 			//年級
@@ -2423,7 +2463,7 @@ public class IndexController {
 			propositionFile.setData_type("1");
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setFile_name(file_name+word.getOriginalFilename().substring(word.getOriginalFilename().lastIndexOf("."), word.getOriginalFilename().length()));
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -2441,7 +2481,7 @@ public class IndexController {
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setMaterial_link(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setFile_name(file_name+pdf.getOriginalFilename().substring(pdf.getOriginalFilename().lastIndexOf("."), pdf.getOriginalFilename().length()));
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -2840,12 +2880,16 @@ public class IndexController {
 				propositionFile.setProposition_id(proposition.getId());
 				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 				
+				//取得檔案清單
+				List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+				String pdf_name = getFile.get(1).get("file_name").toString();
+				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
 				propositionFile.setData_type("5");
 				propositionFile.setMaterial_type_id(null);
 				propositionFile.setMaterial_link(null);
 				propositionFile.setUpload_name(uploadName);
-				propositionFile.setFile_name(fileName.getOriginalFilename());
+				propositionFile.setFile_name(pdf_name.substring(0,pdf_name.lastIndexOf("."))+fileName.getOriginalFilename().substring(fileName.getOriginalFilename().lastIndexOf("."), fileName.getOriginalFilename().length()));
 				propositionFile.setDisplay("1");
 				propositionFile.setCreate_by(accountSession.getAccount());
 				propositionFile.setUpdate_by(accountSession.getAccount());
@@ -2981,11 +3025,16 @@ public class IndexController {
 			propositionFile.setProposition_id(proposition.getId());
 			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
+			//取得檔案清單
+			List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+			String word_name = getFile.get(0).get("file_name").toString();
+			String pdf_name = getFile.get(1).get("file_name").toString();
+			
 			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
 			propositionFile.setData_type("1");
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setFile_name(word_name);
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3003,7 +3052,7 @@ public class IndexController {
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setMaterial_link(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setFile_name(pdf_name);
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3185,6 +3234,22 @@ public class IndexController {
 			proposition.setUpdate_by(accountSession.getAccount());
 			int id = propositionService.add(proposition);
 			
+			/**
+			 * 設定檔名
+			 * 檔名編碼規則：
+			 * 1：國小(E)，2：國中(J)，3：高中(S)
+			 * 1：國文(C)，2：英文(E)，3：數學(M)
+			 * 教案流水號：3碼
+			 * 命題流水號：4碼
+			 */
+			Proposition p = new Proposition();
+			p.setQuestion_type("2");
+			p.setEducation_id(proposition.getEducation_id());
+			p.setSubject_id(proposition.getSubject_id());
+			p.setId(String.valueOf(id));
+			Map<String, Object> getNum = propositionService.getNum(p);
+			String file_name = edu[Integer.valueOf(proposition.getEducation_id())]+sub[Integer.valueOf(proposition.getSubject_id())]+"-G-"+getNum.get("NUM").toString();
+			
 			PropositionOption propositionOption = new PropositionOption();
 			
 			//年級
@@ -3228,7 +3293,7 @@ public class IndexController {
 			propositionFile.setData_type("1");
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setFile_name(file_name+word.getOriginalFilename().substring(word.getOriginalFilename().lastIndexOf("."), word.getOriginalFilename().length()));
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3246,7 +3311,7 @@ public class IndexController {
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setMaterial_link(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setFile_name(file_name+pdf.getOriginalFilename().substring(pdf.getOriginalFilename().lastIndexOf("."), pdf.getOriginalFilename().length()));
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3645,12 +3710,16 @@ public class IndexController {
 				propositionFile.setProposition_id(proposition.getId());
 				propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 				
+				//取得檔案清單
+				List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+				String pdf_name = getFile.get(1).get("file_name").toString();
+				
 				String uploadName = commonService.uploadFileSaveDateName(fileName, uploadedFolder+"file/proposition/");
 				propositionFile.setData_type("5");
 				propositionFile.setMaterial_type_id(null);
 				propositionFile.setMaterial_link(null);
 				propositionFile.setUpload_name(uploadName);
-				propositionFile.setFile_name(fileName.getOriginalFilename());
+				propositionFile.setFile_name(pdf_name.substring(0,pdf_name.lastIndexOf("."))+fileName.getOriginalFilename().substring(fileName.getOriginalFilename().lastIndexOf("."), fileName.getOriginalFilename().length()));
 				propositionFile.setDisplay("1");
 				propositionFile.setCreate_by(accountSession.getAccount());
 				propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3786,11 +3855,16 @@ public class IndexController {
 			propositionFile.setProposition_id(proposition.getId());
 			propositionFile.setProposition_audit_id(String.valueOf(lpa_id));
 			
+			//取得檔案清單
+			List<Map<String, Object>> getFile = propositionFileService.getFile(propositionFile);
+			String word_name = getFile.get(0).get("file_name").toString();
+			String pdf_name = getFile.get(1).get("file_name").toString();
+			
 			String uploadName = commonService.uploadFileSaveDateName(word, uploadedFolder+"file/proposition/");
 			propositionFile.setData_type("1");
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(word.getOriginalFilename());
+			propositionFile.setFile_name(word_name);
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());
@@ -3808,7 +3882,7 @@ public class IndexController {
 			propositionFile.setMaterial_type_id(null);
 			propositionFile.setMaterial_link(null);
 			propositionFile.setUpload_name(uploadName);
-			propositionFile.setFile_name(pdf.getOriginalFilename());
+			propositionFile.setFile_name(pdf_name);
 			propositionFile.setDisplay("1");
 			propositionFile.setCreate_by(accountSession.getAccount());
 			propositionFile.setUpdate_by(accountSession.getAccount());

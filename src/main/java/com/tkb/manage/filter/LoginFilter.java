@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 
+import com.google.gson.Gson;
 import com.tkb.manage.model.Account;
 
 public class LoginFilter implements Filter {
@@ -29,6 +30,12 @@ public class LoginFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		response.setHeader(HttpHeaders.CACHE_CONTROL, CacheControl.noCache().cachePrivate().mustRevalidate().getHeaderValue());
+		
+//		Gson gson = new Gson();
+//		System.out.println(request.getRemoteAddr());
+//		System.out.println(request.getMethod());
+//		System.out.println(request.getRequestURI());
+//		System.out.println(gson.toJson(request.getParameterMap()));
 		
 		Account accountSession = (Account)request.getSession().getAttribute("accountSession");
 		

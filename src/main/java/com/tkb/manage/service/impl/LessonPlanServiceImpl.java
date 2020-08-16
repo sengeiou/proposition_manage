@@ -88,4 +88,8 @@ public class LessonPlanServiceImpl implements LessonPlanService {
 		return lessonPlanDao.auditNum(lessonPlan);
 	}
 	
+	public Map<String, Object> getNum(LessonPlan lessonPlan) {
+		return lessonPlanDao.getNum(lessonPlan);
+	}
+	
 }

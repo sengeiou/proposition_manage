@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.tkb.manage.dao.PropositionDao;
+import com.tkb.manage.model.LessonPlan;
 import com.tkb.manage.model.Proposition;
 
 @Repository
@@ -501,6 +502,35 @@ public class PropositionDaoImpl implements PropositionDao {
 		
 		args.add(proposition.getAuditor2());
 		args.add(proposition.getQuestion_type());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public Map<String, Object> getNum(Proposition proposition) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT L1.*, LPAD(L1.RANK, 5, 0) AS NUM FROM ( "
+				   + " SELECT PMP.ID, PMP.PROPOSITION_NUMBER, (@incRank := @incRank + 1) AS RANK "
+				   + " FROM proposition_manage.proposition PMP, "
+				   + " (SELECT @curRank :=0, @prevRank := NULL, @incRank := 0) R "
+				   + " WHERE PMP.QUESTION_TYPE = ? "
+				   + " AND PMP.EDUCATION_ID = ? "
+				   + " AND PMP.SUBJECT_ID = ? "
+				   + " ORDER BY PMP.CREATE_TIME "
+				   + " ) L1 "
+				   + " WHERE L1.ID = ? ";
+		
+		args.add(proposition.getQuestion_type());
+		args.add(proposition.getEducation_id());
+		args.add(proposition.getSubject_id());
+		args.add(proposition.getId());
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
 		if(list!=null && list.size()>0) {

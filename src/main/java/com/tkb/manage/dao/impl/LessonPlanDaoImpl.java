@@ -458,4 +458,31 @@ public class LessonPlanDaoImpl implements LessonPlanDao {
 		
 	}
 	
+	public Map<String, Object> getNum(LessonPlan lessonPlan) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT L1.*, LPAD(L1.RANK, 3, 0) AS NUM FROM ( "
+				   + " SELECT LP.ID, LP.LESSON_PLAN_NUMBER, (@incRank := @incRank + 1) AS RANK "
+				   + " FROM proposition_manage.lesson_plan LP, "
+				   + " (SELECT @curRank :=0, @prevRank := NULL, @incRank := 0) R "
+				   + " WHERE LP.EDUCATION_ID = ? "
+				   + " AND LP.SUBJECT_ID = ? "
+				   + " ORDER BY LP.CREATE_TIME "
+				   + " ) L1 "
+				   + " WHERE L1.ID = ? ";
+		
+		args.add(lessonPlan.getEducation_id());
+		args.add(lessonPlan.getSubject_id());
+		args.add(lessonPlan.getId());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
 }
