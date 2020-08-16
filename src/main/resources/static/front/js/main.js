@@ -1008,11 +1008,17 @@ $(function(){
             $("section.lightBoxBG").removeClass('dis-n').add('dis-b')
             $("section.lightBoxAlert .container div").text(text)
         }else {
-        	if (type == 'lessonContentFinish') {            	
+        	if (type == 'lessonContentFinish') {
+        		$("#mainForm").attr("action", "/lesson/audit");
+                $("#mainForm").submit();
                 console.log('校長--教案詳細資料審核--完稿確認')
-            }else if (type == 'propoGroupContentFinish') {            	
+            }else if (type == 'propoGroupContentFinish') {
+            	$("#mainForm").attr("action", "/proposition/group/audit");
+                $("#mainForm").submit();
                 console.log('校長--命題-混合題：：詳細資料審核--完稿確認')
-            }else if (type == 'propoBasicContentFinish') {            	
+            }else if (type == 'propoBasicContentFinish') {
+            	$("#mainForm").attr("action", "/proposition/basic/audit");
+                $("#mainForm").submit();
                 console.log('校長--命題-選擇題：：教案詳細資料審核--完稿確認')
             }
         }

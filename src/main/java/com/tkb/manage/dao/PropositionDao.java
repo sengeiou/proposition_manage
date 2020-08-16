@@ -25,5 +25,6 @@ public interface PropositionDao {
 	public Proposition data(Proposition proposition);
 	public void audit(Proposition proposition);
 	public Map<String, Object> auditNum(Proposition proposition);
+	public Map<String, Object> getNum(Proposition proposition);
 	
 }

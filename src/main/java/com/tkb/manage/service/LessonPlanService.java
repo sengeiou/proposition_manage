@@ -25,5 +25,6 @@ public interface LessonPlanService {
 	public LessonPlan data(LessonPlan lessonPlan);
 	public void audit(LessonPlan lessonPlan);
 	public Map<String, Object> auditNum(LessonPlan lessonPlan);
+	public Map<String, Object> getNum(LessonPlan lessonPlan);
 	
 }
