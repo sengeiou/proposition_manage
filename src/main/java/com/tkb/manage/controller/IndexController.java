@@ -725,6 +725,7 @@ public class IndexController {
 			}
 		}
 		
+		model.addAttribute("ACT", "teacher");
 		model.addAttribute("PATH", "/teacher");
 		return "front/path";
     }
