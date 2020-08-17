@@ -29,7 +29,7 @@ $(function(){
     })
 
     $(".selectCity").on("change",function(){
-        alert('選擇的縣市：：'+$(this).val())        
+//        alert('選擇的縣市：：'+$(this).val())        
         // $(this).siblings('.selectArea').html(ajax 出來的鄉鎮放在這邊)
         sameAbove('selectCity')
     })
@@ -65,13 +65,13 @@ $(function(){
 
     $(".address-block").on("change","#residenceSelectZip",function(){ //戶籍地址郵遞區號select
         let zipInput = $(this).parent().parent().parent().find("input#residencezip")        
-        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val().substring(0, 6))
+        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val().substring(0, 5))
         sameAbove('residenceSelectZip')        
     })
 
     $(".address-block").on("change","#selectZip",function(){ //通訊地址郵遞區號select
         let zipInput = $(this).parent().parent().parent().find("input#zip")      
-        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val().substring(0, 6))
+        $(this).val() == 0 ? zipInput.val('') : zipInput.val($(this).val().substring(0, 5))
         sameAbove('selectZip')        
     })
 
@@ -96,7 +96,7 @@ $(function(){
     			var str = "<option value='0'>請選擇對應郵遞區號</option>";
     			if(road.length > 0){
     				for(var i =0;i < road.length;i++){
-    					str += "<option value='"+road[i].Zip5+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
+    					str += "<option value='"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"'>"+road[i].Zip5+road[i].Area+road[i].Road+road[i].Scope+"</option>";
     				}
     			}								
     			$(".customselect-block").html("<select id='selectZip' class='custom-select'>"+str+"</select>")

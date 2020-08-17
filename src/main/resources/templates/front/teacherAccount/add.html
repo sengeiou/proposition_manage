@@ -103,7 +103,7 @@
                         <label class="les-labelBlock" th:for="${subject.name}" th:each="subject:${subjectList}">
                             <div class="checkbox-square"></div>
                             <span>[[${subject.name}]]</span>
-                            <input type="checkbox" th:id="${subject.name}" class="dis-n specialSkill" name="subject" th:value="${subject.id}">
+                            <input type="checkbox" th:id="${subject.name}" class="dis-n specialSkill subject" name="subject" th:value="${subject.id}">
                         </label>
                     </div>
                     <div><span class="required">*</span>服務學校</div>
