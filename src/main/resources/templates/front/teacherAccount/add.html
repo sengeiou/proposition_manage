@@ -181,7 +181,7 @@
                         <input type="text" placeholder="郵遞區號" id="zip" disabled>
                         <input type="hidden" id="address_area" th:field="*{address_area}">
                         <input type="hidden" id="address_zip" th:field="*{address_zip}">
-                        <select class="address selectCity" id="city">
+                        <select class="address selectCity" id="city" th:field="*{address_city}">
                             <option value="">請選擇縣市</option>
                             <option value="臺北市">臺北市</option>
 							<option value="基隆市">基隆市</option>
@@ -211,7 +211,7 @@
                         <select class="address selectArea" id="area">
                             <option value="">請選擇鄉鎮市區</option>
                         </select>
-                        <input type="text" placeholder="請輸入通訊地址" id="address">
+                        <input type="text" placeholder="請輸入通訊地址" id="address" th:field="*{address_road}">
                         <div class="customselect-block">
                         	<select id="selectZip" class="custom-select" >
                             	<option value="">請選擇對應郵遞區號</option>

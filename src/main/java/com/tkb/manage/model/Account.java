@@ -1,5 +1,7 @@
 package com.tkb.manage.model;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -65,5 +67,7 @@ public class Account extends Base {
 	private String search_subject;				//搜尋學科
 	private String search_school_master;		//搜尋學校
 	private String search_email;				//搜尋電子信箱
+	
+	private List<TeacherAccountOption> teacherAccountOption;		//老師帳號選項
 	
 }

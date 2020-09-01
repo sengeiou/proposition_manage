@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.tkb.manage.interceptor.LogInterceptor;
+
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -24,6 +26,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
+	
+//	private final String[] includePath = {"/**/addSubmit","/**/updateSubmit","/**/editSubmit","/**/delete","/**/audit"};
+	
 	@Bean
 	public Docket api() {
 		/**
@@ -47,5 +52,17 @@ public class SwaggerConfig implements WebMvcConfigurer {
 		return new ApiInfoBuilder().title("素養教案與命題管理 API 服務").description("\"素養教案與命題管理 API 服務\"").version("1.0.0")
 				.license("中華未來教育學會 Version 1.0").licenseUrl("").build();
 	}
+	
+	@Bean
+	public LogInterceptor logInterceptor() {
+		return new LogInterceptor();
+	}
+	
+//	@Override
+//	public void addInterceptors(InterceptorRegistry registry) {
+//		
+//		registry.addInterceptor(logInterceptor()).addPathPatterns(includePath);
+//		
+//	}
 
 }
