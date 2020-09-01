@@ -4,9 +4,9 @@ public class LogInterceptor {
 //public class LogInterceptor implements HandlerInterceptor {
 	
 //	@Autowired
-//	HistoryService	userLogService;
+//	HistoryService	historyService;
 //	
-//	UserLog userLog = new UserLog();
+//	History history = new History();
 //	
 ////	private static final String LOGGER_SEND_TIME = "_send_time";
 ////	private static final String LOGGER_ENTITY = "_logger_entity";
@@ -42,14 +42,14 @@ public class LogInterceptor {
 //		
 ////		System.out.println("LOGGER_SEND_TIME : " + System.currentTimeMillis());
 //	  	
-//		ManagerAccount managerAccountSession = (ManagerAccount) request.getSession().getAttribute("managerAccountSession");
+//		Account accountSession = (Account) request.getSession().getAttribute("accountSession");
 //		
-//		if (managerAccountSession != null) {
+//		if (accountSession != null) {
 ////		    System.out.println("User : " + managerAccountSession.getAccount());
-//		    userLog.setUser(managerAccountSession.getAccount());
+//			history.setAccount_id(accountSession.getId());
 //		} else {
 ////			System.out.println("User : 0 ");
-//			userLog.setUser("0");
+//			history.setAccount_id("0");
 //		}
 //		
 //		
@@ -62,10 +62,10 @@ public class LogInterceptor {
 //		String Args = gson.toJson(request.getParameterMap());
 ////		System.out.println("Args : " + Args);
 //		
-//        userLog.setIp(request.getRemoteAddr());
-//        userLog.setMethod(request.getMethod());
-//        userLog.setUrl(request.getRequestURI());
-//        userLog.setArgs(Args);
+//		history.setIp(request.getRemoteAddr());
+//		history.setMethod(request.getMethod());
+//		history.setUrl(request.getRequestURI());
+//		history.setArgs(Args);
 //		
 ////		request.setAttribute(LOGGER_SEND_TIME,System.currentTimeMillis());
 //		
@@ -88,7 +88,7 @@ public class LogInterceptor {
 //		
 //		int status = response.getStatus();
 //		
-//		userLog.setResponse(Integer.toString(status));
+//		history.setResponse(Integer.toString(status));
 //		
 ////		long currentTime = System.currentTimeMillis();
 //		
@@ -100,11 +100,11 @@ public class LogInterceptor {
 ////		userLog.setTime(Integer.valueOf((currentTime - time)+""));
 //		
 ////		System.out.println("status : " + status);
+////		System.out.println(history.toString());
 ////		System.out.println("----------------Log End------------------------");
-//		userLogService.addLog(userLog);
+//		historyService.add(history);
 //		
 //		
 //	}
 	
-
 }

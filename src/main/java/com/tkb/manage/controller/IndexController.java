@@ -82,6 +82,8 @@ import com.tkb.manage.service.SchoolMasterService;
 import com.tkb.manage.service.SubjectService;
 import com.tkb.manage.service.TeacherAccountOptionService;
 import com.tkb.manage.service.TeacherAccountService;
+import com.tkb.manage.util.aop.annotation.AuditAction;
+import com.tkb.manage.util.aop.common.enums.Action;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -518,6 +520,7 @@ public class IndexController {
 		return "front/teacherAccount/register";
     }
 	
+	@AuditAction(action = Action.ADD, targetTable = "teacher_account")
 	@RequestMapping(value = "/teacher/registerSubmit" , method = {RequestMethod.POST, RequestMethod.GET})
     public String registerSubmit(@ModelAttribute Account account,
     		HttpServletRequest pRequest,
@@ -553,6 +556,7 @@ public class IndexController {
 		account.setCreate_by(account.getId_no());
 		account.setUpdate_by(account.getId_no());
 		int id = teacherAccountService.add(account);
+		account.setId(String.valueOf(id));
 		
 		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
 		if(educationList != null) {
@@ -562,6 +566,8 @@ public class IndexController {
 				teacherAccountOption.setCode(educationList[i]);
 				teacherAccountOption.setCreate_by(account.getId_no());
 				teacherAccountOptionService.add(teacherAccountOption);
+				
+				account.getTeacherAccountOption().add(teacherAccountOption);
 			}
 		}
 		
@@ -573,6 +579,8 @@ public class IndexController {
 				teacherAccountOption.setCode(subjectList[i]);
 				teacherAccountOption.setCreate_by(account.getId_no());
 				teacherAccountOptionService.add(teacherAccountOption);
+				
+				account.getTeacherAccountOption().add(teacherAccountOption);
 			}
 		}
 		
@@ -655,9 +663,11 @@ public class IndexController {
 		return "front/teacherAccount/add";
     }
 	
+	@AuditAction(action = Action.ADD, targetTable = "teacher_account")
 	@RequestMapping(value = "/teacher/addSubmit" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String addSubmit(@SessionAttribute("accountSession") Account accountSession,
+    public String addSubmit(
     		@ModelAttribute Account account,
+    		@SessionAttribute("accountSession") Account accountSession,
     		HttpServletRequest pRequest,
     		Model model){
 		
@@ -700,16 +710,21 @@ public class IndexController {
 		account.setCreate_by(accountSession.getAccount());
 		account.setUpdate_by(accountSession.getAccount());
 		int id = teacherAccountService.add(account);
+		account.setId(String.valueOf(id));
+		
+		List<TeacherAccountOption> tao = new ArrayList<TeacherAccountOption>();
+		account.setTeacherAccountOption(tao);
 		
 		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
 		if(educationList != null) {
 			for(int i=0; i<educationList.length; i++) {
-
 				teacherAccountOption.setTeacher_account_id(String.valueOf(id));
 				teacherAccountOption.setType("3");
 				teacherAccountOption.setCode(educationList[i]);
 				teacherAccountOption.setCreate_by(accountSession.getAccount());
 				teacherAccountOptionService.add(teacherAccountOption);
+				
+				tao.add(teacherAccountOption);
 			}
 		}
 		
@@ -722,6 +737,8 @@ public class IndexController {
 				teacherAccountOption.setCode(subjectList[i]);
 				teacherAccountOption.setCreate_by(accountSession.getAccount());
 				teacherAccountOptionService.add(teacherAccountOption);
+				
+				tao.add(teacherAccountOption);
 			}
 		}
 		
@@ -825,9 +842,11 @@ public class IndexController {
 		return "front/teacherAccount/edit";
     }
 	
+	@AuditAction(action = Action.UPDATE, targetTable = "teacher_account")
 	@RequestMapping(value = "/teacher/editSubmit" , method = {RequestMethod.POST, RequestMethod.GET})
-    public String editSubmit(@SessionAttribute("accountSession") Account accountSession,
+    public String editSubmit(
     		@ModelAttribute Account account,
+    		@SessionAttribute("accountSession") Account accountSession,
     		HttpServletRequest pRequest,
     		Model model){
 		
@@ -1587,7 +1606,7 @@ public class IndexController {
 			lp.setSubject_id(lessonPlan.getSubject_id());
 			lp.setId(String.valueOf(id));
 			Map<String, Object> getNum = lessonPlanService.getNum(lp);
-			String file_name = edu[Integer.valueOf(lessonPlan.getEducation_id())]+sub[Integer.valueOf(lessonPlan.getSubject_id())]+"-L-"+getNum.get("NUM").toString();
+			String file_name = edu[Integer.valueOf(lessonPlan.getEducation_id())-1]+sub[Integer.valueOf(lessonPlan.getSubject_id())-1]+"-L-"+getNum.get("NUM").toString();
 			
 			LessonPlanOption lessonPlanOption = new LessonPlanOption();
 			
@@ -2419,7 +2438,7 @@ public class IndexController {
 			p.setSubject_id(proposition.getSubject_id());
 			p.setId(String.valueOf(id));
 			Map<String, Object> getNum = propositionService.getNum(p);
-			String file_name = edu[Integer.valueOf(proposition.getEducation_id())]+sub[Integer.valueOf(proposition.getSubject_id())]+"-B-"+getNum.get("NUM").toString();
+			String file_name = edu[Integer.valueOf(proposition.getEducation_id())-1]+sub[Integer.valueOf(proposition.getSubject_id())-1]+"-B-"+getNum.get("NUM").toString();
 			
 			PropositionOption propositionOption = new PropositionOption();
 			
@@ -3249,7 +3268,7 @@ public class IndexController {
 			p.setSubject_id(proposition.getSubject_id());
 			p.setId(String.valueOf(id));
 			Map<String, Object> getNum = propositionService.getNum(p);
-			String file_name = edu[Integer.valueOf(proposition.getEducation_id())]+sub[Integer.valueOf(proposition.getSubject_id())]+"-G-"+getNum.get("NUM").toString();
+			String file_name = edu[Integer.valueOf(proposition.getEducation_id())-1]+sub[Integer.valueOf(proposition.getSubject_id())-1]+"-G-"+getNum.get("NUM").toString();
 			
 			PropositionOption propositionOption = new PropositionOption();
 			

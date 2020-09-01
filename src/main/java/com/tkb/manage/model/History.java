@@ -1,57 +1,33 @@
 package com.tkb.manage.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class History {
 	
-	private Long id;
-    private String user;
-    private String ip;
-    private String method;
-    private String url;
-    private String args;
-    private String response;
-    
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getUser() {
-		return user;
-	}
-	public void setUser(String user) {
-		this.user = user;
-	}
-	public String getIp() {
-		return ip;
-	}
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-	public String getMethod() {
-		return method;
-	}
-	public void setMethod(String method) {
-		this.method = method;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	public String getArgs() {
-		return args;
-	}
-	public void setArgs(String args) {
-		this.args = args;
-	}
-	public String getResponse() {
-		return response;
-	}
-	public void setResponse(String response) {
-		this.response = response;
-	}
-    
+	private String id;				//流水號
+	private String url;				//URL
+	private String data;			//資料
+	private String method;			//方法
+	private String table_name;		//表名
+	private String ip;				//IP
+	private String create_by;		//創建者
+	private String create_time;		//創建時間
+	
+	public static final String add = "ADD";			//新增
+	public static final String delete = "DELETE";	//刪除
+	public static final String update = "UPDATE";	//修改
     
 }
