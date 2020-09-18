@@ -22,5 +22,8 @@ public interface TeacherAccountDao {
 	public List<Map<String, Object>> getAuditorByEduSub(Account account);
 	public Integer checkAccount(String id_no,String id);
 	public void audit(Account account);
-	
+	public Account dataByAccount(Account account);
+	public void updateVerify(Account account);
+	public void updatePassword(Account account);
+	public List<Map<String, Object>> managerList(Account account);
 }
