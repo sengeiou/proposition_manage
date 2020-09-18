@@ -39,8 +39,11 @@ public class LoginFilter implements Filter {
 		
 		Account accountSession = (Account)request.getSession().getAttribute("accountSession");
 		
+		//API
+		if (request.getServletPath().indexOf("/api") >= 0 || request.getServletPath().indexOf("swagger") >= 0) {
+			request.getRequestDispatcher(((HttpServletRequest) request).getServletPath()).forward(request, response);
 		//已登入
-		if (accountSession != null) {
+		} else if (accountSession != null) {
 			//如果已登入卻輸入此網址 則導向首頁
 			if(request.getServletPath().equals("/tkbrule/login") || request.getServletPath().equals("/tkbrule/") || request.getServletPath().equals("/tkbrule")) {
 				response.sendRedirect(request.getContextPath() + "/tkbrule/index");

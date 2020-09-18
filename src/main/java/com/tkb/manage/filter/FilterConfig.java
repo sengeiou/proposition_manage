@@ -21,18 +21,18 @@ public class FilterConfig {
         return filterRegistrationBean;
     }
 	
-	@Bean
-    public APIFilter apiFilter(){
-        return new APIFilter();
-    }
-	
-	@Bean
-    public FilterRegistrationBean<APIFilter> setAPIFilter() {
-        FilterRegistrationBean<APIFilter> filterRegistrationBean = new FilterRegistrationBean<APIFilter>();
-        filterRegistrationBean.setFilter(apiFilter());
-        filterRegistrationBean.addUrlPatterns("/api/*");
-        filterRegistrationBean.setOrder(2);   //order的数值越小，在所有的filter中优先级越高
-        return filterRegistrationBean;
-    }
+//	@Bean
+//    public APIFilter apiFilter(){
+//        return new APIFilter();
+//    }
+//	
+//	@Bean
+//    public FilterRegistrationBean<APIFilter> setAPIFilter() {
+//        FilterRegistrationBean<APIFilter> filterRegistrationBean = new FilterRegistrationBean<APIFilter>();
+//        filterRegistrationBean.setFilter(apiFilter());
+//        filterRegistrationBean.addUrlPatterns("/api/*");
+//        filterRegistrationBean.setOrder(2);   //order的数值越小，在所有的filter中优先级越高
+//        return filterRegistrationBean;
+//    }
 	
 }
