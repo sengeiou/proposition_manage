@@ -76,4 +76,20 @@ public class TeacherAccountServiceImpl implements TeacherAccountService {
 		teacherAccountDao.audit(account);
 	}
 	
+	public Account dataByAccount(Account account) {
+		return teacherAccountDao.dataByAccount(account);
+	}
+	
+	public void updateVerify(Account account) {
+		teacherAccountDao.updateVerify(account);
+	}
+	
+	public void updatePassword(Account account) {
+		teacherAccountDao.updatePassword(account);
+	}
+	
+	public List<Map<String, Object>> managerList(Account account) {
+		return teacherAccountDao.managerList(account);
+	}
+	
 }

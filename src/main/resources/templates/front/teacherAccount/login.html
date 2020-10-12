@@ -44,7 +44,10 @@
                 <br>
                 寄通知信到您註冊信箱
             </div>
-            <input type="text" placeholder="請輸入帳號" id="account">            
+            <form id="forgetForm" method="post" action="/teacher/forget/password">
+            	<input type="text" placeholder="請輸入帳號" name="forgetAccount" id="account">  
+            </form>
+                      
         </div>
         <button class="editNewDataBtn btn-sm" data-newdata="forgetPassword" id="sendVerify" type="button">確定</button>
     </section>
@@ -63,11 +66,12 @@
 				$("#mainForm").submit();
 			});
 			$("#sendVerify").click(function(){
+				
 				$.ajax({
-					url: '/teacher/send/verify',
+					url: '/teacher/forget/check',
 					cache: false,
 					async: false,
-					dataType: 'json',
+					dataType: 'text',
 					type: 'POST',
 					data: {
 						account: $("#account").val()
@@ -76,15 +80,15 @@
 						alert("取得資料錯誤");
 					},
 					success: function(data) {
-// 						if(data != null && data.length > 0) {
-// 							var child = data[0];
-// 							$("#educationId").val(child.EDUCATION_ID);
-// 							$("#education").text(child.EDUCATION_NAME);
-// 							$("#subjectId").val(child.SUBJECT_ID);
-// 							$("#subject").text(child.SUBJECT_NAME);
-// 							getGrade(child.EDUCATION_ID);
-// 							getCrossSubject(child.SUBJECT_ID);
-// 						}
+						if(data == "T"){
+							$("#forgetForm").submit();
+						}else if(data == "E"){
+							alert("一小時內不得重複送出");
+							return false;
+						}else{
+							alert("帳號驗證失敗");
+							return false;
+						}
 					}
 				});
 			});

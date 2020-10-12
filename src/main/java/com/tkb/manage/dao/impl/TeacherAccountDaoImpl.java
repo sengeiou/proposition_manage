@@ -444,4 +444,76 @@ public class TeacherAccountDaoImpl implements TeacherAccountDao {
 		
 	}
 	
+	public Account dataByAccount(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT * "
+				   + " FROM proposition_manage.teacher_account "
+				   + " WHERE ACCOUNT = ? ";
+		
+		args.add(account.getAccount());
+		
+		List<Account> list = jdbcTemplate.query(sql, args.toArray(), new BeanPropertyRowMapper<Account>(Account.class));
+		if(list!=null && list.size()>0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public void updateVerify(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " UPDATE proposition_manage.teacher_account "
+				   + " SET PASSWORD = ? "
+				   + " WHERE ACCOUNT = ? ";
+		
+		args.add(account.getPassword());
+		args.add(account.getAccount());
+
+		jdbcTemplate.update(sql, args.toArray());
+		
+	}
+	
+	public void updatePassword(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " UPDATE proposition_manage.teacher_account "
+				   + " SET PASSWORD = ? "
+				   + " WHERE ID = ? ";
+		
+		args.add(account.getPassword());
+		args.add(account.getId());
+
+		jdbcTemplate.update(sql, args.toArray());
+		
+	}
+	
+	public List<Map<String, Object>> managerList(Account account) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT TA.*, I.NAME, I.LEVEL FROM proposition_manage.teacher_account TA "
+				   + " LEFT JOIN proposition_manage.identity I ON TA.IDENTITY_ID = I.ID "
+				   + " FROM proposition_manage.teacher_account TA "
+				   + " WHERE TA.STATUS = ? "
+				   + " AND I.LEVEL <= ? "
+				   + "  ";
+		
+		args.add(account.getStatus());
+		args.add(account.getLevel());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0) {
+			return list;
+		} else {
+			return null;
+		}
+		
+	}
+	
 }

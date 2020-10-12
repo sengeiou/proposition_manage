@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統 - 建立老師</title>
+	<meta charset="utf-8">
+</head>
+<body class="style-content-teacher">
+	<section class="header-content">
+        <div class="fixed-width header">
+            <div class="register-logo">素養教案與命題管理平台</div>
+        </div>
+    </section>
+    <section class="main-content">
+        <div class="fixed-width update-password">
+            <p><i class="fas fa-bullhorn"></i>已寄出驗證信</p>
+            <p>請於今日內至帳號預設信箱進行帳號驗證及密碼重置</p>
+            <p>並在<span id="time">5</span>秒鐘自動跳到首頁</p>
+        </div>        
+    </section>
+
+    <div th:include="front/load/js :: js"></div>
+
+	<script>
+    $(function () {
+        setTimeout(ChangeTime, 1000);
+    });
+
+    function ChangeTime() {
+        var time;
+        time = $("#time").text();    
+        time = parseInt(time);
+        time--;
+        if (time <= 0) {
+            window.location.href = "/";
+//             alert('先將跳轉功能註解～～之後記得打開！！！')
+        } else {
+            $("#time").text(time);
+            setTimeout(ChangeTime, 1000);
+        }
+    }
+
+	</script>
+	
+</body>
+</html>
