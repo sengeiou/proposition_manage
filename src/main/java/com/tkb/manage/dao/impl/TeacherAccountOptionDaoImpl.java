@@ -98,9 +98,9 @@ public class TeacherAccountOptionDaoImpl implements TeacherAccountOptionDao {
 		
 		List<Object> args = new ArrayList<Object>();
 		
-		String sql = " SELECT GROUP_CONCAT(PMF.NAME SEPARATOR '、') AS OPTION "
+		String sql = " SELECT GROUP_CONCAT(PMS.NAME SEPARATOR '、') AS OPTION "
 				   + " FROM proposition_manage.teacher_account_option TAO "
-				   + " LEFT JOIN proposition_manage.field PMF ON PMF.ID = TAO.CODE "
+				   + " LEFT JOIN proposition_manage.subject PMS ON PMS.ID = TAO.CODE "
 				   + " WHERE TAO.TEACHER_ACCOUNT_ID = ? "
 				   + " AND TAO.TYPE = ? ";
 		

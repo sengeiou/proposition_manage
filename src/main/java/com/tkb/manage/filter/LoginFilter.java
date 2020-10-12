@@ -110,7 +110,7 @@ public class LoginFilter implements Filter {
 //			//請求至登入頁或執行登入動作 則導至請求的目的端
 			if(request.getServletPath().equals("/tkbrule/login") || request.getServletPath().equals("/tkbrule/manager/doLogin") || request.getServletPath().equals("/tkbrule/teacher/doLogin") || request.getServletPath().equals("/tkbrule/logout")) {
 				filterChain.doFilter(request, response);
-			} else if(request.getServletPath().equals("/manager/login") || request.getServletPath().equals("/teacher/login") || request.getServletPath().equals("/teacher/register") || request.getServletPath().equals("/teacher/registerSubmit") || request.getServletPath().equals("/teacher/check") || request.getServletPath().equals("/teacher/send/verify") || request.getServletPath().equals("/manager/doLogin") || request.getServletPath().equals("/teacher/doLogin") || request.getServletPath().equals("/logout")) {
+			} else if(request.getServletPath().equals("/manager/login") || request.getServletPath().equals("/teacher/login") || request.getServletPath().equals("/teacher/register") || request.getServletPath().equals("/teacher/registerSubmit") || request.getServletPath().equals("/teacher/check") || request.getServletPath().equals("/teacher/send/verify") || request.getServletPath().equals("/manager/doLogin") || request.getServletPath().equals("/teacher/doLogin") || request.getServletPath().equals("/teacher/forget/check") || request.getServletPath().equals("/teacher/forget/password") || request.getServletPath().equals("/teacher/forget/Verify") || request.getServletPath().equals("/logout")) {
 				filterChain.doFilter(request, response);
 //			//請求至非登入頁 或執行非登入動作 導至登入頁	
 			} else {
