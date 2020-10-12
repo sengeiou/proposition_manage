@@ -20,5 +20,6 @@ public interface SubjectDao {
 	public List<Map<String, Object>> getList(Subject subject);
 	public Map<String, Object> searchName(Subject subject);
 	public List<Map<String, Object>> getListInId(Subject subject);
+	public String getName(Subject subject);
 	
 }

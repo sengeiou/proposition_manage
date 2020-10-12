@@ -90,4 +90,27 @@ public class SubjectAPI {
 		
 	}
 	
+	@RequestMapping(value = "/getName", method = { RequestMethod.GET })
+	@ResponseBody
+	@ApiOperation(value = "依ID取得學科名稱", notes = "無")
+	@ApiImplicitParam(paramType = "header", name = "Authorization", value = "Bearer a4ht0ObOFH5NOt9mJai3KHBkDgR0NZL5yOwbTMIDGI5ifaPfp0ENSyXji/doY5/Xc59/ysJ5z2J4fU4nChmdOQ==", required = true, dataType = "String")
+	public ResponseEntity<?> getName(
+//			@RequestParam("ids[]") Integer[] ids
+			@RequestParam(value = "id", required = true) int id
+			) {
+//		Gson gson = new Gson();
+//		logger.info(gson.toJson(organization));
+		logger.info("excute request /api/subject/getName time is {} ", dateFormat.format(new Date()));
+		
+//		boolean status = true;		//狀態
+//		String msg = "done";		//訊息
+		
+		Subject subject = new Subject();
+		subject.setId(String.valueOf(id));
+		String name = subjectService.getName(subject);
+		
+		return new ResponseEntity<String>(name, HttpStatus.OK);
+		
+	}
+	
 }

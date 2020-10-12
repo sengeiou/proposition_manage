@@ -68,4 +68,8 @@ public class SubjectServiceImpl implements SubjectService {
 		return subjectDao.getListInId(subject);
 	}
 	
+	public String getName(Subject subject) {
+		return subjectDao.getName(subject);
+	}
+	
 }
