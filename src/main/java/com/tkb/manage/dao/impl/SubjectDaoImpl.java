@@ -265,4 +265,22 @@ public class SubjectDaoImpl implements SubjectDao {
 		
 	}
 	
+	public String getName(Subject subject) {
+		
+		List<Object> args = new ArrayList<Object>();
+		
+		String sql = " SELECT NAME FROM proposition_manage.subject "
+				   + " WHERE ID = ? ";
+		
+		args.add(subject.getId());
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, args.toArray());
+		if(list!=null && list.size()>0 && list.get(0).get("NAME")!=null) {
+			return list.get(0).get("NAME").toString();
+		} else {
+			return null;
+		}
+		
+	}
+	
 }
