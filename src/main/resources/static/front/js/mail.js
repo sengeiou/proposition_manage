@@ -21,6 +21,7 @@ $(function(){
             alert('請輸入訊息')
         }else {
             alert('驗證成功～～～可以寄信～～～')
+            $("#mainForm").submit();
         }
     })
 })

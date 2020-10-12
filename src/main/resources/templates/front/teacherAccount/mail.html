@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="front/load/css :: css"></head>
+<head>
+	<title>素養教案與命題管理系統</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body th:class="${accountSession.level<='2' ? 'style-admin mail' : accountSession.level=='3' ? 'style-content-teacher mail' : 'style-verify-teacher mail'}">    
+   
+    <form id="mainForm" method="POST" th:object="${account}" action="/teacher/mail/send">
+		<input type="hidden" id="id" th:field="*{id}" />
+	<div class="logo">素養教案與命題管理平台</div>
+    <section class="content">
+        <div><span class="required">*</span>主旨</div>
+        <div>
+            <input type="text" placeholder="請輸入主旨" id="title" name="title">
+        </div>
+        <div><span class="required">*</span>訊息</div>
+        <div>
+            <textarea id="message" name="message"></textarea>
+        </div>        
+    </section>
+    </form>
+    <div class="btn-block">
+        <button class="btn-md btnSendMail" type="button">送出</button>
+    </div>
+
+    <div th:include="front/load/js :: js"></div>
+    <script th:src="@{/front/js/mail.js}"></script>
+	<script>
+		$(function(){
+			//返回列表
+			$("#back").click(function(){
+				$("#mainForm").attr("action", "/teacher");
+				$("#mainForm").submit();
+			})
+			//編輯
+			$("#edit").click(function(){
+				$("#mainForm").attr("action", "/teacher/edit");
+				$("#mainForm").submit();
+			})
+		})
+	</script>
+</body>
+</html>

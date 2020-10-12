@@ -6,6 +6,7 @@
     --lightRed: #FF0000;
     --gray: #6b6b6b;
     --lightGray: #999;
+    --darkGray: #4b4b4b;
 }
 .style-admin {
     --primary: #948574;
@@ -174,6 +175,8 @@ span.btn-file {
     padding: 7px 15px;
     cursor: pointer;
 }
+a.btn { color: var(--darkGray); }
+a.btn:hover { color: var(--secondary); }
 .fixed-width {
     width: 1200px;    
     margin: 0 auto;
@@ -183,9 +186,17 @@ span.btn-file {
     font-size: 0.9rem; 
     line-height: 1.1rem;
 }
+.w-100per { width: 100%; }
+.w-65per { width: 65%; }
+.w-60per { width: 60%; }
+.w-55per { width: 55%; }
+.w-40per { width: 40%; }
+.w-30per { width: 30%; }
 .font-size-08 { font-size: 0.8rem; }
 .text-center { text-align: center; }
 .p-left-14px { padding-left: 12px; }
+.m-right-5px { margin-right: 5px; }
+.m-left-5px { margin-left: 5px; }
 .m-top-15px { margin-top: 15px; }
 .m-top-30px { margin-top: 30px; }
 .failTag { background-color: var(--red); }
@@ -208,7 +219,13 @@ span.btn-file {
     white-space: nowrap;
     overflow: hidden;
 }
-
+.text-overflow-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
 /* index.html start */
 .big-logo {
     color: var(--primary-dark);
@@ -395,9 +412,9 @@ span.btn-file {
     color: #4b4b4b;
     transform: translate(-50%, -50%);
 }
-.lightBoxContent.teacherImportData-lightBox , .delete-categorySubject-lightBox , .restart-categorySubject-lightBox{
+.lightBoxContent.teacherImportData-lightBox , .delete-categorySubject-lightBox , .restart-categorySubject-lightBox , .delete-categorySubjectGuideline-lightBox {
     width: 400px; /* 若需「選擇學校」的select 寬度為680px */
-    min-height: 220px;
+    min-height: 226px;
 }
 .lightBoxContent.teacherImportData-lightBox .select-school-box {
     margin-bottom: 20px;
@@ -467,10 +484,17 @@ span.btn-file {
 .lessonFile-lightbox .container a{
     color: #948574;
 }
+.lightBoxContent .container-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-row-gap: 15px;
+    align-items: center;
+}
 .lessonFile-lightbox .container-grid {
     display: grid;
     grid-template-columns: 80px 1fr;
     grid-row-gap: 20px;
+    align-items: flex-start;
 }
 .lessonFile-lightbox .container-grid>div>div {
     margin-bottom: 10px;
@@ -482,14 +506,43 @@ span.btn-file {
     width: 500px;
     height: 300px;
 }
-.edit-categorySubject-lightBox .container-grid , .delete-categorySubject-lightBox .container-grid  , .create-categorySubject-lightBox .container-grid , .restart-categorySubject-lightBox .container-grid {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-row-gap: 15px;
-    align-items: center;
-}
-.edit-categorySubject-lightBox .container-grid input[type='text'] , .create-categorySubject-lightBox .container-grid input[type='text']{
+.lightBoxContent .container-grid input[type='text'] {
     margin: 0;
+}
+.create-categorySubjectGuideline-lightBox , .edit-categorySubjectGuideline-lightBox {
+    width: 620px;
+    height: 460px;
+}
+.create-categorySubjectGuideline-lightBox textarea , .edit-categorySubjectGuideline-lightBox textarea{
+    width: 450px;
+    height: 150px;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    line-height: 1.4rem;
+}
+.lightBoxContent .container-grid .input-sm[type='text'] {
+    height: 30px;
+    width: 50px;
+    text-align: center;
+    border-radius: 5px;
+    margin: 0 5px;
+    padding: 0 3px;    
+}
+.create-categoryPerformance_per-lightBox  {
+    width: 520px;
+    height: 350px;
+}
+.light-box-mdsize {
+    width: 520px;
+    height: 350px;
+}
+.light-box-smsize {
+    width: 500px;
+    height: 260px;
+}
+.light-box-xssize {
+    width: 400px;
+    height: 230px;
 }
 /* 燈箱 end */
 
@@ -638,7 +691,7 @@ span.btn-file {
 
 /* content 、breadcrumb start */
 .main-content {
-    margin-top: 140px;
+    margin: 140px 0 50px 0;
 }
 .breadcrumb i {
     margin: 8px;
@@ -1013,6 +1066,9 @@ div.basic-h {
 .list-content .teacherList-principal-verifyGrid { /* 老師列表-組長、校長的審核列表 */
     grid-template-columns: 90px 90px 60px 60px 90px 1fr 1fr 2fr 80px 80px;
 }
+.list-content .teacherList-principal-verifyGrid:last-child { /* 老師列表-組長、校長的審核列表 */
+    border-bottom: none;
+}
 .list-content .contractList-grid { /* 合約列表 */
     grid-template-columns: 2fr 2fr 85px 3fr 3fr 3fr 75px 75px 75px;
 }
@@ -1098,7 +1154,7 @@ button.btn-search:hover {
 }
 .search-block {
     background-color: var(--primary-light);
-    margin: 0 auto;
+    /* margin: 0 auto; */
     padding: 25px 0;
     display: flex;
     align-items: flex-start;
@@ -1109,6 +1165,9 @@ button.btn-search:hover {
     display: grid;
     grid-template-columns: 100px 1fr;
     grid-row-gap: 5px;    
+}
+.search-block .categorySubjectGuideline-search-grid {
+    grid-template-columns: 130px 1fr;
 }
 .search-block .search-grid>div:nth-child(odd) {
     line-height: 36px;
@@ -1127,12 +1186,8 @@ button.btn-search:hover {
 .category-block .block {
     border: 1px solid #4b4b4b;
     border-radius: 5px;
-    overflow: hidden;
-    width: 40%;
+    overflow: hidden;    
     position: relative;
-}
-.category-block .grid-block {
-    width: 60%;
 }
 .category-block .block:nth-child(2) {
     margin-left: 30px;
@@ -1155,10 +1210,17 @@ button.btn-search:hover {
     width: calc(100% - 80px);
     border: none;
 }
-.category-block .block .item-group , .category-block .block .none {
-    min-height: 200px;
+.category-block .block .item-group {
+    min-height: 130px;
     padding: 20px;
     margin-bottom: 50px;
+}
+.category-block .block .itemlist-group {
+    min-height: 130px;
+    padding: 20px;    
+    margin-bottom: 50px;
+    max-height: 350px;
+    overflow-y: auto;
 }
 .category-block .block .none {
     display: flex;
@@ -1167,28 +1229,25 @@ button.btn-search:hover {
     font-size: 1.1rem;
     color: var(--gray);
 }
-.category-block .block .item-group .item {
+.category-block .block .item-group .item , .category-block .block .itemlist-group .itemlist {
     border: 1px solid var(--primary);    
     cursor: pointer;
     padding: 10px 0 10px 5px;    
     margin-bottom: 15px;
 }
-.category-block .block .item-group .item-grid {
+.category-block .block .item-group .item-grid , .category-block .block .itemlist-group .item-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1fr;
 }
-.category-block .block .item-group .item:last-child {
-    border-bottom: 1px solid var(--primary);
-}
-.category-block .block .item-group .item:hover {
+.category-block .block .item-group .item:hover , .category-block .block .itemlist-group .itemlist:hover {
     background-color: var(--secondary);
     color: #ffffff;
 }
-.category-block .block .item-group .item.active {
+.category-block .block .item-group .item.active , .category-block .block .itemlist-group .itemlist.active {
     background-color: var(--primary);
     color: #ffffff;
 }
-.category-block .block .item-group .item span {
+.category-block .block .item-group .item span , .category-block .block .itemlist-group .itemlist span{
     color: unset;
 }
 .category-block .block .btns-group {
@@ -1215,12 +1274,37 @@ button.btn-search:hover {
     background-color: var(--primary-dark);
     color: #ffffff;    
 }
-.category-block .grid-block .categorySubject-grid{
+.categorySubject-grid{
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr;
     text-align: center;
     align-items: center;   
     margin: 10px 0; 
+}
+.category-grid {
+    display: grid;
+    text-align: center;
+    align-items: center;   
+    margin: 20px 0; 
+    line-height: 1.5rem;
+}
+.categorySubjectGuideline-grid{    
+    grid-template-columns: 1.2fr 1fr 3fr 100px 100px;    
+}
+.categoryPerformance_class-grid {
+    grid-template-columns: 70px 1fr 80px 80px;
+}
+.categoryPerformance_per-grid {
+    grid-template-columns: 100px 100px 1fr 80px 80px;
+}
+.categoryContent_theme-grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 80px 80px;
+}
+.category-block .none {
+    min-height: 130px;
+}
+.category-block .grid-block .grid-group {
+    min-height: 170px;
 }
 .category-block .grid-block .categorySubject-grid span{
     margin: 0 5px;
@@ -1411,11 +1495,57 @@ button.btn-openArea i {
 }
 /* 新增教案、編輯教案的附件、素材授權申請 end */
 /* 教案詳細資料、修正教案的檔案歷程 start */
+@keyframes openFile {
+    from {
+      height: 60px;    
+    }
+    to {
+      height: 300px;      
+    }
+}
+@keyframes closeFile {
+    from {
+      height: 300px;      
+    }
+    to {
+      height: 60px;
+    }
+}
+.closeAreaFile {
+    animation: closeFile 1s linear forwards;
+    overflow: hidden;
+}
+.openAreaFile {
+    animation: openFile 1s linear forwards;        
+    overflow-y: auto;
+}
+.lessonFile .subject-title {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #4b4b4b;
+    background-color: var(--primary-light);
+    display: flex;
+    align-items: center;
+}
+.lessonFile .subject-title h3 {
+    font-size: 1.4rem;
+    width: calc(100% - 110px);
+}
 .lessonFile .lessoncontent-file-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr;
     text-align: center;    
     align-items: center;
+}
+.lessonFile .lessoncontent-file-grid:first-child {
+    padding-top: 6px;
+}
+.lessonFile .lessoncontent-file-grid:last-child {
+    padding-bottom: 6px;
+}
+.lessonFile .lessoncontent-file-grid>div:first-child {
+    padding: 0 20px 0 10px;
+    text-align: left;
 }
 .lessonFile .lessoncontent-file-grid:hover {
     background-color: var(--primary-light);    
@@ -1427,7 +1557,7 @@ button.btn-openArea i {
     padding: 20px 10px 20px 0;
     font-size: 1.1rem;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr;
     text-align: center;    
     align-items: center;
 }
@@ -1457,10 +1587,10 @@ button.btn-openArea i {
     background-color: var(--red); 
     color: #ffffff;
 }
-.lessonFile .overflowY-scroll {
-    min-height: 220px;
-    overflow-y: scroll;    
-    max-height: 400px
+.lessonFile .file-list {    
+    height: 60px;
+    padding: 0 3px;
+    box-sizing: border-box;
 }
 /* 教案詳細資料、修正教案的檔案歷程 end */
 /* 報表匯出 start */

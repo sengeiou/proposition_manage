@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,6 +62,7 @@ import com.tkb.manage.model.PropositionTag;
 import com.tkb.manage.model.SchoolMaster;
 import com.tkb.manage.model.Subject;
 import com.tkb.manage.model.TeacherAccountOption;
+import com.tkb.manage.model.TeacherPasswordLog;
 import com.tkb.manage.service.CommonService;
 import com.tkb.manage.service.ContractMaterialOptionService;
 import com.tkb.manage.service.ContractMaterialService;
@@ -82,6 +84,7 @@ import com.tkb.manage.service.SchoolMasterService;
 import com.tkb.manage.service.SubjectService;
 import com.tkb.manage.service.TeacherAccountOptionService;
 import com.tkb.manage.service.TeacherAccountService;
+import com.tkb.manage.service.TeacherPasswordLogService;
 import com.tkb.manage.util.aop.annotation.AuditAction;
 import com.tkb.manage.util.aop.common.enums.Action;
 
@@ -160,6 +163,9 @@ public class IndexController {
 	private MaterialTypeService materialTypeService;
 	
 	@Autowired
+	private TeacherPasswordLogService teacherPasswordLogService;
+	
+	@Autowired
 	private CommonService commonService;
 	
 	@Value("${front.menu.name}") 
@@ -176,6 +182,12 @@ public class IndexController {
 	
 	@Value("${teacher.fileName}") 
 	private String teacherFileName;
+	
+	@Value("${forget.password.key}") 
+	private String pwKey;
+	
+	@Value("${web.path}") 
+	private String webPath;
 	
 	private String[] edu = {"E", "J", "S"};
 	private String[] sub = {"C", "E", "M"};
@@ -769,6 +781,113 @@ public class IndexController {
 		return "front/teacherAccount/content";
     }
 	
+	@RequestMapping(value = "/teacher/member" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherMember(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
+		
+		account = new Account();
+		account.setId(accountSession.getId());
+		Account data = teacherAccountService.data(account);
+		model.addAttribute("data", data);
+		
+		//取得學制清單
+		TeacherAccountOption teacherAccountOption = new TeacherAccountOption();
+		teacherAccountOption.setTeacher_account_id(data.getId());
+		teacherAccountOption.setType("3");
+		Map<String, Object> educationOption = teacherAccountOptionService.educationOption(teacherAccountOption);
+		String educationStr = educationOption!=null ? educationOption.get("OPTION").toString() : "";
+		model.addAttribute("educationStr", educationStr);
+		
+		//取得學科清單
+		teacherAccountOption = new TeacherAccountOption();
+		teacherAccountOption.setTeacher_account_id(data.getId());
+		teacherAccountOption.setType("1");
+		Map<String, Object> subjectOption = teacherAccountOptionService.fieldOption(teacherAccountOption);
+		String subjectStr = subjectOption!=null ? subjectOption.get("OPTION").toString() : "";
+		model.addAttribute("subjectStr", subjectStr);
+
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+		
+		return "front/teacherAccount/member";
+    }
+	
+	@RequestMapping(value = "/teacher/edit/password" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherEditPw(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
+
+		account.setId(accountSession.getId());
+		teacherAccountService.updatePassword(account);
+		model.addAttribute("PATH", "/teacher/member");
+//		model.addAttribute("MESSAGE", "驗碼帳號及密碼重製錯誤");
+		return "front/path";
+    }
+	
+	@RequestMapping(value = "/teacher/mail" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherMail(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
+		
+		account = new Account();
+		account.setId(accountSession.getId());
+		Account data = teacherAccountService.data(account);
+		model.addAttribute("data", data);
+
+		//選單
+		List<Map<String, Object>> menu = functionController.menu(accountSession, menuName);
+		model.addAttribute("menu", menu);
+
+		return "front/teacherAccount/mail";
+    }
+	
+	@RequestMapping(value = "/teacher/mail/send" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String teacherMailSend(
+    	@SessionAttribute("accountSession") Account accountSession,
+    	@ModelAttribute Account account,
+    	HttpServletRequest pRequest,
+    	Model model){
+		String title = pRequest.getParameter("title") == null ? "" : pRequest.getParameter("title");
+		String message = pRequest.getParameter("message") == null ? "" : pRequest.getParameter("message");
+		String status = "F";
+		account = new Account();
+		account.setStatus("1");
+		account.setLevel("2");
+		List<Map<String, Object>> manager = teacherAccountService.managerList(account);
+				
+		try {
+			
+			if(manager != null && manager.size() > 0) {
+				for(int i = 0;i < manager.size(); i++) {
+					commonService.sendEmail(manager.get(i).get("EMAIL").toString(), title, message);
+				}
+			}else {
+				model.addAttribute("MESSAGE", "無管理者");
+			}
+			
+			status = "T";
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if("T".equals(status)) {
+			model.addAttribute("MESSAGE", "寄信成功");
+		}else {
+			model.addAttribute("MESSAGE", "寄信錯誤");
+		}
+		model.addAttribute("PATH", "/teacher/member");
+		return "front/path";
+    }
+	
 	@RequestMapping(value = "/teacher/edit" , method = {RequestMethod.POST, RequestMethod.GET})
     public String teacherEdit(
     	@SessionAttribute("accountSession") Account accountSession,
@@ -922,12 +1041,9 @@ public class IndexController {
 		//分頁
 		model.addAttribute("page", account.getPage());
 		model.addAttribute("total_page", account.getTotal_page());
-		model.addAttribute("page_count", account.getPage_count());
-		
+		model.addAttribute("page_count", account.getPage_count());		
 		model.addAttribute("account", account);
-		
-		System.out.println();
-		
+	
 		model.addAttribute("PATH", "/teacher");
 		return "front/path";
     }
@@ -1143,7 +1259,6 @@ public class IndexController {
 		String yyyymmddStr = yyyymmdd.format(date.getTime());
 		String temp = account.getAccount() + "," + yyyymmddStr;
 		String content = commonService.encrypt(temp, cKey);
-		System.out.println("content:"+content);
 		
 		//10分鐘內不可重複寄送
 		
@@ -1155,6 +1270,146 @@ public class IndexController {
 		PrintWriter out = pResponse.getWriter();
 		out.write(tJSONArray.toString());
 		
+	}
+	
+	@RequestMapping(value = "/teacher/forget/password" , method = {RequestMethod.POST, RequestMethod.GET})
+    public String forgetPassword(Model model, HttpServletRequest pRequest){	
+		
+		Account account = new Account();
+		account.setAccount(pRequest.getParameter("forgetAccount") == null ? "" : pRequest.getParameter("forgetAccount"));
+		account = teacherAccountService.dataByAccount(account);
+		
+		String ip = getIp(pRequest);
+		String verify_code = randomCode(8);
+
+		try {
+			
+			TeacherPasswordLog teacherPasswordLog = new TeacherPasswordLog();
+			teacherPasswordLog.setTeacher_account_id(account.getId());
+			teacherPasswordLog.setAccount(account.getAccount());
+			teacherPasswordLog.setOld_password(account.getPassword());
+			teacherPasswordLog.setIp(ip);
+			teacherPasswordLog.setVerify_code(verify_code);
+			teacherPasswordLog.setVerify_status("1");
+			teacherPasswordLog.setVerify_count("1");
+			teacherPasswordLog.setFrom_type("2");
+			int id = teacherPasswordLogService.add(teacherPasswordLog);
+			
+			String code = commonService.encrypt(verify_code+","+account.getAccount()+","+id, pwKey);
+			String url = webPath + "teacher/forget/Verify?code="+code;
+			String subject = "素養管理平台-忘記密碼";
+		    String message = "<html><body>老師您好:<br/> "
+		    		 	   + "請點擊以下連結重製密碼<br/>"
+		    		 	   + "<a href='"+url+"'>請點此處</a><br/>"
+		    		 	   + "若連結失效請用瀏覽器開啟以下連結<br/>"
+		    		 	   + url
+		     			+ "</body></html>";
+			commonService.sendEmail(account.getEmail(), subject, message);
+			return "front/teacherAccount/forget";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		model.addAttribute("PATH", "/");
+		model.addAttribute("MESSAGE", "忘記密碼發生錯誤,即將跳回首頁");
+		return "front/path";
+    }
+	
+	@RequestMapping(value = "/teacher/forget/Verify" , method = {RequestMethod.GET, RequestMethod.POST})
+	public String forgetPasswordVerify(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) {
+		String code = pRequest.getParameter("code") == null ? "" : pRequest.getParameter("code");
+		String status = "F";
+		
+		String deStr;
+		try {
+			deStr = commonService.decrypt(code, pwKey);
+			String codeArray[] = deStr.split(",");
+			Account account = new Account();
+			account.setAccount(codeArray[1]);
+			account = teacherAccountService.dataByAccount(account);
+			
+			TeacherPasswordLog teacherPasswordLog = new TeacherPasswordLog();
+			teacherPasswordLog.setAccount(account.getAccount());
+			teacherPasswordLog.setVerify_status("1");
+			teacherPasswordLog.setId(codeArray[2]);
+			teacherPasswordLog = teacherPasswordLogService.data(teacherPasswordLog);
+			
+			//比對驗證碼
+			if(codeArray[0].equals(teacherPasswordLog.getVerify_code())) {
+				account.setPassword(account.getId_no().substring(account.getId_no().length()-4,account.getId_no().length()));
+				teacherAccountService.updateVerify(account);
+				
+				//寫入更新密碼後LOG
+				teacherPasswordLog.setNew_password(account.getPassword());
+				teacherPasswordLog.setVerify_status("2");
+				teacherPasswordLogService.update(teacherPasswordLog);
+				
+				return "front/teacherAccount/updatePw";
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		model.addAttribute("PATH", "/");
+		model.addAttribute("MESSAGE", "驗碼帳號及密碼重製錯誤");
+		return "front/path";
+		
+	}
+	
+	@RequestMapping(value = "/teacher/forget/check" , method = {RequestMethod.GET, RequestMethod.POST})
+	public void forgetPasswordCheck(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) throws Exception {
+		
+		String status = "F";
+		Account account = new Account();
+		account.setAccount(pRequest.getParameter("account") == null ? "" : pRequest.getParameter("account"));
+		account = teacherAccountService.dataByAccount(account);
+		
+		if(account != null) {
+			TeacherPasswordLog teacherPasswordLog = new TeacherPasswordLog();
+			teacherPasswordLog.setAccount(account.getAccount());
+			teacherPasswordLog = teacherPasswordLogService.dataBy1Hour(teacherPasswordLog);
+			
+			if(teacherPasswordLog == null) {
+				status = "T";
+			}else {
+				status = "E";//一小時內重複送出
+			}
+			
+		}
+
+		pResponse.setCharacterEncoding("utf-8");
+		PrintWriter out = pResponse.getWriter();
+		out.write(status);
+		
+	}
+	
+	private String getIp(HttpServletRequest request) {
+		String ip = request.getHeader("x-forwarded-for");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : ip;
+	}
+	
+	private String randomCode(int num) {
+		
+		String text = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";//儲存數字0-9 和 大小寫字母
+		char[] ch = new char[num]; //宣告一個字元陣列物件ch 儲存 驗證碼
+		for (int i = 0; i < num; i++) {
+			Random random = new Random();//建立一個新的隨機數生成器
+			int index = random.nextInt(text.length());//返回[0,string.length)範圍的int值    作用：儲存下標
+			ch[i] = text.charAt(index);//charAt() : 返回指定索引處的 char 值   ==》儲存到字元陣列物件ch裡面
+		}
+		return String.valueOf(ch);
 	}
 	
 	/**
@@ -1270,7 +1525,7 @@ public class IndexController {
 		model.addAttribute("PATH", "/contract/teacher");
 		return "front/path";
 	}
-	
+
 	@RequestMapping(value = "/contract/teacher/content" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String contractTeacherContent(Model model, @SessionAttribute("accountSession") Account accountSession, @ModelAttribute Contract contract) {
 		
