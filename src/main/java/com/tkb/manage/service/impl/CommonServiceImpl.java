@@ -11,12 +11,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Properties;
 import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
@@ -178,55 +184,49 @@ public class CommonServiceImpl implements CommonService {
 	public void sendEmail(String send, String title, String content) throws IOException {
 		try {
 
-		     Email sendMail = new HtmlEmail();
-		     String authuser = "";
-		     String authpwd = "";
-		     sendMail.setHostName("smtp.gmail.com");
-		     sendMail.setSmtpPort(465);
-		     sendMail.setAuthenticator(new DefaultAuthenticator(authuser, authpwd));
-		     sendMail.setDebug(false);
-		     sendMail.setSSL(true);
-		     sendMail.setSslSmtpPort("465");
-		     sendMail.setCharset("UTF-8");
-		     sendMail.setSubject(title);
-		     try {
-		    	 sendMail.setFrom("dgd54ssdd@gmail.com", "網站客服中心");
-		    	 sendMail.setMsg(content);
-		    	 sendMail.addTo(send, "親愛的老師");
-		    	 sendMail.send();
-		            System.out.println("郵件發送成功");
-		        } catch (EmailException e) {
-		            e.printStackTrace();
-		        }
+//		     Email sendMail = new HtmlEmail();
+//		     String authuser = "";
+//		     String authpwd = "";
+//		     sendMail.setHostName("smtp.gmail.com");
+//		     sendMail.setSmtpPort(465);
+//		     sendMail.setAuthenticator(new DefaultAuthenticator(authuser, authpwd));
+//		     sendMail.setDebug(false);
+//		     sendMail.setSSL(true);
+//		     sendMail.setSslSmtpPort("465");
+//		     sendMail.setCharset("UTF-8");
+//		     sendMail.setSubject(title);
+//		     try {
+//		    	 sendMail.setFrom("", "網站客服中心");
+//		    	 sendMail.setMsg(content);
+//		    	 sendMail.addTo(send, "親愛的老師");
+//		    	 sendMail.send();
+//		            System.out.println("郵件發送成功");
+//		     } catch (EmailException e) {
+//		          e.printStackTrace();
+//		     }
 			
-//			Properties properties = System.getProperties();// 獲取系統屬性
-//		 	
-//		 	properties.setProperty("mail.transport.protocol", "smtp");
-//	        properties.setProperty("mail.smtp.host", "mail.tkbnews.com.tw");// 設置郵件服務器
-//	        properties.setProperty("mail.smtp.auth", "true");// 打開認證
-////	        properties.setProperty("mail.user", "ifUserNameNeeded");
-////	        properties.setProperty("mail.password", "ifPasswordNeeded");
-//	        
-//	        Session mailSession = Session.getDefaultInstance(properties, null);
-////           Transport transport = mailSession.getTransport();
-//            InternetAddress from = new InternetAddress("service@tkbnews.com.tw");
-//            // 產生整封 email 的主體 message
-//            MimeMessage msg = new MimeMessage(mailSession);
-//           
-//            msg.setSubject(title);
-//            msg.setFrom(from);
-//   		    msg.setRecipients(Message.RecipientType.TO, email);
-//   		    msg.setText(content);
-////           //QQ郵箱需要下面這段代碼，163郵箱不需要
-////           MailSSLSocketFactory sf = new MailSSLSocketFactory();
-////           sf.setTrustAllHosts(true);
-////           properties.put("mail.smtp.ssl.enable", "true");
-////           properties.put("mail.smtp.ssl.socketFactory", sf);
-//
-//       	    Transport transport = mailSession.getTransport("smtp");
-//       	    transport.connect("mail.tkbnews.com.tw", "byone@tkbnews.com.tw", "j;6m06vu06");
-//       	    transport.sendMessage(msg, msg.getRecipients(Message.RecipientType.TO));
-//   		    transport.close();
+			Properties properties = System.getProperties();// 獲取系統屬性
+		 	properties.setProperty("mail.transport.protocol", "smtp");
+	        properties.setProperty("mail.smtp.host", "mail.tkbnews.com.tw");// 設置郵件服務器
+	        properties.setProperty("mail.smtp.auth", "true");// 打開認證
+//		        properties.setProperty("mail.user", "ifUserNameNeeded");
+//		        properties.setProperty("mail.password", "ifPasswordNeeded");
+	        
+	        Session mailSession = Session.getDefaultInstance(properties, null);
+//	           Transport transport = mailSession.getTransport();
+            InternetAddress from = new InternetAddress("service@tkbnews.com.tw");
+            // 產生整封 email 的主體 message
+            MimeMessage msg = new MimeMessage(mailSession);
+           
+            msg.setSubject(title);
+            msg.setFrom(from);
+   		    msg.setRecipients(Message.RecipientType.TO, send);
+   		    msg.setContent(content,"text/html;charset=UTF-8");
+
+       	    Transport transport = mailSession.getTransport("smtp");
+       	    transport.connect("mail.tkbnews.com.tw", "byone@tkbnews.com.tw", "j;6m06vu06");
+       	    transport.sendMessage(msg, msg.getRecipients(Message.RecipientType.TO));
+   		    transport.close();
 
        } catch (Exception e) {
            e.printStackTrace();

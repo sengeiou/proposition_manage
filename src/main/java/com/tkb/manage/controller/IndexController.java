@@ -880,7 +880,9 @@ public class IndexController {
 		}
 		
 		if("T".equals(status)) {
-			model.addAttribute("MESSAGE", "寄信成功");
+			if(manager != null) {
+				model.addAttribute("MESSAGE", "寄信成功");
+			}
 		}else {
 			model.addAttribute("MESSAGE", "寄信錯誤");
 		}
@@ -1303,7 +1305,7 @@ public class IndexController {
 		    		 	   + "<a href='"+url+"'>請點此處</a><br/>"
 		    		 	   + "若連結失效請用瀏覽器開啟以下連結<br/>"
 		    		 	   + url
-		     			+ "</body></html>";
+		     			   + "</body></html>";
 			commonService.sendEmail(account.getEmail(), subject, message);
 			return "front/teacherAccount/forget";
 		} catch (Exception e) {
@@ -1319,7 +1321,7 @@ public class IndexController {
 	@RequestMapping(value = "/teacher/forget/Verify" , method = {RequestMethod.GET, RequestMethod.POST})
 	public String forgetPasswordVerify(HttpServletRequest pRequest, HttpServletResponse pResponse, Model model) {
 		String code = pRequest.getParameter("code") == null ? "" : pRequest.getParameter("code");
-		String status = "F";
+		code = code.replaceAll(" ", "+");//加密後如果有+號,瀏覽器會轉成空白,須再轉回來
 		
 		String deStr;
 		try {
