@@ -1837,7 +1837,7 @@ public class IndexController {
 			//取得相關領域審核人(校長)
 			Account account = new Account();
 			account.setAccount(accountSession.getAccount());
-			account.setPosition("3");
+			account.setPosition("3"); //改成編輯號,maybe "4"
 			account.setEducation_id(lessonPlan.getEducation_id());
 			account.setSubject_id(lessonPlan.getSubject_id());
 			Map<String, Object> getAuditor = teacherAccountService.getAuditor(account);
